@@ -1,20 +1,24 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:flutter_application_1/features/mining/application/game_notifier.dart';
-import 'package:flutter_application_1/features/mining/domain/models/grid_model.dart';
-import 'package:flutter_application_1/features/mining/domain/models/tile_model.dart';
-import 'package:flutter_application_1/features/mining/domain/models/tool_model.dart';
-import 'package:flutter_application_1/features/multiplayer/domain/models/remote_player_model.dart';
-import 'package:flutter_application_1/features/battle_royale/domain/models/battle_phase_model.dart';
+import 'package:derin_kazi/features/mining/application/game_notifier.dart';
+import 'package:derin_kazi/features/mining/domain/models/grid_model.dart';
+import 'package:derin_kazi/features/mining/domain/models/tile_model.dart';
+import 'package:derin_kazi/features/mining/domain/models/tool_model.dart';
+import 'package:derin_kazi/features/multiplayer/domain/models/remote_player_model.dart';
+import 'package:derin_kazi/features/battle_royale/domain/models/battle_phase_model.dart';
 
 void main() {
   group('Battle Royale Mantık Testleri', () {
     test('Oyun 3 saniyelik geri sayım fazı ile başlamalı', () {
       final container = ProviderContainer();
+      final notifier = container.read(gameNotifierProvider.notifier);
+      notifier.startBattleRoyaleMatch();
       final state = container.read(gameNotifierProvider);
 
       expect(state.battlePhase.phase, BattlePhase.countdown);
       expect(state.battlePhase.countdownSeconds, 3);
+      expect(state.gameMode, GameMode.battleRoyale);
+      container.dispose();
     });
 
     test('Kutu kırıldığında envantere alet eklenmeli ve hasar gücü artmalı', () {
@@ -144,3 +148,4 @@ void main() {
     });
   });
 }
+

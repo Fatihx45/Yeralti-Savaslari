@@ -108,3 +108,4 @@ class InventorySlotBar extends ConsumerWidget {
     );
   }
 }
+

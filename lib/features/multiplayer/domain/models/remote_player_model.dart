@@ -1,5 +1,5 @@
-import 'package:flutter_application_1/features/mining/domain/models/grid_model.dart';
-import 'package:flutter_application_1/features/mining/domain/models/tool_model.dart';
+import 'package:derin_kazi/features/mining/domain/models/grid_model.dart';
+import 'package:derin_kazi/features/mining/domain/models/tool_model.dart';
 
 class RemotePlayerModel {
   final String uid;
@@ -70,3 +70,4 @@ class RemotePlayerModel {
     );
   }
 }
+

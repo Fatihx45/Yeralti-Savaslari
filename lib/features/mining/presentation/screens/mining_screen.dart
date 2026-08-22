@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+﻿import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../application/game_notifier.dart';
@@ -9,10 +9,10 @@ import '../widgets/mining_grid_view.dart';
 import '../widgets/directional_pad.dart';
 import '../widgets/bottom_progress_bar.dart';
 
-import 'package:flutter_application_1/features/battle_royale/presentation/widgets/player_scoreboard_panel.dart';
-import 'package:flutter_application_1/features/battle_royale/presentation/widgets/inventory_slot_bar.dart';
-import 'package:flutter_application_1/features/battle_royale/presentation/widgets/countdown_overlay.dart';
-import 'package:flutter_application_1/features/battle_royale/presentation/widgets/battle_result_dialog.dart';
+import 'package:derin_kazi/features/battle_royale/presentation/widgets/player_scoreboard_panel.dart';
+import 'package:derin_kazi/features/battle_royale/presentation/widgets/inventory_slot_bar.dart';
+import 'package:derin_kazi/features/battle_royale/presentation/widgets/countdown_overlay.dart';
+import 'package:derin_kazi/features/battle_royale/presentation/widgets/battle_result_dialog.dart';
 
 class MiningScreen extends ConsumerWidget {
   const MiningScreen({super.key});
@@ -35,8 +35,10 @@ class MiningScreen extends ConsumerWidget {
         );
       }
 
-      // 2. Battle Royale Oyun Sonu Dialog'u
-      if (next.battlePhase.isFinished && previous?.battlePhase.isFinished != true) {
+      // 2. Battle Royale Oyun Sonu Dialog'u (Sadece BR Modunda)
+      if (next.gameMode == GameMode.battleRoyale &&
+          next.battlePhase.isFinished &&
+          previous?.battlePhase.isFinished != true) {
         showDialog(
           context: context,
           barrierDismissible: false,
@@ -55,6 +57,8 @@ class MiningScreen extends ConsumerWidget {
         );
       }
     });
+
+    final gameState = ref.watch(gameNotifierProvider);
 
     return Scaffold(
       backgroundColor: AppColors.background,
@@ -79,12 +83,13 @@ class MiningScreen extends ConsumerWidget {
                               const Center(
                                 child: MiningGridView(),
                               ),
-                              // Sol Üst Köşe: Madenciler ve Canları
-                              const Positioned(
-                                top: 6,
-                                left: 6,
-                                child: PlayerScoreboardPanel(),
-                              ),
+                              // Sol Üst Köşe: Madenciler ve Canları (Çok Oyunculu veya BR'de)
+                              if (gameState.grid.otherPlayers.isNotEmpty || gameState.gameMode == GameMode.battleRoyale)
+                                const Positioned(
+                                  top: 6,
+                                  left: 6,
+                                  child: PlayerScoreboardPanel(),
+                                ),
                             ],
                           ),
                         ),
@@ -217,8 +222,9 @@ class MiningScreen extends ConsumerWidget {
               ],
             ),
 
-            // 4. 3 Saniyelik Geri Sayım Tam Ekran Overlay'i
-            const CountdownOverlay(),
+            // 4. 3 Saniyelik Geri Sayım Tam Ekran Overlay'i (Sadece BR Modunda)
+            if (gameState.gameMode == GameMode.battleRoyale)
+              const CountdownOverlay(),
           ],
         ),
       ),

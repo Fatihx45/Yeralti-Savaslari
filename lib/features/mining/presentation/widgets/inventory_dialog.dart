@@ -310,3 +310,4 @@ class InventoryDialog extends ConsumerWidget {
     );
   }
 }
+

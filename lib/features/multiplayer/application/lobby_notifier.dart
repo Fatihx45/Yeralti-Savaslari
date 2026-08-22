@@ -2,7 +2,7 @@ import 'dart:math';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../domain/models/room_model.dart';
 import '../domain/models/remote_player_model.dart';
-import 'package:flutter_application_1/features/mining/domain/models/grid_model.dart';
+import 'package:derin_kazi/features/mining/domain/models/grid_model.dart';
 
 class LobbyState {
   final RoomModel? currentRoom;
@@ -188,3 +188,4 @@ class LobbyNotifier extends StateNotifier<LobbyState> {
 final lobbyNotifierProvider = StateNotifierProvider<LobbyNotifier, LobbyState>((ref) {
   return LobbyNotifier();
 });
+

@@ -27,3 +27,4 @@ class PlayerContributionModel {
     this.badges = const [],
   });
 }
+

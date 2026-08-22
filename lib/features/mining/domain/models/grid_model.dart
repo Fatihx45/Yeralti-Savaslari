@@ -1,5 +1,5 @@
 import 'tile_model.dart';
-import 'package:flutter_application_1/features/multiplayer/domain/models/remote_player_model.dart';
+import 'package:derin_kazi/features/multiplayer/domain/models/remote_player_model.dart';
 
 enum PlayerDirection { up, down, left, right }
 
@@ -102,3 +102,4 @@ class GridModel {
     );
   }
 }
+

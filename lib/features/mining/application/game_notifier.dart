@@ -6,10 +6,15 @@ import '../domain/models/player_state_model.dart';
 import '../domain/models/tile_model.dart';
 import '../domain/models/upgrade_model.dart';
 import '../domain/services/grid_generator.dart';
-import 'package:flutter_application_1/features/multiplayer/domain/models/remote_player_model.dart';
+import 'package:derin_kazi/features/multiplayer/domain/models/remote_player_model.dart';
 
-import 'package:flutter_application_1/features/battle_royale/domain/models/battle_phase_model.dart';
+import 'package:derin_kazi/features/battle_royale/domain/models/battle_phase_model.dart';
 import '../domain/models/tool_model.dart';
+
+enum GameMode {
+  solo,
+  battleRoyale,
+}
 
 class GameState {
   final PlayerStateModel player;
@@ -17,6 +22,7 @@ class GameState {
   final String? lastMessage;
   final Position? lastDamagedTile;
   final BattlePhaseState battlePhase;
+  final GameMode gameMode;
 
   const GameState({
     required this.player,
@@ -24,6 +30,7 @@ class GameState {
     this.lastMessage,
     this.lastDamagedTile,
     this.battlePhase = const BattlePhaseState(),
+    this.gameMode = GameMode.solo,
   });
 
   GameState copyWith({
@@ -32,6 +39,7 @@ class GameState {
     String? lastMessage,
     Position? lastDamagedTile,
     BattlePhaseState? battlePhase,
+    GameMode? gameMode,
   }) {
     return GameState(
       player: player ?? this.player,
@@ -39,6 +47,7 @@ class GameState {
       lastMessage: lastMessage ?? this.lastMessage,
       lastDamagedTile: lastDamagedTile ?? this.lastDamagedTile,
       battlePhase: battlePhase ?? this.battlePhase,
+      gameMode: gameMode ?? this.gameMode,
     );
   }
 }
@@ -52,10 +61,10 @@ class GameNotifier extends StateNotifier<GameState> {
           GameState(
             player: PlayerStateModel.initial(),
             grid: GridGenerator.generateStage(stage: 1, depth: 1),
+            gameMode: GameMode.solo,
           ),
         ) {
     _startEnergyTimer();
-    startBattleRoyaleMatch();
   }
 
   void _startEnergyTimer() {
@@ -291,50 +300,10 @@ class GameNotifier extends StateNotifier<GameState> {
             : (hpReward >= 10 ? '💛 BÜYÜK CAN BULUNDU! +$hpReward Can ❤️' : '❤️ +$hpReward Can Bulundu! (Can: $newHpVal)');
       }
 
-      if (targetTile.type == TileType.potion) {
-        newHpVal = (newHpVal + 30).clamp(0, state.player.maxHp);
-        rewardMsg = '🧪 İksir Bulundu! +30 Can ❤️ +$energyReward Enerji ⚡';
-      } else if (targetTile.type == TileType.hiddenMine) {
-        // 💣 Gizli Bomba Patlaması: Net -30 Can Hasarı & 3x3 Alan Patlaması
-        newHpVal = max(0, state.player.hp - 30);
-        if (newHpVal <= 0) {
-          newHpVal = 0;
-          rewardMsg = '💀 GİZLİ BOMBA! Canınız tükendi ve elendiniz! 💀';
-        } else {
-          rewardMsg = '💥 GİZLİ BOMBA PATLADI! -30 CAN GİTTİ! (Kalan Can: $newHpVal ❤️)';
-        }
-
-        // 3x3 Çevre Patlaması
-        for (int dr = -1; dr <= 1; dr++) {
-          for (int dc = -1; dc <= 1; dc++) {
-            final nr = targetRow + dr;
-            final nc = targetCol + dc;
-            if (nr >= 0 && nr < state.grid.rows && nc >= 0 && nc < state.grid.columns) {
-              final neighbor = newTiles[nr][nc];
-              if (!neighbor.isCleared && !neighbor.isUnbreakable && neighbor.type != TileType.empty) {
-                goldReward += neighbor.rewardGold;
-                gemReward += neighbor.rewardGems;
-                energyReward += neighbor.rewardEnergy;
-
-                newTiles[nr][nc] = neighbor.copyWith(
-                  currentHp: 0,
-                  isCleared: true,
-                  type: TileType.empty,
-                );
-                extraCleared++;
-              }
-            }
-          }
-        }
-      } else if (rewardMsg.isEmpty) {
-        if (energyReward > 0) {
-          rewardMsg = '⚡ Enerji Bulundu! +$energyReward Enerji';
-        } else if (goldReward > 0) {
-          rewardMsg = '🟡 +$goldReward Altın Bulundu!';
-        }
-      } else if (targetTile.type == TileType.tnt) {
-        rewardMsg = '💥 TNT PATLADI! Çevre kutular temizlendi!';
-        // 3x3 Alan Patlaması
+      // Tile Tiplerine Göre Özel Efektler ve Bildirimler
+      if (targetTile.type == TileType.tnt) {
+        // 🧨 TNT Patlaması: 3x3 Alan Temizleme & Dinamit Ödülü
+        rewardMsg = '💥 TNT PATLADI! 3x3 Alan Temizlendi! (+1 Dinamit 💣)';
         for (int dr = -1; dr <= 1; dr++) {
           for (int dc = -1; dc <= 1; dc++) {
             final nr = targetRow + dr;
@@ -347,6 +316,7 @@ class GameNotifier extends StateNotifier<GameState> {
                 copperReward += neighbor.rewardCopper;
                 ironReward += neighbor.rewardIron;
                 emeraldReward += neighbor.rewardEmerald;
+                fossilReward += neighbor.rewardFossil;
                 energyReward += neighbor.rewardEnergy;
 
                 newTiles[nr][nc] = neighbor.copyWith(
@@ -358,6 +328,54 @@ class GameNotifier extends StateNotifier<GameState> {
               }
             }
           }
+        }
+      } else if (targetTile.type == TileType.hiddenMine) {
+        // 💣 Gizli Bomba Patlaması: Net -30 Can Hasarı & 3x3 Alan Patlaması
+        newHpVal = max(0, state.player.hp - 30);
+        if (newHpVal <= 0) {
+          newHpVal = 0;
+          rewardMsg = '💀 GİZLİ BOMBA! Canınız tükendi ve elendiniz! 💀';
+        } else {
+          rewardMsg = '💥 GİZLİ BOMBA PATLADI! -30 CAN GİTTİ! (Kalan Can: $newHpVal ❤️)';
+        }
+
+        for (int dr = -1; dr <= 1; dr++) {
+          for (int dc = -1; dc <= 1; dc++) {
+            final nr = targetRow + dr;
+            final nc = targetCol + dc;
+            if (nr >= 0 && nr < state.grid.rows && nc >= 0 && nc < state.grid.columns) {
+              final neighbor = newTiles[nr][nc];
+              if (!neighbor.isCleared && !neighbor.isUnbreakable && neighbor.type != TileType.empty) {
+                goldReward += neighbor.rewardGold;
+                gemReward += neighbor.rewardGems;
+                energyReward += neighbor.rewardEnergy;
+
+                newTiles[nr][nc] = neighbor.copyWith(
+                  currentHp: 0,
+                  isCleared: true,
+                  type: TileType.empty,
+                );
+                extraCleared++;
+              }
+            }
+          }
+        }
+      } else if (targetTile.type == TileType.chest) {
+        rewardMsg = '📦 Hazine Sandığı Bulundu! +$goldReward 🟡 +$gemReward 💎';
+      } else if (targetTile.type == TileType.emeraldOre) {
+        rewardMsg = '🟢 Zümrüt Damarı Bulundu! +1 Zümrüt +$gemReward 💎';
+      } else if (targetTile.type == TileType.bossCore) {
+        rewardMsg = '👑 TİTAN ÇEKİRDEĞİ KIRILDI! +$goldReward 🟡 +$gemReward 💎';
+      } else if (targetTile.type == TileType.potion) {
+        newHpVal = (newHpVal + 30).clamp(0, state.player.maxHp);
+        rewardMsg = '🧪 İksir Bulundu! +30 Can ❤️ +$energyReward Enerji ⚡';
+      } else if (rewardMsg.isEmpty) {
+        if (energyReward > 0) {
+          rewardMsg = '⚡ Enerji Bulundu! +$energyReward Enerji';
+        } else if (copperReward > 0 || ironReward > 0) {
+          rewardMsg = copperReward > 0 ? '🟤 Bakır Madeni (+1 Bakır)' : '⚪ Demir Madeni (+1 Demir)';
+        } else if (goldReward > 0) {
+          rewardMsg = '🟡 +$goldReward Altın Bulundu!';
         }
       }
 
@@ -756,11 +774,22 @@ class GameNotifier extends StateNotifier<GameState> {
     }
   }
 
+  void startSoloGame() {
+    _battleTimer?.cancel();
+    state = state.copyWith(
+      gameMode: GameMode.solo,
+      battlePhase: const BattlePhaseState(phase: BattlePhase.finished),
+      grid: GridGenerator.generateStage(stage: 1, depth: 1, playerCount: 1),
+      lastMessage: 'Solo Madencilik Başladı! İyi kazılar!',
+    );
+  }
+
   void startBattleRoyaleMatch() {
     _battleTimer?.cancel();
 
     // 1. 3 Saniyelik Geri Sayım Fazı
     state = state.copyWith(
+      gameMode: GameMode.battleRoyale,
       battlePhase: const BattlePhaseState(
         phase: BattlePhase.countdown,
         countdownSeconds: 3,
@@ -916,3 +945,4 @@ class GameNotifier extends StateNotifier<GameState> {
 final gameNotifierProvider = StateNotifierProvider<GameNotifier, GameState>((ref) {
   return GameNotifier();
 });
+

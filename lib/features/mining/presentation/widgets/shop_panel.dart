@@ -331,3 +331,4 @@ class ShopPanel extends ConsumerWidget {
     );
   }
 }
+

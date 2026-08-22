@@ -346,3 +346,4 @@ class VictoryPodiumDialog extends StatelessWidget {
     );
   }
 }
+

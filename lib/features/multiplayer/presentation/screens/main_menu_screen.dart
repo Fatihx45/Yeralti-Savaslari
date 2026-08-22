@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../mining/presentation/screens/mining_screen.dart';
+import '../../../mining/application/game_notifier.dart';
 import 'create_room_screen.dart';
 import 'join_room_screen.dart';
 import '../../application/lobby_notifier.dart';
@@ -101,6 +102,7 @@ class _MainMenuScreenState extends ConsumerState<MainMenuScreen> {
                   textColor: AppColors.neonGreen,
                   onTap: () {
                     ref.read(lobbyNotifierProvider.notifier).setPlayerName(_nameController.text);
+                    ref.read(gameNotifierProvider.notifier).startSoloGame();
                     Navigator.push(
                       context,
                       MaterialPageRoute(builder: (ctx) => const MiningScreen()),
@@ -219,3 +221,4 @@ class _MainMenuScreenState extends ConsumerState<MainMenuScreen> {
     );
   }
 }
+

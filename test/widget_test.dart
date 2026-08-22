@@ -1,6 +1,6 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:flutter_application_1/main.dart';
+import 'package:derin_kazi/main.dart';
 
 void main() {
   testWidgets('Derin Kazı App render ve Mağaza buton testi', (WidgetTester tester) async {
@@ -44,3 +44,4 @@ void main() {
     container.dispose();
   });
 }
+

@@ -158,3 +158,4 @@ class PlayerScoreboardPanel extends ConsumerWidget {
     );
   }
 }
+

@@ -36,3 +36,4 @@ class AppTheme {
     color: AppColors.primaryText,
   );
 }
+

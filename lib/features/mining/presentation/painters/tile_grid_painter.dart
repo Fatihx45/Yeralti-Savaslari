@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../domain/models/grid_model.dart';
 import '../../domain/models/tile_model.dart';
-import 'package:flutter_application_1/features/multiplayer/domain/models/remote_player_model.dart';
+import 'package:derin_kazi/features/multiplayer/domain/models/remote_player_model.dart';
 
 class TileGridPainter extends CustomPainter {
   final GridModel grid;
@@ -408,3 +408,4 @@ class TileGridPainter extends CustomPainter {
     return true;
   }
 }
+

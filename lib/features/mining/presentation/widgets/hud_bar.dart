@@ -219,6 +219,33 @@ class HudBar extends ConsumerWidget {
   }
 
   Widget _buildCenterSection(GridModel grid, PlayerStateModel player, GameState state) {
+    if (state.gameMode == GameMode.solo) {
+      return Container(
+        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+        decoration: BoxDecoration(
+          color: const Color(0xFF0F0F28),
+          borderRadius: BorderRadius.circular(6),
+          border: Border.all(color: AppColors.neonGreen.withValues(alpha: 0.6), width: 1),
+        ),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            const Icon(Icons.terrain, color: AppColors.neonGreen, size: 14),
+            const SizedBox(width: 5),
+            Text(
+              'AŞAMA ${grid.stage} • ${grid.biomeName} (${grid.tilesClearedInStage}/${grid.totalTilesInStage})',
+              style: const TextStyle(
+                color: AppColors.neonGreen,
+                fontSize: 10,
+                fontWeight: FontWeight.bold,
+                letterSpacing: 0.5,
+              ),
+            ),
+          ],
+        ),
+      );
+    }
+
     final phase = state.battlePhase;
     final String phaseTitle = phase.isDeathmatch
         ? '⚔️ SERBEST DÖVÜŞ'
@@ -338,3 +365,4 @@ class HudBar extends ConsumerWidget {
     );
   }
 }
+

@@ -1,10 +1,10 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:flutter_application_1/features/mining/domain/models/grid_model.dart';
-import 'package:flutter_application_1/features/mining/domain/services/grid_generator.dart';
-import 'package:flutter_application_1/features/multiplayer/application/lobby_notifier.dart';
-import 'package:flutter_application_1/features/multiplayer/domain/models/room_model.dart';
-import 'package:flutter_application_1/features/mining/application/game_notifier.dart';
+import 'package:derin_kazi/features/mining/domain/models/grid_model.dart';
+import 'package:derin_kazi/features/mining/domain/services/grid_generator.dart';
+import 'package:derin_kazi/features/multiplayer/application/lobby_notifier.dart';
+import 'package:derin_kazi/features/multiplayer/domain/models/room_model.dart';
+import 'package:derin_kazi/features/mining/application/game_notifier.dart';
 
 void main() {
   group('Çok Oyunculu Ekip Kazısı Mantık Testleri', () {
@@ -91,3 +91,4 @@ void main() {
     });
   });
 }
+

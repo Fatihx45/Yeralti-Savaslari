@@ -25,3 +25,4 @@ class AppColors {
   static const Color badgeRed = Color(0xFFD32F2F);
   static const Color badgeGreen = Color(0xFF2E7D32);
 }
+

@@ -141,3 +141,4 @@ class BottomProgressBar extends ConsumerWidget {
     );
   }
 }
+

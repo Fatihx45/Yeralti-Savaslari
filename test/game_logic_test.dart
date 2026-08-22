@@ -1,9 +1,9 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:flutter_application_1/features/mining/application/game_notifier.dart';
-import 'package:flutter_application_1/features/mining/domain/models/upgrade_model.dart';
-import 'package:flutter_application_1/features/mining/domain/models/tile_model.dart';
-import 'package:flutter_application_1/features/mining/domain/models/grid_model.dart';
+import 'package:derin_kazi/features/mining/application/game_notifier.dart';
+import 'package:derin_kazi/features/mining/domain/models/upgrade_model.dart';
+import 'package:derin_kazi/features/mining/domain/models/tile_model.dart';
+import 'package:derin_kazi/features/mining/domain/models/grid_model.dart';
 
 void main() {
   group('Derin Kazı Oyun Mantığı Testleri', () {
@@ -227,6 +227,91 @@ void main() {
       final afterState = container.read(gameNotifierProvider);
       expect(afterState.player.hp, 70); // 100 - 30 = 70 Can
       expect(afterState.lastMessage?.contains('GİZLİ BOMBA'), true);
+      container.dispose();
+    });
+
+    test('TNT kutusu kazıldığında patlamalı, 3x3 alanı temizlemeli ve dinamit kazandırmalı', () {
+      final container = ProviderContainer();
+      final notifier = container.read(gameNotifierProvider.notifier);
+
+      final state = container.read(gameNotifierProvider);
+      final pPos = state.grid.playerPosition;
+      final targetRow = pPos.row + 1;
+      final targetCol = pPos.col;
+
+      final updatedTiles = [
+        for (int r = 0; r < state.grid.rows; r++)
+          [
+            for (int c = 0; c < state.grid.columns; c++)
+              if (r == targetRow && c == targetCol)
+                state.grid.tiles[r][c].copyWith(
+                  type: TileType.tnt,
+                  maxHp: 2,
+                  currentHp: 2,
+                  isCleared: false,
+                  rewardDynamite: 1,
+                )
+              else
+                state.grid.tiles[r][c]
+          ]
+      ];
+
+      notifier.state = state.copyWith(
+        grid: state.grid.copyWith(tiles: updatedTiles),
+        player: state.player.copyWith(dynamites: 0),
+      );
+
+      notifier.changeDirection(PlayerDirection.down);
+      notifier.digTargetTile();
+
+      final afterState = container.read(gameNotifierProvider);
+      expect(afterState.player.dynamites, 1);
+      expect(afterState.lastMessage?.contains('TNT PATLADI'), true);
+      container.dispose();
+    });
+
+    test('Zümrüt, Bakır, Demir ve Sandık kutuları madenleri envantere eklemeli', () {
+      final container = ProviderContainer();
+      final notifier = container.read(gameNotifierProvider.notifier);
+
+      final state = container.read(gameNotifierProvider);
+      final pPos = state.grid.playerPosition;
+      final targetRow = pPos.row + 1;
+      final targetCol = pPos.col;
+
+      // Hedefe Zümrüt Damarı koyalım
+      final updatedTiles = [
+        for (int r = 0; r < state.grid.rows; r++)
+          [
+            for (int c = 0; c < state.grid.columns; c++)
+              if (r == targetRow && c == targetCol)
+                state.grid.tiles[r][c].copyWith(
+                  type: TileType.emeraldOre,
+                  maxHp: 2,
+                  currentHp: 2,
+                  isCleared: false,
+                  rewardEmerald: 1,
+                  rewardGems: 2,
+                )
+              else
+                state.grid.tiles[r][c]
+          ]
+      ];
+
+      notifier.state = state.copyWith(
+        grid: state.grid.copyWith(tiles: updatedTiles),
+        player: state.player.copyWith(emeralds: 0, gems: 0),
+      );
+
+      notifier.changeDirection(PlayerDirection.down);
+      notifier.digTargetTile();
+
+      final afterState = container.read(gameNotifierProvider);
+      expect(afterState.player.emeralds, 1);
+      expect(afterState.player.gems, 2);
+      expect(afterState.lastMessage?.contains('Zümrüt Damarı'), true);
+      container.dispose();
     });
   });
 }
+
