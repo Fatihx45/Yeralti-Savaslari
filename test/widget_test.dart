@@ -16,6 +16,7 @@ void main() {
     // Ana Menü Elemanları
     expect(find.text('DERİN KAZI'), findsOneWidget);
     expect(find.text('SOLO KAZI'), findsOneWidget);
+    expect(find.textContaining('MULTIPLAYER'), findsOneWidget);
     expect(find.text('EKİP KAZISI (ODA KUR)'), findsOneWidget);
     expect(find.text('ODAYA KATIL'), findsOneWidget);
 

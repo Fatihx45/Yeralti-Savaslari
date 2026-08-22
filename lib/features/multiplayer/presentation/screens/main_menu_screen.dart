@@ -1,11 +1,14 @@
-import 'package:flutter/material.dart';
+﻿import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../mining/presentation/screens/mining_screen.dart';
 import '../../../mining/application/game_notifier.dart';
 import 'create_room_screen.dart';
 import 'join_room_screen.dart';
+import 'lobby_screen.dart';
 import '../../application/lobby_notifier.dart';
+import '../../../cosmetics/presentation/screens/cosmetics_screen.dart';
+import '../../../quests/presentation/widgets/quest_dialog.dart';
 
 class MainMenuScreen extends ConsumerStatefulWidget {
   const MainMenuScreen({super.key});
@@ -29,10 +32,10 @@ class _MainMenuScreenState extends ConsumerState<MainMenuScreen> {
       backgroundColor: AppColors.background,
       body: Center(
         child: SingleChildScrollView(
-          padding: const EdgeInsets.all(24),
+          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 24),
           child: Container(
             constraints: const BoxConstraints(maxWidth: 480),
-            padding: const EdgeInsets.all(28),
+            padding: const EdgeInsets.all(24),
             decoration: BoxDecoration(
               color: const Color(0xFF0F0F28),
               borderRadius: BorderRadius.circular(24),
@@ -49,8 +52,8 @@ class _MainMenuScreenState extends ConsumerState<MainMenuScreen> {
               mainAxisSize: MainAxisSize.min,
               children: [
                 // Oyun Logosu & Başlık
-                const Icon(Icons.hardware, size: 56, color: AppColors.goldText),
-                const SizedBox(height: 10),
+                const Icon(Icons.hardware, size: 52, color: AppColors.goldText),
+                const SizedBox(height: 8),
                 const Text(
                   'DERİN KAZI',
                   style: TextStyle(
@@ -62,10 +65,10 @@ class _MainMenuScreenState extends ConsumerState<MainMenuScreen> {
                 ),
                 const SizedBox(height: 4),
                 const Text(
-                  'Yeraltı Madencilik & Hazine Macerası',
+                  'Yeraltı Madencilik & Battle Royale Macerası',
                   style: TextStyle(color: Color(0xFF8E8EAE), fontSize: 12),
                 ),
-                const SizedBox(height: 24),
+                const SizedBox(height: 20),
 
                 // Oyuncu İsim Girişi
                 TextField(
@@ -90,12 +93,12 @@ class _MainMenuScreenState extends ConsumerState<MainMenuScreen> {
                     ref.read(lobbyNotifierProvider.notifier).setPlayerName(val);
                   },
                 ),
-                const SizedBox(height: 28),
+                const SizedBox(height: 20),
 
                 // 1. SOLO KAZI BUTONU
                 _buildMenuButton(
                   title: 'SOLO KAZI',
-                  subtitle: 'Tek Kişilik Çevrimdışı Madencilik',
+                  subtitle: 'Tek Kişilik Rahat Madencilik & Boss Savaşı',
                   icon: Icons.person,
                   buttonColor: const Color(0xFF1E3A24),
                   borderColor: AppColors.neonGreen,
@@ -109,12 +112,31 @@ class _MainMenuScreenState extends ConsumerState<MainMenuScreen> {
                     );
                   },
                 ),
-                const SizedBox(height: 14),
+                const SizedBox(height: 12),
 
-                // 2. EKİP KAZISI - ODA KUR
+                // 2. MULTIPLAYER (ÇOK OYUNCULU) BATTLE ROYALE BUTONU
+                _buildMenuButton(
+                  title: '🌐 MULTIPLAYER (ÇOK OYUNCULU)',
+                  subtitle: '4 Kişilik Battle Royale Hayatta Kalma',
+                  icon: Icons.sports_kabaddi,
+                  buttonColor: const Color(0xFF351228),
+                  borderColor: const Color(0xFFFF5252),
+                  textColor: const Color(0xFFFF5252),
+                  onTap: () {
+                    ref.read(lobbyNotifierProvider.notifier).setPlayerName(_nameController.text);
+                    ref.read(lobbyNotifierProvider.notifier).createRoom(maxPlayers: 4);
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (ctx) => const LobbyScreen()),
+                    );
+                  },
+                ),
+                const SizedBox(height: 12),
+
+                // 3. EKİP KAZISI (ÖZEL ODA KUR)
                 _buildMenuButton(
                   title: 'EKİP KAZISI (ODA KUR)',
-                  subtitle: '1-10 Kişilik Arkadaş Grubuyla Kaz',
+                  subtitle: '1-10 Kişilik Özel Arkadaş Odası Kur',
                   icon: Icons.group_add,
                   buttonColor: const Color(0xFF2E1A0A),
                   borderColor: AppColors.goldText,
@@ -127,12 +149,12 @@ class _MainMenuScreenState extends ConsumerState<MainMenuScreen> {
                     );
                   },
                 ),
-                const SizedBox(height: 14),
+                const SizedBox(height: 12),
 
-                // 3. EKİP KAZISI - ODAYA KATIL
+                // 4. ODAYA KATIL
                 _buildMenuButton(
                   title: 'ODAYA KATIL',
-                  subtitle: 'Arkadaşının 6 Haneli Kodunu Gir',
+                  subtitle: '6 Haneli Oda Kodu ile Katıl',
                   icon: Icons.login,
                   buttonColor: const Color(0xFF1E1038),
                   borderColor: const Color(0xFFE040FB),
@@ -144,6 +166,45 @@ class _MainMenuScreenState extends ConsumerState<MainMenuScreen> {
                       MaterialPageRoute(builder: (ctx) => const JoinRoomScreen()),
                     );
                   },
+                ),
+                const SizedBox(height: 16),
+
+                // Alt Kısayollar: Görevler & Kostümler
+                Row(
+                  children: [
+                    Expanded(
+                      child: OutlinedButton.icon(
+                        style: OutlinedButton.styleFrom(
+                          foregroundColor: AppColors.goldText,
+                          side: const BorderSide(color: AppColors.goldText),
+                          padding: const EdgeInsets.symmetric(vertical: 12),
+                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                        ),
+                        icon: const Icon(Icons.assignment, size: 18),
+                        label: const Text('GÖREVLER', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 12)),
+                        onPressed: () => QuestDialog.showQuestDialog(context),
+                      ),
+                    ),
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: OutlinedButton.icon(
+                        style: OutlinedButton.styleFrom(
+                          foregroundColor: const Color(0xFFE040FB),
+                          side: const BorderSide(color: Color(0xFFE040FB)),
+                          padding: const EdgeInsets.symmetric(vertical: 12),
+                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                        ),
+                        icon: const Icon(Icons.palette, size: 18),
+                        label: const Text('KOSTÜMLER', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 12)),
+                        onPressed: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(builder: (ctx) => const CosmeticsScreen()),
+                          );
+                        },
+                      ),
+                    ),
+                  ],
                 ),
               ],
             ),
@@ -169,7 +230,7 @@ class _MainMenuScreenState extends ConsumerState<MainMenuScreen> {
         borderRadius: BorderRadius.circular(14),
         child: Container(
           width: double.infinity,
-          padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 14),
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
           decoration: BoxDecoration(
             color: buttonColor,
             borderRadius: BorderRadius.circular(14),
@@ -189,7 +250,7 @@ class _MainMenuScreenState extends ConsumerState<MainMenuScreen> {
                   color: Colors.black38,
                   borderRadius: BorderRadius.circular(10),
                 ),
-                child: Icon(icon, color: textColor, size: 24),
+                child: Icon(icon, color: textColor, size: 22),
               ),
               const SizedBox(width: 14),
               Expanded(
@@ -198,22 +259,22 @@ class _MainMenuScreenState extends ConsumerState<MainMenuScreen> {
                   children: [
                     Text(
                       title,
-                      style: TextStyle(
+                      style: const TextStyle(
                         color: Colors.white,
-                        fontSize: 14,
+                        fontSize: 13,
                         fontWeight: FontWeight.bold,
-                        letterSpacing: 0.8,
+                        letterSpacing: 0.6,
                       ),
                     ),
                     const SizedBox(height: 2),
                     Text(
                       subtitle,
-                      style: TextStyle(color: Colors.white70, fontSize: 11),
+                      style: const TextStyle(color: Colors.white70, fontSize: 11),
                     ),
                   ],
                 ),
               ),
-              Icon(Icons.arrow_forward_ios, color: textColor, size: 16),
+              Icon(Icons.arrow_forward_ios, color: textColor, size: 14),
             ],
           ),
         ),
@@ -221,4 +282,3 @@ class _MainMenuScreenState extends ConsumerState<MainMenuScreen> {
     );
   }
 }
-
