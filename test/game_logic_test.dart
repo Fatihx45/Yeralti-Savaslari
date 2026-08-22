@@ -6,6 +6,8 @@ import 'package:derin_kazi/features/mining/domain/models/tile_model.dart';
 import 'package:derin_kazi/features/mining/domain/models/grid_model.dart';
 
 void main() {
+  TestWidgetsFlutterBinding.ensureInitialized();
+
   group('Derin Kazı Oyun Mantığı Testleri', () {
     test('Başlangıç durumu ve değerleri doğrulanmalı', () {
       final container = ProviderContainer();

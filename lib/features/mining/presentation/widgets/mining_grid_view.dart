@@ -37,17 +37,10 @@ class MiningGridView extends ConsumerWidget {
               final double cellWidth = box.size.width / grid.columns;
               final double cellHeight = box.size.height / grid.rows;
 
-              final int clickedCol = (localPos.dx / cellWidth).floor();
-              final int clickedRow = (localPos.dy / cellHeight).floor();
+              final int clickedCol = (localPos.dx / cellWidth).floor().clamp(0, grid.columns - 1);
+              final int clickedRow = (localPos.dy / cellHeight).floor().clamp(0, grid.rows - 1);
 
-              final pPos = grid.playerPosition;
-              final int dRow = clickedRow - pPos.row;
-              final int dCol = clickedCol - pPos.col;
-
-              // Yalnızca 4 yönlü komşu ise hareket/kazı yap
-              if ((dRow.abs() == 1 && dCol == 0) || (dRow == 0 && dCol.abs() == 1)) {
-                ref.read(gameNotifierProvider.notifier).moveOrDig(dRow, dCol);
-              }
+              ref.read(gameNotifierProvider.notifier).tapTile(clickedRow, clickedCol);
             },
             child: CustomPaint(
               painter: TileGridPainter(

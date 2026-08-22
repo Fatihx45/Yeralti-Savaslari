@@ -52,9 +52,9 @@ class InventorySlotBar extends ConsumerWidget {
                       }
                     : null,
                 child: Container(
-                  width: 38,
-                  height: 38,
-                  margin: const EdgeInsets.symmetric(horizontal: 2),
+                  width: 44,
+                  height: 44,
+                  margin: const EdgeInsets.symmetric(horizontal: 2.5),
                   decoration: BoxDecoration(
                     color: isActive
                         ? const Color(0xFF1E3A24)

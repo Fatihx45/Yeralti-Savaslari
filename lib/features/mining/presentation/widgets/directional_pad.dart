@@ -90,11 +90,11 @@ class DirectionalPad extends ConsumerWidget {
         onTap: onTap,
         borderRadius: BorderRadius.circular(6),
         child: Container(
-          width: 38,
-          height: 38,
+          width: 42,
+          height: 42,
           decoration: BoxDecoration(
             color: const Color(0xFF164424),
-            borderRadius: BorderRadius.circular(4),
+            borderRadius: BorderRadius.circular(8),
             border: Border.all(
               color: AppColors.neonGreen,
               width: 1.5,

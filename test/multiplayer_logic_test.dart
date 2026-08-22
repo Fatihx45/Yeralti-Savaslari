@@ -7,6 +7,8 @@ import 'package:derin_kazi/features/multiplayer/domain/models/room_model.dart';
 import 'package:derin_kazi/features/mining/application/game_notifier.dart';
 
 void main() {
+  TestWidgetsFlutterBinding.ensureInitialized();
+
   group('Çok Oyunculu Ekip Kazısı Mantık Testleri', () {
     test('Deterministik seed aynı haritayı ve taşları üretmeli', () {
       const int testSeed = 424242;

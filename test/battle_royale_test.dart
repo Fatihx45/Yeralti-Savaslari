@@ -8,6 +8,8 @@ import 'package:derin_kazi/features/multiplayer/domain/models/remote_player_mode
 import 'package:derin_kazi/features/battle_royale/domain/models/battle_phase_model.dart';
 
 void main() {
+  TestWidgetsFlutterBinding.ensureInitialized();
+
   group('Battle Royale Mantık Testleri', () {
     test('Oyun 3 saniyelik geri sayım fazı ile başlamalı', () {
       final container = ProviderContainer();

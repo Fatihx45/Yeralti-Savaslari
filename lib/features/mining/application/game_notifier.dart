@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:math';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../domain/models/grid_model.dart';
 import '../domain/models/player_state_model.dart';
@@ -78,6 +79,18 @@ class GameNotifier extends StateNotifier<GameState> {
     _energyTimer?.cancel();
     _battleTimer?.cancel();
     super.dispose();
+  }
+
+  void _triggerHaptic(String type) {
+    try {
+      if (type == 'heavy') {
+        HapticFeedback.heavyImpact();
+      } else if (type == 'selection') {
+        HapticFeedback.selectionClick();
+      } else {
+        HapticFeedback.lightImpact();
+      }
+    } catch (_) {}
   }
 
   void regenerateEnergy(int amount) {
@@ -414,11 +427,18 @@ class GameNotifier extends StateNotifier<GameState> {
         lastMessage: rewardMsg.isNotEmpty ? rewardMsg : state.lastMessage,
       );
 
+      if (targetTile.type == TileType.hiddenMine || targetTile.type == TileType.tnt) {
+        _triggerHaptic('heavy');
+      } else {
+        _triggerHaptic('light');
+      }
+
       if (newClearedCount >= state.grid.totalTilesInStage) {
         _advanceStage();
       }
     } else {
       // Hasar aldı ama kırılmadı
+      _triggerHaptic('selection');
       final updatedTile = targetTile.copyWith(currentHp: newHp);
       final newTiles = [
         for (int r = 0; r < state.grid.rows; r++)
@@ -767,10 +787,39 @@ class GameNotifier extends StateNotifier<GameState> {
 
   void selectInventoryTool(int index) {
     if (index >= 0 && index < state.player.inventoryTools.length) {
+      _triggerHaptic('selection');
       state = state.copyWith(
         player: state.player.copyWith(activeToolIndex: index),
         lastMessage: 'Aktif Silah: ${state.player.inventoryTools[index].displayName} ${state.player.inventoryTools[index].iconEmoji}',
       );
+    }
+  }
+
+  void tapTile(int targetRow, int targetCol) {
+    final pPos = state.grid.playerPosition;
+    final int dr = targetRow - pPos.row;
+    final int dc = targetCol - pPos.col;
+
+    if (dr == 0 && dc == 0) return;
+
+    // Komşu kutu ise doğrudan yöne dönüp kaz
+    if (dr.abs() <= 1 && dc.abs() <= 1 && (dr == 0 || dc == 0)) {
+      if (dr == -1) changeDirection(PlayerDirection.up);
+      if (dr == 1) changeDirection(PlayerDirection.down);
+      if (dc == -1) changeDirection(PlayerDirection.left);
+      if (dc == 1) changeDirection(PlayerDirection.right);
+
+      digTargetTile();
+    } else {
+      // Uzaktaysa o yöne doğru 1 adım yaklaş
+      int stepR = 0;
+      int stepC = 0;
+      if (dr.abs() >= dc.abs()) {
+        stepR = dr > 0 ? 1 : -1;
+      } else {
+        stepC = dc > 0 ? 1 : -1;
+      }
+      moveOrDig(stepR, stepC);
     }
   }
 
