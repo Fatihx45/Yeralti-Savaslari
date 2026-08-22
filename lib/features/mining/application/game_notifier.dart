@@ -20,6 +20,141 @@ enum GameMode {
   battleRoyale,
 }
 
+List<DailyQuestModel> defaultWeeklyQuests() => [
+  const DailyQuestModel(
+    id: 'q_dig_30',
+    title: 'Acemi Madenci',
+    description: 'Yeraltında 30 kutu kaz',
+    iconEmoji: '⛏️',
+    target: 30,
+    rewardGold: 250,
+    rewardGems: 3,
+    difficulty: QuestDifficulty.easy,
+    actionType: QuestActionType.dig,
+  ),
+  const DailyQuestModel(
+    id: 'q_gold_500',
+    title: 'Altın Avcısı',
+    description: 'Kazılardan 500 altın topla',
+    iconEmoji: '🟡',
+    target: 500,
+    rewardGold: 300,
+    rewardGems: 4,
+    difficulty: QuestDifficulty.easy,
+    actionType: QuestActionType.gold,
+  ),
+  const DailyQuestModel(
+    id: 'q_potion_2',
+    title: 'Hayatta Kalma',
+    description: '2 adet Can/Enerji iksiri bul',
+    iconEmoji: '🧪',
+    target: 2,
+    rewardGold: 350,
+    rewardGems: 5,
+    difficulty: QuestDifficulty.easy,
+    actionType: QuestActionType.potion,
+  ),
+  const DailyQuestModel(
+    id: 'q_tool_3',
+    title: 'Alet Koleksiyoneri',
+    description: 'Kutulardan 3 farklı alet çıkar',
+    iconEmoji: '🛠️',
+    target: 3,
+    rewardGold: 600,
+    rewardGems: 8,
+    difficulty: QuestDifficulty.medium,
+    actionType: QuestActionType.tool,
+  ),
+  const DailyQuestModel(
+    id: 'q_combo_5',
+    title: 'Seri Kazıcı',
+    description: 'Kazıda 5x kombo serisine ulaş',
+    iconEmoji: '🔥',
+    target: 5,
+    rewardGold: 750,
+    rewardGems: 10,
+    difficulty: QuestDifficulty.medium,
+    actionType: QuestActionType.combo,
+  ),
+  const DailyQuestModel(
+    id: 'q_emerald_3',
+    title: 'Zümrüt Madencisi',
+    description: '3 adet yeşil zümrüt damarı kır',
+    iconEmoji: '🟢',
+    target: 3,
+    rewardGold: 900,
+    rewardGems: 12,
+    difficulty: QuestDifficulty.medium,
+    actionType: QuestActionType.emerald,
+  ),
+  const DailyQuestModel(
+    id: 'q_tnt_3',
+    title: 'Patlama Uzmanı',
+    description: '3 adet TNT kutusu veya dinamit patlat',
+    iconEmoji: '💣',
+    target: 3,
+    rewardGold: 1500,
+    rewardGems: 18,
+    difficulty: QuestDifficulty.hard,
+    actionType: QuestActionType.tnt,
+  ),
+  const DailyQuestModel(
+    id: 'q_chest_2',
+    title: 'Hazine Avcısı',
+    description: '2 adet gizli hazine sandığı aç',
+    iconEmoji: '🏛️',
+    target: 2,
+    rewardGold: 1800,
+    rewardGems: 20,
+    difficulty: QuestDifficulty.hard,
+    actionType: QuestActionType.chest,
+  ),
+  const DailyQuestModel(
+    id: 'q_pvp_1',
+    title: 'Arena Savaşçısı',
+    description: 'Multiplayer veya BR maçında rakip vur',
+    iconEmoji: '⚔️',
+    target: 1,
+    rewardGold: 2200,
+    rewardGems: 25,
+    difficulty: QuestDifficulty.hard,
+    actionType: QuestActionType.pvp,
+  ),
+  const DailyQuestModel(
+    id: 'q_boss_1',
+    title: 'Titan Avcısı',
+    description: '1 adet 500 HP Titan Boss Çekirdeğini yok et',
+    iconEmoji: '👑',
+    target: 1,
+    rewardGold: 3500,
+    rewardGems: 35,
+    difficulty: QuestDifficulty.legendary,
+    actionType: QuestActionType.boss,
+  ),
+  const DailyQuestModel(
+    id: 'q_depth_5',
+    title: 'Derin Maden Fatihi',
+    description: '5. Derinlik / Katman seviyesine ulaş',
+    iconEmoji: '🚀',
+    target: 5,
+    rewardGold: 4000,
+    rewardGems: 40,
+    difficulty: QuestDifficulty.legendary,
+    actionType: QuestActionType.depth,
+  ),
+  const DailyQuestModel(
+    id: 'q_prestige_1',
+    title: 'Kusursuz Madenci',
+    description: 'Prestij yapıp rütbeni 1 seviye yükselt',
+    iconEmoji: '⚡',
+    target: 1,
+    rewardGold: 5000,
+    rewardGems: 50,
+    difficulty: QuestDifficulty.legendary,
+    actionType: QuestActionType.prestige,
+  ),
+];
+
 class GameState {
   final PlayerStateModel player;
   final GridModel grid;
@@ -30,6 +165,7 @@ class GameState {
   final int comboCount;
   final int lastDigTimestamp;
   final String? activeReactionEmoji;
+  final int lastQuestResetTimestamp;
   final List<DailyQuestModel> quests;
 
   const GameState({
@@ -42,11 +178,8 @@ class GameState {
     this.comboCount = 0,
     this.lastDigTimestamp = 0,
     this.activeReactionEmoji,
-    this.quests = const [
-      DailyQuestModel(id: 'q1', title: '15 Kutu Kaz', iconEmoji: '⛏️', target: 15, current: 0, rewardGold: 150, rewardGems: 2),
-      DailyQuestModel(id: 'q2', title: '200 Altın Topla', iconEmoji: '🟡', target: 200, current: 0, rewardGold: 250, rewardGems: 3),
-      DailyQuestModel(id: 'q3', title: '1 Alet Bul', iconEmoji: '🛠️', target: 1, current: 0, rewardGold: 300, rewardGems: 5),
-    ],
+    this.lastQuestResetTimestamp = 0,
+    this.quests = const [],
   });
 
   GameState copyWith({
@@ -59,6 +192,7 @@ class GameState {
     int? comboCount,
     int? lastDigTimestamp,
     String? activeReactionEmoji,
+    int? lastQuestResetTimestamp,
     List<DailyQuestModel>? quests,
   }) {
     return GameState(
@@ -71,6 +205,7 @@ class GameState {
       comboCount: comboCount ?? this.comboCount,
       lastDigTimestamp: lastDigTimestamp ?? this.lastDigTimestamp,
       activeReactionEmoji: activeReactionEmoji ?? this.activeReactionEmoji,
+      lastQuestResetTimestamp: lastQuestResetTimestamp ?? this.lastQuestResetTimestamp,
       quests: quests ?? this.quests,
     );
   }
@@ -86,9 +221,12 @@ class GameNotifier extends StateNotifier<GameState> {
             player: PlayerStateModel.initial(),
             grid: GridGenerator.generateStage(stage: 1, depth: 1),
             gameMode: GameMode.solo,
+            quests: defaultWeeklyQuests(),
+            lastQuestResetTimestamp: DateTime.now().millisecondsSinceEpoch,
           ),
         ) {
     _startEnergyTimer();
+    loadSavedPlayer();
   }
 
   void _startEnergyTimer() {
@@ -238,6 +376,9 @@ class GameNotifier extends StateNotifier<GameState> {
         grid: state.grid.copyWith(otherPlayers: updatedOthers),
         lastMessage: attackMsg,
       );
+
+      _trackQuestProgress(pvp: 1);
+      _saveState();
 
       _checkBattleRoyaleStatus();
       return;
@@ -465,7 +606,17 @@ class GameNotifier extends StateNotifier<GameState> {
             : (rewardMsg.isNotEmpty ? rewardMsg : state.lastMessage),
       );
 
-      _trackQuestProgress(tiles: 1, gold: goldReward, tools: toolReward != null ? 1 : 0);
+      _trackQuestProgress(
+        tiles: 1,
+        gold: goldReward,
+        potions: (targetTile.type == TileType.potion || hpReward > 0) ? 1 : 0,
+        tools: toolReward != null ? 1 : 0,
+        combo: currentCombo,
+        emeralds: (targetTile.type == TileType.emeraldOre || emeraldReward > 0) ? 1 : 0,
+        tnt: targetTile.type == TileType.tnt ? 1 : 0,
+        chests: targetTile.type == TileType.chest ? 1 : 0,
+        boss: targetTile.type == TileType.bossCore ? 1 : 0,
+      );
       _saveState();
 
       if (targetTile.type == TileType.hiddenMine || targetTile.type == TileType.tnt) {
@@ -529,6 +680,9 @@ class GameNotifier extends StateNotifier<GameState> {
       ),
       lastMessage: 'Aşama $nextStage Tamamlandı! Yeni katmana inildi.',
     );
+
+    _trackQuestProgress(depth: nextDepth);
+    _saveState();
   }
 
   bool purchaseUpgrade(UpgradeType type) {
@@ -708,6 +862,9 @@ class GameNotifier extends StateNotifier<GameState> {
       ),
       lastMessage: '💣 DİNAMİT PATLATILDI! +$goldReward 🟡 toplanıldı!',
     );
+
+    _trackQuestProgress(tnt: 1, gold: goldReward);
+    _saveState();
 
     if (newClearedCount >= state.grid.totalTilesInStage) {
       _advanceStage();
@@ -921,32 +1078,99 @@ class GameNotifier extends StateNotifier<GameState> {
     _saveState();
   }
 
-  void _trackQuestProgress({int tiles = 0, int gold = 0, int tools = 0}) {
-    if (tiles == 0 && gold == 0 && tools == 0) return;
+  void _checkAndResetWeeklyQuests() {
+    final int now = DateTime.now().millisecondsSinceEpoch;
+    const int sevenDaysMs = 7 * 24 * 60 * 60 * 1000;
+    if (state.lastQuestResetTimestamp == 0 || (now - state.lastQuestResetTimestamp) >= sevenDaysMs) {
+      state = state.copyWith(
+        quests: defaultWeeklyQuests(),
+        lastQuestResetTimestamp: now,
+      );
+      _saveState();
+    }
+  }
+
+  void _trackQuestProgress({
+    int tiles = 0,
+    int gold = 0,
+    int potions = 0,
+    int tools = 0,
+    int combo = 0,
+    int emeralds = 0,
+    int tnt = 0,
+    int chests = 0,
+    int pvp = 0,
+    int boss = 0,
+    int depth = 0,
+    int prestige = 0,
+  }) {
+    _checkAndResetWeeklyQuests();
 
     final updatedQuests = state.quests.map((q) {
-      if (q.id == 'q1' && tiles > 0) {
-        return q.copyWith(current: q.current + tiles);
-      } else if (q.id == 'q2' && gold > 0) {
-        return q.copyWith(current: q.current + gold);
-      } else if (q.id == 'q3' && tools > 0) {
-        return q.copyWith(current: q.current + tools);
+      if (q.isClaimed) return q;
+
+      int addVal = 0;
+      if (q.actionType == QuestActionType.dig && tiles > 0) addVal = tiles;
+      if (q.actionType == QuestActionType.gold && gold > 0) addVal = gold;
+      if (q.actionType == QuestActionType.potion && potions > 0) addVal = potions;
+      if (q.actionType == QuestActionType.tool && tools > 0) addVal = tools;
+      if (q.actionType == QuestActionType.combo && combo > 0) {
+        if (combo > q.current) return q.copyWith(current: combo);
+        return q;
+      }
+      if (q.actionType == QuestActionType.emerald && emeralds > 0) addVal = emeralds;
+      if (q.actionType == QuestActionType.tnt && tnt > 0) addVal = tnt;
+      if (q.actionType == QuestActionType.chest && chests > 0) addVal = chests;
+      if (q.actionType == QuestActionType.pvp && pvp > 0) addVal = pvp;
+      if (q.actionType == QuestActionType.boss && boss > 0) addVal = boss;
+      if (q.actionType == QuestActionType.depth && depth > 0) {
+        if (depth > q.current) return q.copyWith(current: depth);
+        return q;
+      }
+      if (q.actionType == QuestActionType.prestige && prestige > 0) addVal = prestige;
+
+      if (addVal > 0) {
+        return q.copyWith(current: q.current + addVal);
       }
       return q;
     }).toList();
 
     state = state.copyWith(quests: updatedQuests);
+    _saveState();
   }
 
   void _saveState() {
     SaveService.savePlayer(state.player);
+    SaveService.saveQuests(state.quests.map((q) => q.toJson()).toList(), state.lastQuestResetTimestamp);
   }
 
   Future<void> loadSavedPlayer() async {
-    final saved = await SaveService.loadPlayer();
-    if (saved != null && mounted) {
-      state = state.copyWith(player: saved);
-    }
+    try {
+      final saved = await SaveService.loadPlayer();
+      final savedQuestsData = await SaveService.loadQuests();
+
+      if (!mounted) return;
+
+      List<DailyQuestModel> loadedQuests = state.quests;
+      int lastReset = state.lastQuestResetTimestamp;
+
+      if (savedQuestsData != null) {
+        try {
+          final List<dynamic> qList = savedQuestsData['quests'] as List<dynamic>;
+          loadedQuests = qList.map((j) => DailyQuestModel.fromJson(j as Map<String, dynamic>)).toList();
+          lastReset = savedQuestsData['lastReset'] as int? ?? DateTime.now().millisecondsSinceEpoch;
+        } catch (_) {}
+      }
+
+      if (!mounted) return;
+
+      state = state.copyWith(
+        player: saved ?? state.player,
+        quests: loadedQuests.isNotEmpty ? loadedQuests : defaultWeeklyQuests(),
+        lastQuestResetTimestamp: lastReset,
+      );
+      _checkAndResetWeeklyQuests();
+    } catch (_) {}
   }
 
   void startSoloGame() {
@@ -1114,6 +1338,9 @@ class GameNotifier extends StateNotifier<GameState> {
       grid: GridGenerator.generateStage(stage: 1, depth: 1, biomeName: 'Kırmızı Toprak'),
       lastMessage: 'SIFIRLANDI! Yeni Rütbe: $newRank',
     );
+
+    _trackQuestProgress(prestige: 1);
+    _saveState();
   }
 }
 

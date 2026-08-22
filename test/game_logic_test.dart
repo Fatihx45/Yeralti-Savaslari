@@ -4,6 +4,7 @@ import 'package:derin_kazi/features/mining/application/game_notifier.dart';
 import 'package:derin_kazi/features/mining/domain/models/upgrade_model.dart';
 import 'package:derin_kazi/features/mining/domain/models/tile_model.dart';
 import 'package:derin_kazi/features/mining/domain/models/grid_model.dart';
+import 'package:derin_kazi/features/quests/domain/models/daily_quest_model.dart';
 
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
@@ -336,7 +337,7 @@ void main() {
       final notifier = container.read(gameNotifierProvider.notifier);
 
       final quests = notifier.state.quests.map((q) {
-        if (q.id == 'q1') return q.copyWith(current: 15);
+        if (q.id == 'q_dig_30') return q.copyWith(current: 30);
         return q;
       }).toList();
 
@@ -345,12 +346,24 @@ void main() {
         player: notifier.state.player.copyWith(gold: 100, gems: 5),
       );
 
-      notifier.claimQuestReward('q1');
+      notifier.claimQuestReward('q_dig_30');
 
       final state = container.read(gameNotifierProvider);
-      expect(state.player.gold, 250); // 100 + 150
-      expect(state.player.gems, 7);   // 5 + 2
-      expect(state.quests.firstWhere((q) => q.id == 'q1').isClaimed, true);
+      expect(state.player.gold, 350); // 100 + 250
+      expect(state.player.gems, 8);   // 5 + 3
+      expect(state.quests.firstWhere((q) => q.id == 'q_dig_30').isClaimed, true);
+      container.dispose();
+    });
+
+    test('12 Adet Haftalık Kademeli Görev listesi başlatılmalı', () {
+      final container = ProviderContainer();
+      final state = container.read(gameNotifierProvider);
+
+      expect(state.quests.length >= 10, true);
+      expect(state.quests.any((q) => q.difficulty == QuestDifficulty.easy), true);
+      expect(state.quests.any((q) => q.difficulty == QuestDifficulty.medium), true);
+      expect(state.quests.any((q) => q.difficulty == QuestDifficulty.hard), true);
+      expect(state.quests.any((q) => q.difficulty == QuestDifficulty.legendary), true);
       container.dispose();
     });
 
