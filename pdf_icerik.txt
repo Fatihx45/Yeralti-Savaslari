@@ -1,0 +1,559 @@
+--- SAYFA 1 ---
+ÖLMEZ TECH — OYUN TASARIM DOKÜMANI
+DERİN KAZI
+2B Kazı / Madencilik Bulmaca Oyunu — Flutter Uyarlaması İçin Uzman Seviye Tasarım ve
+Teknik Mimari Dokümanı
+Doküman Amacı: Referans alınan görsel kaynaktaki oyunun (masaüstü tarayıcı prototipi, "Derin Kazı") oyun mekaniği, arayüz
+düzeni, renk paleti ve ekonomi dengesinin Flutter ile birebir uyarlanması için gereken tüm tasarım kararlarını ve teknik mimariyi
+tanımlar.
+Kapsam: Oyun mekanikleri · UI/UX düzeni · Renk paleti · Ekonomi & denge · Flutter mimarisi · Veri modelleri · Kalıcı veri
+(persistence) · Performans stratejisi · Monetizasyon · Geliştirme yol haritası
+Durum: Kod yazımı öncesi onay dokümanı (v1.0)
+Bu doküman, paylaşılan ekran görüntüsünün görsel ve fonksiyonel analizine dayanmaktadır. Küçük/bulanık UI detayları (bkz. §3.4) makul varsayımlarla
+tamamlanmış ve ilgili yerlerde açıkça belirtilmiştir. Kodlama aşamasına geçmeden önce bu dokümanın gözden geçirilmesi önerilir.
+
+--- SAYFA 2 ---
+İçindekiler
+1. Genel Bakış ve Oyun Konsepti
+3
+2. Ekran Görüntüsü Analizi — Kaynak Referans Tespiti
+3
+3. Görsel Kimlik ve Renk Paleti
+4
+4. Arayüz (UI) Düzeni — Bölge Bölge Analiz
+5
+5. Oyun Mekanikleri
+6
+6. Tile (Kutucuk) Sistemi
+7
+7. Mağaza ve Yükseltme (Upgrade) Sistemi
+8
+8. Ekonomi ve Denge (Balance) Tasarımı
+9
+9. Rütbe / Prestij (SIFIRLA) Sistemi
+10
+10. Flutter Teknik Mimarisi
+10
+11. Veri Modelleri (Dart)
+12
+12. Grid Render Stratejisi ve Performans
+13
+13. Kalıcı Veri (Persistence)
+14
+14. Mobil Uyarlama (Responsive) Notları
+14
+15. Monetizasyon
+15
+16. Klasör Yapısı
+15
+17. Geliştirme Yol Haritası
+16
+18. Açık Sorular / Onay Gereken Noktalar
+16
+
+--- SAYFA 3 ---
+1. Genel Bakış ve Oyun Konsepti
+Derin Kazı, oyuncunun kademeli olarak yer altına inerek toprak ve kaya katmanlarını kazdığı, değerli maden/mücevher
+topladığı, kazandığı para ile ekipmanını (kazma, çekiç, şans, enerji) güçlendirdiği bir idle/incremental kazı-bulmaca
+(mining clicker) oyunudur. Tür olarak "Motherload", "Dig Deep", "Deep Town" ve "Idle Miner" serisi oyunlara yakındır: gerçek
+zamanlı aksiyon değil, dokunma tabanlı, sabır ve kaynak yönetimi odaklıdır — bu da onu Flutter için mükemmel bir aday yapar
+(fizik motoruna, karmaşık animasyon pipeline'ına gerek yoktur).
+Oyunun temel döngüsü (core loop) şu şekilde işler:
+1. Oyuncu yön tuşlarıyla (yukarı/aşağı/sol/sağ) bitişik bir kutucuğu kazar.
+2. Her kazı hamlesi enerji tüketir ve kutucuğun sertliğine göre kazma/çekiç hasarı uygular.
+3. Kutucuk kırıldığında içeriğine göre altın, elmas, iksir veya boşluk ortaya çıkar.
+4. Biriken altın ile sağdaki MAĞAZA panelinden kazma/çekiç/şans/enerji yükseltmeleri satın alınır.
+5. Belirli bir derinliğe ulaşınca Aşama artar, yeni bir zemin teması (ör. "Kırmızı Toprak") ve yeni tile türleri devreye girer.
+6. Enerji tükendiğinde oyuncu ya bekler, ya reklam izler ya da SIFIRLA (prestij) yaparak Rütbe kazanır ve kalıcı bonuslarla en
+baştan başlar.
+Bu tür bir döngü, kısa oturumlarda (30 saniye–3 dakika) tekrar tekrar oynanabilir olduğu için mobilde reklam gösterimi (rewarded/interstitial)
+açısından oldukça verimlidir — Ölmez Tech projelerinde standart olan AdMob tabanlı freemium yapıyla doğrudan uyumludur.
+2. Ekran Görüntüsü Analizi — Kaynak Referans Tespiti
+Paylaşılan fotoğrafta, bir masaüstü bilgisayarda tarayıcıda (birden fazla sekme açık) çalışan yerel bir HTML/JS prototipi
+görülüyor. Adres çubuğunda dosya yolu görünüyor:
+C:\Users\user\...\agents\...\workspace\derin-kazi\index.html
+Bu, oyunun daha önce bir web tabanlı prototip (muhtemelen HTML5 Canvas veya DOM tabanlı) olarak geliştirildiğini gösteriyor.
+Sekme başlıklarının hepsi "Derin Kazı..." — yani prototip üzerinde çok sayıda iterasyon/deneme yapılmış. Bu doküman, o
+prototipin görsel ve fonksiyonel birebir kopyasının Flutter'da native olarak nasıl inşa edileceğini tanımlar.
+Not: Orijinal index.html  ve JS kaynak dosyalarına erişimim yok — analiz tamamen fotoğraftaki görsel kanıtlara dayanıyor. Kaynak kod
+paylaşılırsa (özellikle tile HP/ödül tabloları, hasar formülleri, aşama eşik değerleri), §8'deki ekonomi denge tablosu birebir gerçek değerlerle
+güncellenebilir.
+3. Görsel Kimlik ve Renk Paleti
+Fotoğraftan çıkarılan renk paleti aşağıdadır. Ekran parlaması/açı nedeniyle tonlar yaklaşıktır; gerçek varlıklar (assets)
+üretilirken bu hex kodları başlangıç noktası olarak kullanılmalı, gerekirse ±%5 ton ayarı yapılmalıdır.
+#0D0D2B
+Ana arkaplan (koyu lacivert)
+#14143A
+HUD panel zemini
+#171744
+Mağaza panel zemini
+#C2571F
+Kazı alanı zemini (turuncu toprak)
+#5C1F1F
+Kutucuk çerçevesi (koyu kızıl-kahve)
+#8A3010
+Kutucuk iç dolgu (kaya)
+#F5D033
+Altın cevheri tile
+#4DFF88
+Neon yeşil vurgu / çerçeve
+#39FF6A
+İlerleme çubuğu dolgu
+#7FDBFF
+İkincil metin / etiket (cyan)
+#FFD93D
+Para birimi metni (altın sarısı)
+#E53935
+SIFIRLA butonu / uyarı kırmızısı
+#FFFFFF
+Birincil metin (beyaz)
+#12120C
+Kazılmış boş alan (siyah)
+#2F2F66
+Panel iç kutu / seviye çubuğu boş kısım
+3.1 Tipografi
+Arayüzde köşeli, biraz "pixel/retro-arcade" hissi veren bir sans-serif/mono karışımı font kullanılmış görünüyor (sayılar ve HUD
+etiketleri için mono ağırlıklı). Flutter tarafında önerilen eşleşme:
+Başlıklar / HUD sayaçları: Press Start 2P  veya VT323  (Google Fonts, retro-arcade hissi) — küçük punto ile kullanılmalı,
+okunabilirlik için gövde metninde kullanılmamalı.
+Gövde / buton metni: Rubik  veya Chakra Petch  — köşeli ama okunaklı, oyunun sert/teknik hissiyle uyumlu.
+3.2 Doku ve Efektler
+Kazı alanı zemininde ince noktalı (dotted/stipple) doku var — turuncu zemin üzerine hafif koyu noktalarla derinlik hissi
+
+--- SAYFA 4 ---
+verilmiş. CustomPainter'da Canvas.drawPoints  ile düşük maliyetli üretilebilir, ya da tek seferlik bir doku PNG'si tile edilebilir
+(önerilen — daha performanslı).
+Neon yeşil çerçeveler ince bir glow (parlama) efektiyle çiziliyor — Flutter'da BoxShadow(color: Color(0xFF4DFF88),
+blurRadius: 6, spreadRadius: 0.5)  ile taklit edilebilir.
+Kazılmış (boş) alanlar düz siyah — parlama/gölge efekti yok, kontrast için bilinçli tercih.
+
+--- SAYFA 5 ---
+Rütbe 4   Toplam 3.21K   SIFIRLA
+4. Arayüz (UI) Düzeni — Bölge Bölge Analiz
+Aşağıdaki şema, oyun ekranının ana bölgelerini ve göreli yerleşimini özetler (gerçek varlıklar değil, yapısal referans):
+ 997
+ 24
+ Kırmızı Toprak
+
+x2 Bonus · 500
+⛏ 8/184   Bakır: 0
+Aşama 8 · Derinlik 8
+✛ MAĞAZA ✛
+⛏ Kazma · Hasar 5→6 · Lv 4/5 · 800
+ Çekiç · Hasar 9→12 (kaya) · Lv 3/5 · 800
+ Şans · +%15 altın bulma · Lv 3/5 · 600
+⚡ Enerji · 80→95 · Lv 2/5 · 320
+◆ Yön tuşları (yukarı / aşağı / sol / sağ) — elmas biçimli D-Pad ◆
+4.1 Üst HUD Şeridi
+Öğe
+İçerik
+Davranış
+Altın sayacı
+ sarı ikon + sayı (ör. 997)
+Anlık güncellenir, kazı ile artar, mağazada harcanır
+Elmas/gem sayacı
+ ikon + sayı (ör. 24)
+Nadir kaynak; premium yükseltme/reklam kaldırma için kullanılabilir
+Bölge/biyom rozeti
+ "Kırmızı Toprak" etiketi
+Mevcut derinlik katmanının temasını gösterir; her Aşama'da değişebilir
+Ses aç/kapa
+ ikon
+Toggle; kullanıcı tercihi olarak yerel kaydedilir
+x2 Bonus rozeti
+Yeşil kutu, "500" fiyat
+Ödül çarpanı satın alma / reklamla aktif etme kısayolu
+Rütbe / Toplam
+Sağ üstte metin bloğu
+Prestij seviyesi + tüm zamanlar toplam kazanç
+SIFIRLA
+Kırmızı buton, sağ üst köşe
+Prestij onay diyaloğunu açar (bkz. §9)
+4.2 İlerleme Şeridi (Aşama başlığı altı)
+İnce yatay bir çubuk: kazma ikonu + "X/184" formatında bu derinlik katmanındaki toplam kazılabilir kutucuk sayısı ve kazılan
+miktar; yanında o katmana özgü bir kaynak sayacı (fotoğrafta "Bakır: 0" okunuyor — katman-özel maden sayacı, örn.
+bakır/demir/altın gibi katmana göre değişen birincil kaynak).
+4.3 Kazı Alanı (Ana Grid)
+Ekranın sol/orta ~%65'ini kaplayan turuncu zeminli ızgara. Oyuncu karakteri ortada sabit kalır (kamera oyuncuyu takip eder,
+tipik "sonsuz kazı" oyunlarında olduğu gibi) — etrafındaki kutucuklar kazıldıkça yeni satırlar aşağıdan/kenarlardan akar.
+Karakterin hemen altında/etrafında siyah (kazılmış) bir alan var — oyuncunun o ana kadar açtığı tünel.
+4.4 Mağaza Paneli (Sağ)
+Ekranın sağ ~%35'i, koyu lacivert zeminli, her biri neon yeşil çerçeveli 4 kart: Kazma, Çekiç, Şans, Enerji. Her kart: ikon,
+başlık, etki açıklaması ("Hasar: 5 → 6" gibi mevcut→sonraki değer formatı), sağ üstte "Lv X/5" seviye göstergesi, altında yeşil
+segmentli bir seviye çubuğu (5 segment, dolu segment = mevcut seviye) ve sağ altta sarı fiyat etiketi.
+4.5 Kontrol Alanı (Alt)
+Koyu bant üzerinde elmas biçiminde, 4 yönlü (yukarı/aşağı/sol/sağ) dokunmatik D-Pad. Fotoğrafta yukarı yön vurgulanmış/aktif
+görünüyor — muhtemelen son basılan yön ya da önerilen sıradaki hamle. D-Pad'in altında tüm genişlikte ikinci bir ilerleme
+çubuğu var (muhtemelen genel Aşama ilerlemesi ya da enerji çubuğu — fotoğrafta boş görünüyor).
+Belirsiz nokta: Sol üstteki ikinci satırdaki "Lv 93 derinlik" benzeri metin ve alt ilerleme çubuğunun tam anlamı fotoğrafta net okunamıyor.
+§18'de bu netleştirilmesi gereken sorular listelenmiştir.
+
+--- SAYFA 6 ---
+5. Oyun Mekanikleri
+5.1 Hareket ve Kazı
+Oyuncu D-Pad ile 4 yönden birini seçer.
+Seçilen yöndeki bitişik kutucuk hedeflenir; kutucuk boşsa (daha önce kazılmışsa) karakter o hücreye hareket eder (enerji
+maliyeti yok veya düşük sabit maliyet).
+Kutucuk doluysa, karaktere göre "kazma" (soft/toprak tile) veya "çekiç" (kaya tile) hasarı uygulanır; kutucuğun kalan HP'si
+düşer.
+Her kazı hamlesi 1 birim enerji tüketir (tile kırılana kadar her vuruş ayrı enerji tüketir — bu, Enerji yükseltmesinin oyun
+süresini doğrudan uzatmasını sağlar).
+Kutucuk HP'si 0'a inince kırılır → içeriği (ödül) envantere eklenir → hücre "kazılmış" (siyah) duruma geçer → karakter o
+hücreye ilerler.
+Enerji 0 olduğunda kazı/hareket kilitlenir; oyuncuya 3 seçenek sunulur: bekle (zamanla dolar), reklam izle (anında dolum),
+ya da SIFIRLA yap.
+5.2 Aşama (Stage) ve Derinlik (Depth)
+Derinlik, o ana kadar kazılan toplam satır/tile sayısını; Aşama ise belirli derinlik eşiklerinde artan bir "seviye" sayacını temsil
+eder. Her yeni Aşama'da:
+Zemin teması ve tile görselleri değişir (ör. "Kırmızı Toprak" → bir sonraki aşamada "Gri Kayalık", "Buzul Katmanı" vb. — tema
+kütüphanesi genişletilebilir).
+Yeni, daha yüksek HP'li tile türleri ve daha değerli maden/ödül türleri devreye girer.
+Katman-özel birincil kaynak değişebilir (Bakır → Demir → Altın → Elmas gibi kademeli maden zinciri).
+5.3 Kaynaklar
+Kaynak
+Kazanım
+Kullanım
+Altın ()
+Sarı tile'ları kırmak, sandık, günlük ödül
+Mağazadan yükseltme satın alma
+Elmas ()
+Nadir tile, derin katmanlar, IAP
+Enerji anında doldurma, özel yükseltmeler, reklamsız
+Enerji (⚡)
+Zamanla otomatik dolum, iksir tile, reklam
+Her kazı/hareket hamlesi için tüketilir
+İksir (potion tile)
+Beyaz şişe ikonlu tile'ı kırmak
+Anlık enerji/can yenileme
+6. Tile (Kutucuk) Sistemi
+Fotoğrafta ayırt edilen tile kategorileri:
+Tile Türü
+Görsel
+Göreli
+HP
+Kırılma Ödülü
+Not
+Toprak
+(soil)
+Düz turuncu zemin (arka plan, tile değil — geçilebilir
+doku)
+—
+—
+Kazılabilir alanın temel dokusu
+Kaya (rock)
+Koyu kızıl-kahve çerçeveli kutu, iç desenli
+(dişli/makine benzeri ikon)
+Orta-
+Yüksek
+Az miktarda altın
+Çekiç ile daha hızlı kırılır (9→12
+hasar bonusu)
+Altın
+Cevheri
+Düz sarı kare
+Düşük-
+Orta
+Orta miktarda altın
+En sık rastlanan "ödüllü" tile
+İksir
+Beyaz şişe ikonu
+Düşük
+Enerji/can yenileme
+Nadiren belirir, öncelikli hedeflenir
+Mermi/Özel
+Obje
+Küçük gümüş/beyaz obje ikonu
+Düşük
+Özel eşya (bomba, ışın
+vb. olabilir)
+Anlamı netleştirilmeli — bkz. §18
+Kazılmış
+Alan
+Düz siyah
+0
+—
+Geçilebilir, ödül yok
+Öneri: Tile veri modeli, sabit bir enum yerine veri odaklı (data-driven) tasarlanmalı — her Aşama için bir "TileSet" tanımı (JSON/Dart const
+map) tutulmalı: hangi tile türlerinin hangi olasılıkla, hangi HP ve ödül aralığıyla üretileceği. Bu, yeni aşama/tema eklemeyi kod değişikliği değil
+içerik (config) değişikliği haline getirir — Ölmez Tech'in diğer projelerinde de (kategori/tema sistemleri) izlediğin ölçeklenebilir yaklaşımla
+tutarlı.
+
+--- SAYFA 7 ---
+7. Mağaza ve Yükseltme (Upgrade) Sistemi
+Yükseltme
+Etki
+Görülen Seviye
+Görülen
+Fiyat
+Önerilen Etki Eğrisi
+⛏ Kazma
+Genel kazı hasarı (toprak/standart
+tile)
+4/5 (5→6 sonraki)
+800
+Doğrusal +1 hasar/seviye, 5 seviyede tavan
+ Çekiç
+Kaya (rock) tile'lara özel bonus hasar
+3/5 (9→12
+sonraki)
+800
++3 hasar/seviye, kaya kırma süresini belirgin kısaltır
+ Şans
+Altın bulma / ekstra ödül olasılığı
+3/5 (+%15)
+600
++%5/seviye, maksimum ~%25 (Lv5)
+⚡ Enerji
+Maksimum enerji kapasitesi
+2/5 (80→95)
+320
++15 kapasite/seviye civarı, oyun oturum süresini
+uzatır
+Her yükseltme 5 seviye ile sınırlı görünüyor (5 segmentli çubuk). Bu, Aşama ilerledikçe yükseltmelerin "yetersiz" kalmasını ve
+oyuncuyu bir sonraki prestij/Rütbe döngüsüne yönlendirmesini sağlayan tipik bir idle-game tasarım deseni. Öneri: 5. seviyeye
+ulaşan bir yükseltme, yalnızca bir sonraki Rütbe artışıyla birlikte yeniden açılsın (soft-reset ile kilit kalksın) — bu da §9'daki
+prestij sistemini anlamlı kılar.
+8. Ekonomi ve Denge (Balance) Tasarımı
+Kaynak kod olmadan kesin formüller doğrulanamaz; aşağıdaki değerler, görülen sayılardan (997 altın, 800/800/600/320
+fiyatlar, Lv 4/3/3/2) geriye doğru türetilmiş makul başlangıç önerileridir — playtest ile ince ayar gerekir.
+8.1 Yükseltme Maliyet Formülü
+cost(level) = baseCost * pow(levelCurve, level - 1)
+// örn. Kazma: baseCost=500, levelCurve=1.35
+// Lv1→Lv2: 500 · Lv2→Lv3: 675 · Lv3→Lv4: 911 · Lv4→Lv5: 1230
+8.2 Tile HP / Ödül Ölçekleme (Aşamaya Göre)
+tileHP(stage, tileType) = baseHP[tileType] * (1 + 0.18 * (stage - 1))
+tileReward(stage, tileType) = baseReward[tileType] * (1 + 0.12 * (stage - 1))
+8.3 Enerji Rejenerasyonu
+energyPerTick = 1 enerji / 25 saniye (çevrimdışıyken de birikir, maxEnergy'de durur)
+rewardedAdRefill = maxEnergy'nin tamamı (günde sınırlı sayıda, örn. 5 gösterim)
+Bu formüller yalnızca başlangıç iskeletidir. Gerçek oyunda tile üretim olasılık tablosu (hangi tile ne sıklıkla çıkar), Aşama geçiş eşiği (kaç tile
+kazılınca bir sonraki Aşama'ya geçilir) ve Rütbe bonus çarpanı gibi değerler bir Ekonomi Denge Tablosu (Google Sheets) üzerinde ayrı
+olarak modellenmeli ve oyuna JSON olarak aktarılmalıdır. İstersen bir sonraki adımda bu tabloyu ayrı bir Excel dosyası olarak da
+hazırlayabilirim.
+9. Rütbe / Prestij (SIFIRLA) Sistemi
+SIFIRLA butonu, klasik idle-game prestij mekaniğidir: oyuncu mevcut Aşama/Derinlik ilerlemesini ve muhtemelen mevcut
+altın/yükseltme seviyelerini sıfırlar, karşılığında:
+Rütbe sayacı 1 artar (görünürde kalıcı bir meta-seviye — "Toplam 3.21K" tüm-zamanlar kazanç ile birlikte gösteriliyor, bu
+da Rütbe'nin toplam kazanca bağlı olabileceğini düşündürüyor).
+Kalıcı bir bonus çarpanı kazanılır (ör. tüm kazı hasarına veya altın kazanımına +%X, Rütbe seviyesine göre artan).
+Oyuncu Aşama 1 / Derinlik 1'e geri döner, ancak yükseltmeler de sıfırlanabilir (bu netleştirilmeli — bkz §18).
+Bu sistem, oyunun uzun vadeli tekrar oynanabilirliğini sağlar ve "Toplam" (lifetime) istatistiğinin neden ayrı gösterildiğini
+açıklar — Rütbe arttıkça bu sayı hiç sıfırlanmaz, sadece büyür.
+Onay gerekli: SIFIRLA sırasında tam olarak neyin sıfırlanıp neyin korunacağı (altın mı, yükseltme seviyeleri mi, ikisi de mi) fotoğraftan kesin
+çıkarılamıyor. §18'de netleştirme sorusu var; bu netleşene kadar önerilen varsayım: altın ve yükseltme seviyeleri sıfırlanır, elmas ve Rütbe
+kalıcıdır.
+
+--- SAYFA 8 ---
+10. Flutter Teknik Mimarisi
+10.1 Teknoloji Seçimleri
+Katman
+Seçim
+Gerekçe
+State
+Management
+Riverpod 2.x (code-
+gen, @riverpod )
+Mevcut proje portföyünle tutarlı; test edilebilir, DI kolaylığı
+Grid Render
+CustomPainter +
+GestureDetector
+GridView/Grid widget'ları büyük/sonsuz kazı ızgarası + kamera takibi için yetersiz kalır; Flame
+gibi bir oyun motoru ise bu tarz sabit-adımlı, fizik gerektirmeyen bir oyun için gereksiz ek
+karmaşıklık getirir
+Yerel Depolama
+Hive
+Hızlı, senkron okuma, mevcut stack ile uyumlu; oyun durumu (grid + istatistikler) tek bir kutuda
+JSON olarak saklanabilir
+Model/Serileştirme
+freezed +
+json_serializable
+Immutable state, kolay kopyalama (copyWith), Hive için otomatik JSON
+Animasyon
+AnimationController
++ implicit
+animations
+Tile kırılma, karakter hareketi, sayaç sayma animasyonları için yeterli — ekstra paket gerekmez
+Ses
+audioplayers
+Kazı/kırılma/upgrade ses efektleri, arka plan müziği toggle
+Reklam
+google_mobile_ads
+(AdMob)
+Mevcut monetizasyon stack'i ile birebir uyumlu
+10.2 Mimari Katmanlar (Clean Architecture, hafifletilmiş)
+lib/
+├── core/                     // tema, renkler, sabitler, uzantılar
+├── features/
+│   └── mining/
+│       ├── data/             // Hive kaynakları, config JSON okuyucular
+│       ├── domain/           // modeller, saf iş kuralları (tile kırma, hasar hesap)
+│       ├── application/      // Riverpod Notifier'lar (GridNotifier, PlayerNotifier, ShopNotifier)
+│       └── presentation/
+│           ├── screens/      // MiningScreen
+│           ├── widgets/      // HudBar, ShopPanel, DirectionalPad, GridPainter
+│           └── painters/     // TileGridPainter, CharacterPainter
+└── shared/                   // ortak widget'lar (CoinCounter, LevelBar vb.)
+10.3 Ana Widget Ağacı
+MiningScreen
+ ├── HudBar               // altın/elmas/biyom/ses/x2bonus/rütbe/sıfırla
+ ├── DepthProgressStrip    // X/184 + katman kaynağı
+ ├── Row
+ │    ├── MiningGridView   // CustomPaint + GestureDetector (yön tuşu değil, opsiyonel drag)
+ │    └── ShopPanel        // 4x UpgradeCard (tablet/geniş ekranda görünür)
+ ├── DirectionalPad        // 4 yönlü dokunmatik kontrol
+ └── BottomProgressBar     // Aşama/enerji ilerlemesi
+
+--- SAYFA 9 ---
+11. Veri Modelleri (Dart)
+Aşağıdaki modeller, kod yazım aşamasında doğrudan freezed  sınıflarına dönüştürülmek üzere taslak olarak sunulmuştur:
+enum TileType { soil, rock, goldOre, potion, specialItem, empty }
+@freezed
+class TileModel {
+  final String id;
+  final TileType type;
+  final int maxHp;
+  final int currentHp;
+  final int rewardGold;
+  final int rewardGems;
+  final bool isCleared;
+}
+@freezed
+class GridModel {
+  final int stage;          // Aşama
+  final int depth;          // Derinlik
+  final String biomeId;     // "kirmizi_toprak" vb.
+  final int columns;
+  final List<List<TileModel>> tiles;
+  final Offset playerCell;  // karakterin ızgara koordinatı
+  final int tilesClearedInStage;
+  final int totalTilesInStage; // örn. 184
+}
+@freezed
+class UpgradeModel {
+  final String id;              // "kazma" | "cekic" | "sans" | "enerji"
+  final String name;
+  final int level;
+  final int maxLevel;            // 5
+  final int currentValue;        // örn. hasar 5
+  final int nextValue;           // örn. hasar 6
+  final int costForNextLevel;
+}
+@freezed
+class PlayerStateModel {
+  final int gold;
+  final int gems;
+  final int energy;
+  final int maxEnergy;
+  final int rank;                // Rütbe
+  final int lifetimeEarnings;    // Toplam
+  final Map<String, UpgradeModel> upgrades;
+  final bool doubleBonusActive;
+}
+11.1 Riverpod Notifier İskeleti
+@riverpod
+class GridNotifier extends _$GridNotifier {
+  @override
+  GridModel build() => GridGenerator.generateStage(stage: 1);
+  void digTile(int row, int col) {
+    // 1. komşuluk kontrolü  2. hasar uygula  3. HP<=0 ise kırılma + ödül  4. state güncelle
+  }
+}
+@riverpod
+class PlayerNotifier extends _$PlayerNotifier {
+  void addGold(int amount) { … }
+  void consumeEnergy(int amount) { … }
+  bool purchaseUpgrade(String upgradeId) { … }
+  void prestige() { … } // SIFIRLA
+}
+12. Grid Render Stratejisi ve Performans
+Sprite atlası: Tüm tile ikonları (kaya deseni, altın, iksir, boş) tek bir sprite_sheet.png  içinde tutulmalı; CustomPainter
+içinde canvas.drawImageRect  ile ilgili kesit çizilmeli. Bu, çok sayıda ayrı Image  widget'ı oluşturmaktan çok daha
+performanslıdır.
+Viewport kırpma: Yalnızca ekranda görünen tile aralığı çizilmeli (örn. karakter merkezde sabit, kamera 7x9 hücrelik bir
+pencere gösteriyor); tüm grid'i (184+ tile) her karede çizmek gereksizdir.
+RepaintBoundary: HUD, Mağaza paneli ve Grid ayrı RepaintBoundary  katmanlarına alınmalı — bir altın sayacı
+güncellemesi tüm grid'in yeniden çizilmesine yol açmamalı.
+Tile kırılma animasyonu: Kısa (150–200ms) bir "shrink + fade" veya "parçalanma" animasyonu; AnimationController  tile
+bazında değil, tek bir "aktif kırılan tile" state'i üzerinden yönetilmeli (aynı anda yalnızca 1 tile kırılabildiği için maliyet düşük).
+60 FPS hedefi: Oyun tur-tabanlı (turn-based, her hamle discrete) olduğu için sürekli bir render döngüsüne (game
+
+--- SAYFA 10 ---
+loop/ticker) ihtiyaç yoktur — yalnızca enerji rejenerasyon sayacı için hafif bir Timer.periodic  yeterlidir. Bu, pil tüketimi
+açısından önemli bir avantajdır.
+
+--- SAYFA 11 ---
+13. Kalıcı Veri (Persistence)
+Hive Box: "derin_kazi_save"
+ ├── key "player"  → PlayerStateModel (json)
+ ├── key "grid"    → GridModel (json, sıkıştırılmış — yalnızca değişen hücreler diff olarak da tutulabilir)
+ ├── key "settings" → { soundOn, musicOn, lastReviewPromptDate, … }
+ └── key "meta"    → { appVersion, lastSaveTimestamp }
+Otomatik kayıt: her tile kırılmasında değil, debounce ile (örn. son hamleden 2 saniye sonra ya da uygulama arka plana
+alındığında AppLifecycleState.paused ) tetiklenmeli — bu, gereksiz disk I/O'sunu önler.
+14. Mobil Uyarlama (Responsive) Notları
+Kaynak görsel, geniş masaüstü tarayıcı düzeninde (Grid solda, Mağaza sağda, yan yana) tasarlanmış. Telefon dikey (portre)
+modda bu düzen doğrudan sığmaz; önerilen uyarlama:
+Portre mod (telefon, birincil hedef): Grid ekranın üstünü kaplar, Mağaza paneli grid'in altında yatay kaydırmalı kart
+şeridi olarak veya bir alt çekmece (bottom sheet) / ayrı sekme olarak sunulur. D-Pad, Mağaza şeridiyle grid arasında
+sabit kalır.
+Yatay/tablet mod: Orijinal düzen (Grid solda %65–70, Mağaza sağda %30–35) birebir korunabilir.
+HUD şeridi küçük ekranlarda iki satıra bölünebilir (üstte kaynak sayaçları, altta Rütbe/Toplam/Sıfırla) — fotoğraftaki tek satır
+masaüstü genişliğine dayanıyor.
+15. Monetizasyon
+Reklam Türü
+Tetikleyici
+Ödüllü video (rewarded)
+Enerji anında doldur · x2 Bonus aktif et · SIFIRLA sonrası ekstra Rütbe bonusu
+Geçiş reklamı (interstitial)
+Aşama tamamlandığında (her 2-3 aşamada bir, sık olmayacak şekilde) · SIFIRLA sonrası
+Banner
+Mağaza panelinin altında (opsiyonel, dikkat dağıtmayacak şekilde) — mevcut projelerdeki gibi kaldırılabilir IAP ile
+IAP
+Elmas paketleri · Reklamları kaldır · "Başlangıç Paketi" (bonus altın + enerji dolu)
+16. Klasör Yapısı (Özet)
+derin_kazi/
+├── lib/
+│   ├── core/{theme, constants, extensions}
+│   ├── features/mining/{data,domain,application,presentation}
+│   ├── features/shop/…
+│   ├── features/settings/…
+│   └── shared/widgets/…
+├── assets/
+│   ├── images/sprite_sheet.png, tiles/, ui/
+│   ├── audio/dig.mp3, break.mp3, upgrade.mp3, bgm.mp3
+│   └── config/stage_definitions.json   // veri-odaklı aşama/tile tanımları
+└── test/…
+17. Geliştirme Yol Haritası
+Faz
+Kapsam
+Faz 1 — İskelet
+Proje kurulumu, Riverpod/Hive entegrasyonu, statik grid render (tıklama yok), sabit renk paletiyle tema
+Faz 2 — Çekirdek Döngü
+D-Pad hareketi, kazı/hasar mantığı, tile kırılma, altın/enerji sayaçları
+Faz 3 — Mağaza
+4 yükseltme kartı, satın alma mantığı, seviye çubukları
+Faz 4 — İlerleme
+Aşama/Derinlik geçişi, yeni tile setleri, biyom temaları
+Faz 5 — Prestij
+SIFIRLA akışı, Rütbe hesaplama, onay diyaloğu, kalıcı bonus
+Faz 6 — Cila
+Animasyonlar, ses efektleri, glow/neon görsel detaylar, sprite atlası
+Faz 7 — Monetizasyon
+AdMob entegrasyonu (rewarded/interstitial), IAP
+Faz 8 — Mobil Cila
+Portre mod düzeni, farklı ekran boyutu testleri, performans profili
+
+--- SAYFA 12 ---
+18. Açık Sorular / Onay Gereken Noktalar
+Fotoğraftaki bazı detaylar netleştirilirse doküman ve sonraki kod aşaması daha isabetli olur:
+1. SIFIRLA (prestij) sırasında ne sıfırlanıyor? Sadece Aşama/Derinlik mi, yoksa altın ve yükseltme seviyeleri de mi?
+2. Sol üstteki ikinci satırdaki ek metin (görüntüde tam okunamayan, "93 derinlik" benzeri ibare) ne anlama geliyor —
+kaydedilmiş en yüksek derinlik rekoru mu?
+3. Alt tam-genişlik ilerleme çubuğu neyi temsil ediyor — enerji mi, Aşama ilerlemesi mi, yoksa günlük görev/ödül çubuğu
+mu?
+4. "Mermi/özel obje" görünümlü tile tam olarak ne işe yarıyor (bomba, ışın, anlık teleport vb.)?
+5. Katman-özel kaynak ("Bakır: 0") her Aşama'da farklı bir maden mi, yoksa sabit ikincil bir kaynak mı?
+6. Kaynak kod (index.html/JS) paylaşılabilir mi? Paylaşılırsa §8'deki tüm formüller gerçek değerlerle birebir eşleştirilebilir ve bu
+doküman "v1.1 — doğrulanmış" olarak güncellenebilir.
+Bu sorulara verilecek yanıtlar doğrultusunda doküman güncellenip, ardından Flutter projesinin ilk iskeleti (Faz 1) için kod yazımına geçilebilir.
+
