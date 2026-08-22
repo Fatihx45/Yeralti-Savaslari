@@ -46,6 +46,8 @@ class MiningGridView extends ConsumerWidget {
               painter: TileGridPainter(
                 grid: grid,
                 lastDamagedTile: gameState.lastDamagedTile,
+                equippedSkinId: gameState.player.equippedSkinId,
+                activeReactionEmoji: gameState.activeReactionEmoji,
               ),
               child: Container(),
             ),

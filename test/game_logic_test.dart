@@ -314,6 +314,56 @@ void main() {
       expect(afterState.lastMessage?.contains('Zümrüt Damarı'), true);
       container.dispose();
     });
+
+    test('equipSkin elmas karşılığı yeni kostüm kuşanmalı', () {
+      final container = ProviderContainer();
+      final notifier = container.read(gameNotifierProvider.notifier);
+
+      notifier.state = notifier.state.copyWith(
+        player: notifier.state.player.copyWith(gems: 20, equippedSkinId: 'default_blue'),
+      );
+
+      notifier.equipSkin('gold_knight', 5);
+
+      final state = container.read(gameNotifierProvider);
+      expect(state.player.equippedSkinId, 'gold_knight');
+      expect(state.player.gems, 15); // 20 - 5 = 15
+      container.dispose();
+    });
+
+    test('claimQuestReward tamamlanan görevin ödülünü vermeli', () {
+      final container = ProviderContainer();
+      final notifier = container.read(gameNotifierProvider.notifier);
+
+      final quests = notifier.state.quests.map((q) {
+        if (q.id == 'q1') return q.copyWith(current: 15);
+        return q;
+      }).toList();
+
+      notifier.state = notifier.state.copyWith(
+        quests: quests,
+        player: notifier.state.player.copyWith(gold: 100, gems: 5),
+      );
+
+      notifier.claimQuestReward('q1');
+
+      final state = container.read(gameNotifierProvider);
+      expect(state.player.gold, 250); // 100 + 150
+      expect(state.player.gems, 7);   // 5 + 2
+      expect(state.quests.firstWhere((q) => q.id == 'q1').isClaimed, true);
+      container.dispose();
+    });
+
+    test('sendReaction aktif emojiyi güncellemeli', () {
+      final container = ProviderContainer();
+      final notifier = container.read(gameNotifierProvider.notifier);
+
+      notifier.sendReaction('💎');
+
+      final state = container.read(gameNotifierProvider);
+      expect(state.activeReactionEmoji, '💎');
+      container.dispose();
+    });
   });
 }
 

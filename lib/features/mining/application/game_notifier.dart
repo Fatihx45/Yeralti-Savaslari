@@ -12,6 +12,9 @@ import 'package:derin_kazi/features/multiplayer/domain/models/remote_player_mode
 import 'package:derin_kazi/features/battle_royale/domain/models/battle_phase_model.dart';
 import '../domain/models/tool_model.dart';
 
+import 'package:derin_kazi/features/quests/domain/models/daily_quest_model.dart';
+import 'package:derin_kazi/core/persistence/save_service.dart';
+
 enum GameMode {
   solo,
   battleRoyale,
@@ -24,6 +27,10 @@ class GameState {
   final Position? lastDamagedTile;
   final BattlePhaseState battlePhase;
   final GameMode gameMode;
+  final int comboCount;
+  final int lastDigTimestamp;
+  final String? activeReactionEmoji;
+  final List<DailyQuestModel> quests;
 
   const GameState({
     required this.player,
@@ -32,6 +39,14 @@ class GameState {
     this.lastDamagedTile,
     this.battlePhase = const BattlePhaseState(),
     this.gameMode = GameMode.solo,
+    this.comboCount = 0,
+    this.lastDigTimestamp = 0,
+    this.activeReactionEmoji,
+    this.quests = const [
+      DailyQuestModel(id: 'q1', title: '15 Kutu Kaz', iconEmoji: '⛏️', target: 15, current: 0, rewardGold: 150, rewardGems: 2),
+      DailyQuestModel(id: 'q2', title: '200 Altın Topla', iconEmoji: '🟡', target: 200, current: 0, rewardGold: 250, rewardGems: 3),
+      DailyQuestModel(id: 'q3', title: '1 Alet Bul', iconEmoji: '🛠️', target: 1, current: 0, rewardGold: 300, rewardGems: 5),
+    ],
   });
 
   GameState copyWith({
@@ -41,6 +56,10 @@ class GameState {
     Position? lastDamagedTile,
     BattlePhaseState? battlePhase,
     GameMode? gameMode,
+    int? comboCount,
+    int? lastDigTimestamp,
+    String? activeReactionEmoji,
+    List<DailyQuestModel>? quests,
   }) {
     return GameState(
       player: player ?? this.player,
@@ -49,6 +68,10 @@ class GameState {
       lastDamagedTile: lastDamagedTile ?? this.lastDamagedTile,
       battlePhase: battlePhase ?? this.battlePhase,
       gameMode: gameMode ?? this.gameMode,
+      comboCount: comboCount ?? this.comboCount,
+      lastDigTimestamp: lastDigTimestamp ?? this.lastDigTimestamp,
+      activeReactionEmoji: activeReactionEmoji ?? this.activeReactionEmoji,
+      quests: quests ?? this.quests,
     );
   }
 }
@@ -246,8 +269,18 @@ class GameNotifier extends StateNotifier<GameState> {
     // Kazı işlemi - Enerji tüketimi
     final newEnergy = max(0, state.player.energy - 1);
 
-    // Hasar hesabı (Aktif Alet Bonusu)
-    int damage = state.player.tileDamageBonus;
+    // Kombo & Kritik Vuruş Hesabı
+    final int nowMs = DateTime.now().millisecondsSinceEpoch;
+    int currentCombo = (nowMs - state.lastDigTimestamp < 2500) ? state.comboCount + 1 : 1;
+    double comboMultiplier = 1.0;
+    if (currentCombo >= 5) {
+      comboMultiplier = 1.5; // %50 Kombo Bonusu
+    } else if (currentCombo >= 3) {
+      comboMultiplier = 1.25; // %25 Kombo Bonusu
+    }
+
+    // Hasar hesabı (Aktif Alet Bonusu + Kombo Çarpanı)
+    int damage = (state.player.tileDamageBonus * comboMultiplier).round();
     if (state.battlePhase.isDeathmatch) {
       damage = (damage * 1.5).round();
     }
@@ -256,7 +289,8 @@ class GameNotifier extends StateNotifier<GameState> {
 
     if (newHp <= 0) {
       // Tile kırıldı!
-      int goldReward = targetTile.rewardGold;
+      int goldReward = (targetTile.rewardGold * comboMultiplier).round();
+      if (state.player.doubleBonusActive) goldReward *= 2;
       int gemReward = targetTile.rewardGems;
       int energyReward = targetTile.rewardEnergy;
       int hpReward = targetTile.rewardHp;
@@ -424,8 +458,15 @@ class GameNotifier extends StateNotifier<GameState> {
           tilesClearedInStage: newClearedCount,
         ),
         lastDamagedTile: Position(targetRow, targetCol),
-        lastMessage: rewardMsg.isNotEmpty ? rewardMsg : state.lastMessage,
+        comboCount: currentCombo,
+        lastDigTimestamp: nowMs,
+        lastMessage: currentCombo >= 3
+            ? '🔥 COMBO x$currentCombo! (+$goldReward 🟡)'
+            : (rewardMsg.isNotEmpty ? rewardMsg : state.lastMessage),
       );
+
+      _trackQuestProgress(tiles: 1, gold: goldReward, tools: toolReward != null ? 1 : 0);
+      _saveState();
 
       if (targetTile.type == TileType.hiddenMine || targetTile.type == TileType.tnt) {
         _triggerHaptic('heavy');
@@ -814,12 +855,97 @@ class GameNotifier extends StateNotifier<GameState> {
       // Uzaktaysa o yöne doğru 1 adım yaklaş
       int stepR = 0;
       int stepC = 0;
-      if (dr.abs() >= dc.abs()) {
-        stepR = dr > 0 ? 1 : -1;
-      } else {
+      if (dc.abs() > 0) {
         stepC = dc > 0 ? 1 : -1;
+      } else {
+        stepR = dr > 0 ? 1 : -1;
       }
       moveOrDig(stepR, stepC);
+    }
+  }
+
+  void equipSkin(String skinId, int costGems) {
+    if (state.player.equippedSkinId == skinId) return;
+
+    if (costGems > 0 && state.player.gems < costGems) {
+      state = state.copyWith(lastMessage: 'Yetersiz Elmas! $costGems 💎 gerekli.');
+      return;
+    }
+
+    final newGems = costGems > 0 ? state.player.gems - costGems : state.player.gems;
+    _triggerHaptic('selection');
+    state = state.copyWith(
+      player: state.player.copyWith(
+        equippedSkinId: skinId,
+        gems: newGems,
+      ),
+      lastMessage: 'Yeni Kostüm Kuşanıldı!',
+    );
+    _saveState();
+  }
+
+  void sendReaction(String emoji) {
+    _triggerHaptic('selection');
+    state = state.copyWith(
+      activeReactionEmoji: emoji,
+      lastMessage: 'Tepki Gönderildi: $emoji',
+    );
+
+    // 2 saniye sonra emojiyi kaldır
+    Timer(const Duration(seconds: 2), () {
+      if (mounted && state.activeReactionEmoji == emoji) {
+        state = state.copyWith(activeReactionEmoji: null);
+      }
+    });
+  }
+
+  void claimQuestReward(String questId) {
+    final questIdx = state.quests.indexWhere((q) => q.id == questId);
+    if (questIdx < 0) return;
+
+    final quest = state.quests[questIdx];
+    if (!quest.isCompleted || quest.isClaimed) return;
+
+    _triggerHaptic('heavy');
+    final updatedQuests = List<DailyQuestModel>.from(state.quests);
+    updatedQuests[questIdx] = quest.copyWith(isClaimed: true);
+
+    state = state.copyWith(
+      player: state.player.copyWith(
+        gold: state.player.gold + quest.rewardGold,
+        gems: state.player.gems + quest.rewardGems,
+      ),
+      quests: updatedQuests,
+      lastMessage: '🏆 Görev Tamamlandı! +${quest.rewardGold} 🟡 +${quest.rewardGems} 💎',
+    );
+    _saveState();
+  }
+
+  void _trackQuestProgress({int tiles = 0, int gold = 0, int tools = 0}) {
+    if (tiles == 0 && gold == 0 && tools == 0) return;
+
+    final updatedQuests = state.quests.map((q) {
+      if (q.id == 'q1' && tiles > 0) {
+        return q.copyWith(current: q.current + tiles);
+      } else if (q.id == 'q2' && gold > 0) {
+        return q.copyWith(current: q.current + gold);
+      } else if (q.id == 'q3' && tools > 0) {
+        return q.copyWith(current: q.current + tools);
+      }
+      return q;
+    }).toList();
+
+    state = state.copyWith(quests: updatedQuests);
+  }
+
+  void _saveState() {
+    SaveService.savePlayer(state.player);
+  }
+
+  Future<void> loadSavedPlayer() async {
+    final saved = await SaveService.loadPlayer();
+    if (saved != null && mounted) {
+      state = state.copyWith(player: saved);
     }
   }
 

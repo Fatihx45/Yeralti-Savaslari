@@ -21,6 +21,7 @@ class PlayerStateModel {
   final Map<UpgradeType, UpgradeModel> upgrades;
   final List<ToolType> inventoryTools;
   final int activeToolIndex;
+  final String equippedSkinId;
 
   const PlayerStateModel({
     required this.gold,
@@ -42,6 +43,7 @@ class PlayerStateModel {
     required this.upgrades,
     this.inventoryTools = const [],
     this.activeToolIndex = 0,
+    this.equippedSkinId = 'default_blue',
   });
 
   ToolType? get activeTool {
@@ -83,6 +85,7 @@ class PlayerStateModel {
     Map<UpgradeType, UpgradeModel>? upgrades,
     List<ToolType>? inventoryTools,
     int? activeToolIndex,
+    String? equippedSkinId,
   }) {
     return PlayerStateModel(
       gold: gold ?? this.gold,
@@ -104,6 +107,65 @@ class PlayerStateModel {
       upgrades: upgrades ?? this.upgrades,
       inventoryTools: inventoryTools ?? this.inventoryTools,
       activeToolIndex: activeToolIndex ?? this.activeToolIndex,
+      equippedSkinId: equippedSkinId ?? this.equippedSkinId,
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'gold': gold,
+      'gems': gems,
+      'hp': hp,
+      'maxHp': maxHp,
+      'energy': energy,
+      'maxEnergy': maxEnergy,
+      'rank': rank,
+      'lifetimeEarnings': lifetimeEarnings,
+      'copper': copper,
+      'iron': iron,
+      'emeralds': emeralds,
+      'fossils': fossils,
+      'dynamites': dynamites,
+      'highestDepth': highestDepth,
+      'soundEnabled': soundEnabled,
+      'doubleBonusActive': doubleBonusActive,
+      'equippedSkinId': equippedSkinId,
+      'inventoryTools': inventoryTools.map((t) => t.name).toList(),
+      'activeToolIndex': activeToolIndex,
+    };
+  }
+
+  factory PlayerStateModel.fromJson(Map<String, dynamic> json) {
+    final List<ToolType> tools = [];
+    if (json['inventoryTools'] != null) {
+      for (final name in json['inventoryTools']) {
+        try {
+          tools.add(ToolType.values.firstWhere((t) => t.name == name));
+        } catch (_) {}
+      }
+    }
+
+    return PlayerStateModel(
+      gold: json['gold'] as int? ?? 997,
+      gems: json['gems'] as int? ?? 24,
+      hp: json['hp'] as int? ?? 100,
+      maxHp: json['maxHp'] as int? ?? 100,
+      energy: json['energy'] as int? ?? 80,
+      maxEnergy: json['maxEnergy'] as int? ?? 80,
+      rank: json['rank'] as int? ?? 4,
+      lifetimeEarnings: json['lifetimeEarnings'] as int? ?? 3210,
+      copper: json['copper'] as int? ?? 0,
+      iron: json['iron'] as int? ?? 0,
+      emeralds: json['emeralds'] as int? ?? 0,
+      fossils: json['fossils'] as int? ?? 0,
+      dynamites: json['dynamites'] as int? ?? 0,
+      highestDepth: json['highestDepth'] as int? ?? 1,
+      soundEnabled: json['soundEnabled'] as bool? ?? true,
+      doubleBonusActive: json['doubleBonusActive'] as bool? ?? false,
+      equippedSkinId: json['equippedSkinId'] as String? ?? 'default_blue',
+      inventoryTools: tools,
+      activeToolIndex: json['activeToolIndex'] as int? ?? 0,
+      upgrades: defaultUpgrades(),
     );
   }
 

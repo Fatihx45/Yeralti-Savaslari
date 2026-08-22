@@ -8,11 +8,15 @@ import '../widgets/inventory_dialog.dart';
 import '../widgets/mining_grid_view.dart';
 import '../widgets/directional_pad.dart';
 import '../widgets/bottom_progress_bar.dart';
+import '../widgets/boss_health_bar.dart';
 
 import 'package:derin_kazi/features/battle_royale/presentation/widgets/player_scoreboard_panel.dart';
 import 'package:derin_kazi/features/battle_royale/presentation/widgets/inventory_slot_bar.dart';
 import 'package:derin_kazi/features/battle_royale/presentation/widgets/countdown_overlay.dart';
 import 'package:derin_kazi/features/battle_royale/presentation/widgets/battle_result_dialog.dart';
+import 'package:derin_kazi/features/multiplayer/presentation/widgets/reaction_bar.dart';
+import 'package:derin_kazi/features/quests/presentation/widgets/quest_dialog.dart';
+import 'package:derin_kazi/features/cosmetics/presentation/screens/cosmetics_screen.dart';
 
 class MiningScreen extends ConsumerWidget {
   const MiningScreen({super.key});
@@ -70,10 +74,13 @@ class MiningScreen extends ConsumerWidget {
                 // 1. Üst Mobil HUD Şeridi
                 const HudBar(),
 
-                // 2. Ana Kazı Alanı (Grid + Scoreboard)
+                // 2. Boss Can Barı (Varsa)
+                const BossHealthBar(),
+
+                // 3. Ana Kazı Alanı (Grid + Scoreboard + Emojiler)
                 Expanded(
                   child: Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
                     child: Stack(
                       children: [
                         const Center(
@@ -86,12 +93,19 @@ class MiningScreen extends ConsumerWidget {
                             left: 4,
                             child: PlayerScoreboardPanel(),
                           ),
+
+                        // Sağ Alt: Oyun İçi Hızlı Tepki Emojileri
+                        const Positioned(
+                          bottom: 4,
+                          right: 4,
+                          child: ReactionBar(),
+                        ),
                       ],
                     ),
                   ),
                 ),
 
-                // 3. Mobil Ergonomik Kontrol Alanı (Gamepad Düzeni)
+                // 4. Mobil Ergonomik Kontrol Alanı (Gamepad Düzeni)
                 Container(
                   padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
                   decoration: const BoxDecoration(
@@ -103,10 +117,32 @@ class MiningScreen extends ConsumerWidget {
                   child: Column(
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      // Üst: 1-5 Alet Yuvaları
-                      const SingleChildScrollView(
-                        scrollDirection: Axis.horizontal,
-                        child: InventorySlotBar(),
+                      // Üst: 1-5 Alet Yuvaları + Görevler & Kostüm Kısayolu
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          const InventorySlotBar(),
+                          const SizedBox(width: 8),
+
+                          // Görevler Butonu
+                          IconButton(
+                            icon: const Icon(Icons.assignment, color: AppColors.goldText, size: 22),
+                            tooltip: 'Günlük Görevler',
+                            onPressed: () => QuestDialog.showQuestDialog(context),
+                          ),
+
+                          // Kostümler Butonu
+                          IconButton(
+                            icon: const Icon(Icons.palette, color: Color(0xFFE040FB), size: 22),
+                            tooltip: 'Kostümler & Skinler',
+                            onPressed: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(builder: (ctx) => const CosmeticsScreen()),
+                              );
+                            },
+                          ),
+                        ],
                       ),
                       const SizedBox(height: 6),
 
@@ -251,12 +287,12 @@ class MiningScreen extends ConsumerWidget {
                   ),
                 ),
 
-                // 4. Alt Can & Enerji Çubuğu
+                // 5. Alt Can & Enerji Çubuğu
                 const BottomProgressBar(),
               ],
             ),
 
-            // 5. 3 Saniyelik Geri Sayım Overlay (Sadece BR Modunda)
+            // 6. 3 Saniyelik Geri Sayım Overlay (Sadece BR Modunda)
             if (gameState.gameMode == GameMode.battleRoyale)
               const CountdownOverlay(),
           ],

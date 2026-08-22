@@ -8,10 +8,14 @@ import 'package:derin_kazi/features/multiplayer/domain/models/remote_player_mode
 class TileGridPainter extends CustomPainter {
   final GridModel grid;
   final Position? lastDamagedTile;
+  final String equippedSkinId;
+  final String? activeReactionEmoji;
 
   TileGridPainter({
     required this.grid,
     this.lastDamagedTile,
+    this.equippedSkinId = 'default_blue',
+    this.activeReactionEmoji,
   });
 
   @override
@@ -313,14 +317,62 @@ class TileGridPainter extends CustomPainter {
     final center = pRect.center;
     final double scale = min(cellWidth, cellHeight) / 24.0;
 
+    Color shirt = const Color(0xFF1976D2);
+    Color pants = const Color(0xFFD32F2F);
+    Color helmet = Colors.white;
+
+    if (equippedSkinId == 'gold_knight') {
+      shirt = const Color(0xFFFFD700);
+      pants = const Color(0xFFB8860B);
+      helmet = const Color(0xFFFFF8DC);
+    } else if (equippedSkinId == 'lava_miner') {
+      shirt = const Color(0xFFFF3D00);
+      pants = const Color(0xFF212121);
+      helmet = const Color(0xFFFF6E40);
+    } else if (equippedSkinId == 'emerald_guardian') {
+      shirt = const Color(0xFF00E676);
+      pants = const Color(0xFF1B5E20);
+      helmet = const Color(0xFF69F0AE);
+    } else if (equippedSkinId == 'crystal_lord') {
+      shirt = const Color(0xFF00E5FF);
+      pants = const Color(0xFF006064);
+      helmet = const Color(0xFFE0F7FA);
+    }
+
     _drawMinerCharacter(
       canvas,
       center,
       scale,
-      shirtColor: const Color(0xFF1976D2), // Mavi tişört
-      pantsColor: const Color(0xFFD32F2F), // Kırmızı pantolon
-      helmetColor: Colors.white,
+      shirtColor: shirt,
+      pantsColor: pants,
+      helmetColor: helmet,
     );
+
+    // Kafa Üstü Emoji Baloncuğu
+    if (activeReactionEmoji != null) {
+      final bubbleCenter = Offset(center.dx, center.dy - 18 * scale);
+      final bubblePaint = Paint()..color = const Color(0xFF0F0F28);
+      final borderPaint = Paint()
+        ..color = AppColors.neonGreen
+        ..style = PaintingStyle.stroke
+        ..strokeWidth = 1.2;
+
+      canvas.drawRRect(
+        RRect.fromRectAndRadius(Rect.fromCenter(center: bubbleCenter, width: 22 * scale, height: 16 * scale), const Radius.circular(6)),
+        bubblePaint,
+      );
+      canvas.drawRRect(
+        RRect.fromRectAndRadius(Rect.fromCenter(center: bubbleCenter, width: 22 * scale, height: 16 * scale), const Radius.circular(6)),
+        borderPaint,
+      );
+
+      final textSpan = TextSpan(
+        text: activeReactionEmoji,
+        style: TextStyle(fontSize: 10 * scale),
+      );
+      final textPainter = TextPainter(text: textSpan, textDirection: TextDirection.ltr)..layout();
+      textPainter.paint(canvas, Offset(bubbleCenter.dx - textPainter.width / 2, bubbleCenter.dy - textPainter.height / 2));
+    }
   }
 
   void _drawMinerCharacter(
