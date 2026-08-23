@@ -1,8 +1,9 @@
 ﻿import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../../core/theme/app_colors.dart';
-import '../../../mining/presentation/screens/mining_screen.dart';
 import '../../../mining/application/game_notifier.dart';
+import '../../../mining/domain/models/stage_config_model.dart';
+import '../../../mining/presentation/screens/stage_select_screen.dart';
 import 'create_room_screen.dart';
 import 'join_room_screen.dart';
 import 'lobby_screen.dart';
@@ -28,6 +29,10 @@ class _MainMenuScreenState extends ConsumerState<MainMenuScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final gameState = ref.watch(gameNotifierProvider);
+    final int unlockedStage = gameState.player.unlockedStage;
+    final stageConfig = StageConfigService.getConfig(unlockedStage);
+
     return Scaffold(
       backgroundColor: AppColors.background,
       body: SafeArea(
@@ -55,7 +60,9 @@ class _MainMenuScreenState extends ConsumerState<MainMenuScreen> {
                     ),
                   ],
                 ),
-                child: isLandscape ? _buildLandscapeLayout() : _buildPortraitLayout(),
+                child: isLandscape
+                    ? _buildLandscapeLayout(unlockedStage, stageConfig.biomeName)
+                    : _buildPortraitLayout(unlockedStage, stageConfig.biomeName),
               ),
             );
           },
@@ -65,7 +72,7 @@ class _MainMenuScreenState extends ConsumerState<MainMenuScreen> {
   }
 
   // Yatay (Landscape) 2 Kolonlu Konsol Düzeni
-  Widget _buildLandscapeLayout() {
+  Widget _buildLandscapeLayout(int unlockedStage, String biomeName) {
     return Row(
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
@@ -89,7 +96,7 @@ class _MainMenuScreenState extends ConsumerState<MainMenuScreen> {
                   ),
                 ),
                 const Text(
-                  'Yeraltı Madencilik & Battle Royale',
+                  '500 Bölüm • Madencilik & Battle Royale',
                   style: TextStyle(color: Color(0xFF8E8EAE), fontSize: 10),
                 ),
                 const SizedBox(height: 14),
@@ -179,23 +186,26 @@ class _MainMenuScreenState extends ConsumerState<MainMenuScreen> {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
+                // 1. OYUNA BAŞLA (BÖLÜM SEÇİMİ)
                 _buildMenuButton(
-                  title: 'SOLO KAZI',
-                  subtitle: 'Tek Kişilik Madencilik & Boss Savaşı',
-                  icon: Icons.person,
-                  buttonColor: const Color(0xFF1E3A24),
+                  title: '🎮 OYUNA BAŞLA',
+                  subtitle: 'Kaldığın Yer: Bölüm $unlockedStage • $biomeName',
+                  icon: Icons.play_arrow_rounded,
+                  buttonColor: const Color(0xFF13381B),
                   borderColor: AppColors.neonGreen,
                   textColor: AppColors.neonGreen,
+                  isPrimary: true,
                   onTap: () {
                     ref.read(lobbyNotifierProvider.notifier).setPlayerName(_nameController.text);
-                    ref.read(gameNotifierProvider.notifier).startSoloGame();
                     Navigator.push(
                       context,
-                      MaterialPageRoute(builder: (ctx) => const MiningScreen()),
+                      MaterialPageRoute(builder: (ctx) => const StageSelectScreen()),
                     );
                   },
                 ),
                 const SizedBox(height: 8),
+
+                // 2. MULTIPLAYER
                 _buildMenuButton(
                   title: '🌐 MULTIPLAYER (ÇOK OYUNCULU)',
                   subtitle: '4 Kişilik Battle Royale Hayatta Kalma',
@@ -213,6 +223,8 @@ class _MainMenuScreenState extends ConsumerState<MainMenuScreen> {
                   },
                 ),
                 const SizedBox(height: 8),
+
+                // 3. EKİP KAZISI
                 _buildMenuButton(
                   title: 'EKİP KAZISI (ODA KUR)',
                   subtitle: '1-10 Kişilik Özel Arkadaş Odası',
@@ -229,6 +241,8 @@ class _MainMenuScreenState extends ConsumerState<MainMenuScreen> {
                   },
                 ),
                 const SizedBox(height: 8),
+
+                // 4. ODAYA KATIL
                 _buildMenuButton(
                   title: 'ODAYA KATIL',
                   subtitle: '6 Haneli Oda Kodu ile Bağlan',
@@ -253,7 +267,7 @@ class _MainMenuScreenState extends ConsumerState<MainMenuScreen> {
   }
 
   // Dikey (Fallback) Düzen
-  Widget _buildPortraitLayout() {
+  Widget _buildPortraitLayout(int unlockedStage, String biomeName) {
     return SingleChildScrollView(
       child: Column(
         mainAxisSize: MainAxisSize.min,
@@ -285,16 +299,16 @@ class _MainMenuScreenState extends ConsumerState<MainMenuScreen> {
           ),
           const SizedBox(height: 14),
           _buildMenuButton(
-            title: 'SOLO KAZI',
-            subtitle: 'Tek Kişilik Madencilik',
-            icon: Icons.person,
-            buttonColor: const Color(0xFF1E3A24),
+            title: '🎮 OYUNA BAŞLA',
+            subtitle: 'Kaldığın Yer: Bölüm $unlockedStage • $biomeName',
+            icon: Icons.play_arrow_rounded,
+            buttonColor: const Color(0xFF13381B),
             borderColor: AppColors.neonGreen,
             textColor: AppColors.neonGreen,
+            isPrimary: true,
             onTap: () {
               ref.read(lobbyNotifierProvider.notifier).setPlayerName(_nameController.text);
-              ref.read(gameNotifierProvider.notifier).startSoloGame();
-              Navigator.push(context, MaterialPageRoute(builder: (ctx) => const MiningScreen()));
+              Navigator.push(context, MaterialPageRoute(builder: (ctx) => const StageSelectScreen()));
             },
           ),
           const SizedBox(height: 8),
@@ -349,6 +363,7 @@ class _MainMenuScreenState extends ConsumerState<MainMenuScreen> {
     required Color buttonColor,
     required Color borderColor,
     required Color textColor,
+    bool isPrimary = false,
     required VoidCallback onTap,
   }) {
     return Material(
@@ -358,15 +373,16 @@ class _MainMenuScreenState extends ConsumerState<MainMenuScreen> {
         borderRadius: BorderRadius.circular(12),
         child: Container(
           width: double.infinity,
-          padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 9),
+          padding: EdgeInsets.symmetric(horizontal: 14, vertical: isPrimary ? 10 : 8.5),
           decoration: BoxDecoration(
             color: buttonColor,
             borderRadius: BorderRadius.circular(12),
-            border: Border.all(color: borderColor, width: 1.3),
+            border: Border.all(color: borderColor, width: isPrimary ? 1.8 : 1.3),
             boxShadow: [
               BoxShadow(
-                color: borderColor.withValues(alpha: 0.2),
-                blurRadius: 8,
+                color: borderColor.withValues(alpha: isPrimary ? 0.35 : 0.18),
+                blurRadius: isPrimary ? 12 : 8,
+                spreadRadius: isPrimary ? 1 : 0,
               ),
             ],
           ),
@@ -375,10 +391,10 @@ class _MainMenuScreenState extends ConsumerState<MainMenuScreen> {
               Container(
                 padding: const EdgeInsets.all(8),
                 decoration: BoxDecoration(
-                  color: Colors.black38,
+                  color: Colors.black45,
                   borderRadius: BorderRadius.circular(8),
                 ),
-                child: Icon(icon, color: textColor, size: 18),
+                child: Icon(icon, color: textColor, size: isPrimary ? 20 : 18),
               ),
               const SizedBox(width: 10),
               Expanded(
@@ -387,9 +403,9 @@ class _MainMenuScreenState extends ConsumerState<MainMenuScreen> {
                   children: [
                     Text(
                       title,
-                      style: const TextStyle(
+                      style: TextStyle(
                         color: Colors.white,
-                        fontSize: 12,
+                        fontSize: isPrimary ? 13 : 12,
                         fontWeight: FontWeight.bold,
                         letterSpacing: 0.5,
                       ),
@@ -397,7 +413,11 @@ class _MainMenuScreenState extends ConsumerState<MainMenuScreen> {
                     const SizedBox(height: 1),
                     Text(
                       subtitle,
-                      style: const TextStyle(color: Colors.white70, fontSize: 9.5),
+                      style: TextStyle(
+                        color: isPrimary ? AppColors.neonGreen.withValues(alpha: 0.85) : Colors.white70,
+                        fontSize: 9.5,
+                        fontWeight: isPrimary ? FontWeight.w600 : FontWeight.normal,
+                      ),
                     ),
                   ],
                 ),

@@ -15,17 +15,19 @@ void main() {
 
     // Ana Menü Elemanları
     expect(find.text('DERİN KAZI'), findsOneWidget);
-    expect(find.text('SOLO KAZI'), findsOneWidget);
+    expect(find.textContaining('OYUNA BAŞLA'), findsOneWidget);
     expect(find.textContaining('MULTIPLAYER'), findsOneWidget);
     expect(find.text('EKİP KAZISI (ODA KUR)'), findsOneWidget);
     expect(find.text('ODAYA KATIL'), findsOneWidget);
 
-    // Solo Kazı'ya tıkla
-    await tester.tap(find.text('SOLO KAZI'));
+    // Oyuna Başla'ya tıkla (Bölüm Seçim Ekranı Açılır)
+    await tester.tap(find.textContaining('OYUNA BAŞLA'));
     await tester.pumpAndSettle();
 
-    // 3 Saniyelik geri sayımın bitmesini bekle (Overlay kapansın)
-    await tester.pump(const Duration(seconds: 4));
+    expect(find.text('BÖLÜM SEÇİMİ'), findsOneWidget);
+
+    // Hızlı Devam Et'e tıkla ve oyuna başla
+    await tester.tap(find.textContaining('DEVAM ET'));
     await tester.pumpAndSettle();
 
     // Oyun ekranı açıldı mı?

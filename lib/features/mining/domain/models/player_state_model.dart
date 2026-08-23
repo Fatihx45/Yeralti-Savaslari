@@ -16,6 +16,7 @@ class PlayerStateModel {
   final int fossils;
   final int dynamites;
   final int highestDepth;
+  final int unlockedStage;
   final bool soundEnabled;
   final bool doubleBonusActive;
   final Map<UpgradeType, UpgradeModel> upgrades;
@@ -38,6 +39,7 @@ class PlayerStateModel {
     this.fossils = 0,
     this.dynamites = 0,
     this.highestDepth = 1,
+    this.unlockedStage = 1,
     this.soundEnabled = true,
     this.doubleBonusActive = false,
     required this.upgrades,
@@ -80,6 +82,7 @@ class PlayerStateModel {
     int? fossils,
     int? dynamites,
     int? highestDepth,
+    int? unlockedStage,
     bool? soundEnabled,
     bool? doubleBonusActive,
     Map<UpgradeType, UpgradeModel>? upgrades,
@@ -102,6 +105,7 @@ class PlayerStateModel {
       fossils: fossils ?? this.fossils,
       dynamites: dynamites ?? this.dynamites,
       highestDepth: highestDepth ?? this.highestDepth,
+      unlockedStage: unlockedStage ?? this.unlockedStage,
       soundEnabled: soundEnabled ?? this.soundEnabled,
       doubleBonusActive: doubleBonusActive ?? this.doubleBonusActive,
       upgrades: upgrades ?? this.upgrades,
@@ -127,6 +131,7 @@ class PlayerStateModel {
       'fossils': fossils,
       'dynamites': dynamites,
       'highestDepth': highestDepth,
+      'unlockedStage': unlockedStage,
       'soundEnabled': soundEnabled,
       'doubleBonusActive': doubleBonusActive,
       'equippedSkinId': equippedSkinId,
@@ -160,6 +165,7 @@ class PlayerStateModel {
       fossils: json['fossils'] as int? ?? 0,
       dynamites: json['dynamites'] as int? ?? 0,
       highestDepth: json['highestDepth'] as int? ?? 1,
+      unlockedStage: json['unlockedStage'] as int? ?? 1,
       soundEnabled: json['soundEnabled'] as bool? ?? true,
       doubleBonusActive: json['doubleBonusActive'] as bool? ?? false,
       equippedSkinId: json['equippedSkinId'] as String? ?? 'default_blue',

@@ -664,21 +664,18 @@ class GameNotifier extends StateNotifier<GameState> {
     final nextDepth = state.grid.depth + 1;
     final newHighest = nextDepth > state.player.highestDepth ? nextDepth : state.player.highestDepth;
 
-    String nextBiome = 'Kırmızı Toprak';
-    if (nextStage > 12) {
-      nextBiome = 'Buzul Katmanı';
-    } else if (nextStage > 8) {
-      nextBiome = 'Gri Kayalık';
-    }
+    final int newUnlocked = max(state.player.unlockedStage, nextStage);
 
     state = state.copyWith(
-      player: state.player.copyWith(highestDepth: newHighest),
+      player: state.player.copyWith(
+        highestDepth: newHighest,
+        unlockedStage: newUnlocked,
+      ),
       grid: GridGenerator.generateStage(
         stage: nextStage,
         depth: nextDepth,
-        biomeName: nextBiome,
       ),
-      lastMessage: 'Aşama $nextStage Tamamlandı! Yeni katmana inildi.',
+      lastMessage: 'Bölüm $nextStage Tamamlandı! Yeni bölüme geçildi.',
     );
 
     _trackQuestProgress(depth: nextDepth);
@@ -1173,14 +1170,24 @@ class GameNotifier extends StateNotifier<GameState> {
     } catch (_) {}
   }
 
-  void startSoloGame() {
+  void startStage(int stageNumber) {
     _battleTimer?.cancel();
+    final int safeStage = stageNumber.clamp(1, 500);
+
     state = state.copyWith(
       gameMode: GameMode.solo,
       battlePhase: const BattlePhaseState(phase: BattlePhase.finished),
-      grid: GridGenerator.generateStage(stage: 1, depth: 1, playerCount: 1),
-      lastMessage: 'Solo Madencilik Başladı! İyi kazılar!',
+      grid: GridGenerator.generateStage(
+        stage: safeStage,
+        depth: safeStage,
+        playerCount: 1,
+      ),
+      lastMessage: 'Bölüm $safeStage Başladı! İyi kazılar!',
     );
+  }
+
+  void startSoloGame() {
+    startStage(state.player.unlockedStage);
   }
 
   void startBattleRoyaleMatch() {
