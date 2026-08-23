@@ -2,6 +2,7 @@ import 'upgrade_model.dart';
 import 'tool_model.dart';
 
 class PlayerStateModel {
+  final String playerName;
   final int gold;
   final int gems;
   final int hp;
@@ -24,7 +25,25 @@ class PlayerStateModel {
   final int activeToolIndex;
   final String equippedSkinId;
 
+  // Yeni Ayarlar ve Profil Alanları (15 Alan)
+  final double musicVolume;
+  final double sfxVolume;
+  final bool vibrationEnabled;
+  final bool notificationsEnergyFull;
+  final bool notificationsDailyQuest;
+  final bool notificationsInvites;
+  final String graphicsQuality; // 'low', 'medium', 'high'
+  final bool batterySaverMode;
+  final String languageCode;
+  final bool adsPersonalized;
+  final bool analyticsEnabled;
+  final List<String> achievementIds;
+  final int tilesBrokenTotal;
+  final int bossesDefeatedTotal;
+  final List<String> favoriteFriends;
+
   const PlayerStateModel({
+    this.playerName = 'Madenci Usta',
     required this.gold,
     required this.gems,
     this.hp = 100,
@@ -46,6 +65,21 @@ class PlayerStateModel {
     this.inventoryTools = const [],
     this.activeToolIndex = 0,
     this.equippedSkinId = 'default_blue',
+    this.musicVolume = 0.8,
+    this.sfxVolume = 1.0,
+    this.vibrationEnabled = true,
+    this.notificationsEnergyFull = true,
+    this.notificationsDailyQuest = true,
+    this.notificationsInvites = true,
+    this.graphicsQuality = 'high',
+    this.batterySaverMode = false,
+    this.languageCode = 'tr',
+    this.adsPersonalized = true,
+    this.analyticsEnabled = true,
+    this.achievementIds = const [],
+    this.tilesBrokenTotal = 0,
+    this.bossesDefeatedTotal = 0,
+    this.favoriteFriends = const [],
   });
 
   ToolType? get activeTool {
@@ -57,17 +91,36 @@ class PlayerStateModel {
 
   int get tileDamageBonus {
     final tool = activeTool;
-    return tool != null ? tool.tileDamage : 2; // Boş el: 2 hasar
+    return tool != null ? tool.tileDamage : 2;
   }
 
   int get pvpDamageBonus {
     final tool = activeTool;
-    return tool != null ? tool.pvpDamage : 5; // Boş el yumruk: 5 hasar
+    return tool != null ? tool.pvpDamage : 15;
   }
 
   bool get isAlive => hp > 0;
 
+  factory PlayerStateModel.initial() {
+    return PlayerStateModel(
+      gold: 997,
+      gems: 24,
+      hp: 100,
+      maxHp: 100,
+      energy: 80,
+      maxEnergy: 80,
+      rank: 4,
+      lifetimeEarnings: 3210,
+      upgrades: defaultUpgrades(),
+      inventoryTools: const [],
+      activeToolIndex: 0,
+      equippedSkinId: 'default_blue',
+      unlockedStage: 1,
+    );
+  }
+
   PlayerStateModel copyWith({
+    String? playerName,
     int? gold,
     int? gems,
     int? hp,
@@ -89,8 +142,24 @@ class PlayerStateModel {
     List<ToolType>? inventoryTools,
     int? activeToolIndex,
     String? equippedSkinId,
+    double? musicVolume,
+    double? sfxVolume,
+    bool? vibrationEnabled,
+    bool? notificationsEnergyFull,
+    bool? notificationsDailyQuest,
+    bool? notificationsInvites,
+    String? graphicsQuality,
+    bool? batterySaverMode,
+    String? languageCode,
+    bool? adsPersonalized,
+    bool? analyticsEnabled,
+    List<String>? achievementIds,
+    int? tilesBrokenTotal,
+    int? bossesDefeatedTotal,
+    List<String>? favoriteFriends,
   }) {
     return PlayerStateModel(
+      playerName: playerName ?? this.playerName,
       gold: gold ?? this.gold,
       gems: gems ?? this.gems,
       hp: hp ?? this.hp,
@@ -112,11 +181,27 @@ class PlayerStateModel {
       inventoryTools: inventoryTools ?? this.inventoryTools,
       activeToolIndex: activeToolIndex ?? this.activeToolIndex,
       equippedSkinId: equippedSkinId ?? this.equippedSkinId,
+      musicVolume: musicVolume ?? this.musicVolume,
+      sfxVolume: sfxVolume ?? this.sfxVolume,
+      vibrationEnabled: vibrationEnabled ?? this.vibrationEnabled,
+      notificationsEnergyFull: notificationsEnergyFull ?? this.notificationsEnergyFull,
+      notificationsDailyQuest: notificationsDailyQuest ?? this.notificationsDailyQuest,
+      notificationsInvites: notificationsInvites ?? this.notificationsInvites,
+      graphicsQuality: graphicsQuality ?? this.graphicsQuality,
+      batterySaverMode: batterySaverMode ?? this.batterySaverMode,
+      languageCode: languageCode ?? this.languageCode,
+      adsPersonalized: adsPersonalized ?? this.adsPersonalized,
+      analyticsEnabled: analyticsEnabled ?? this.analyticsEnabled,
+      achievementIds: achievementIds ?? this.achievementIds,
+      tilesBrokenTotal: tilesBrokenTotal ?? this.tilesBrokenTotal,
+      bossesDefeatedTotal: bossesDefeatedTotal ?? this.bossesDefeatedTotal,
+      favoriteFriends: favoriteFriends ?? this.favoriteFriends,
     );
   }
 
   Map<String, dynamic> toJson() {
     return {
+      'playerName': playerName,
       'gold': gold,
       'gems': gems,
       'hp': hp,
@@ -137,6 +222,21 @@ class PlayerStateModel {
       'equippedSkinId': equippedSkinId,
       'inventoryTools': inventoryTools.map((t) => t.name).toList(),
       'activeToolIndex': activeToolIndex,
+      'musicVolume': musicVolume,
+      'sfxVolume': sfxVolume,
+      'vibrationEnabled': vibrationEnabled,
+      'notificationsEnergyFull': notificationsEnergyFull,
+      'notificationsDailyQuest': notificationsDailyQuest,
+      'notificationsInvites': notificationsInvites,
+      'graphicsQuality': graphicsQuality,
+      'batterySaverMode': batterySaverMode,
+      'languageCode': languageCode,
+      'adsPersonalized': adsPersonalized,
+      'analyticsEnabled': analyticsEnabled,
+      'achievementIds': achievementIds,
+      'tilesBrokenTotal': tilesBrokenTotal,
+      'bossesDefeatedTotal': bossesDefeatedTotal,
+      'favoriteFriends': favoriteFriends,
     };
   }
 
@@ -150,7 +250,22 @@ class PlayerStateModel {
       }
     }
 
+    final List<String> loadedAchievements = [];
+    if (json['achievementIds'] != null) {
+      for (final a in json['achievementIds']) {
+        loadedAchievements.add(a.toString());
+      }
+    }
+
+    final List<String> loadedFriends = [];
+    if (json['favoriteFriends'] != null) {
+      for (final f in json['favoriteFriends']) {
+        loadedFriends.add(f.toString());
+      }
+    }
+
     return PlayerStateModel(
+      playerName: json['playerName'] as String? ?? 'Madenci Usta',
       gold: json['gold'] as int? ?? 997,
       gems: json['gems'] as int? ?? 24,
       hp: json['hp'] as int? ?? 100,
@@ -171,6 +286,21 @@ class PlayerStateModel {
       equippedSkinId: json['equippedSkinId'] as String? ?? 'default_blue',
       inventoryTools: tools,
       activeToolIndex: json['activeToolIndex'] as int? ?? 0,
+      musicVolume: (json['musicVolume'] as num?)?.toDouble() ?? 0.8,
+      sfxVolume: (json['sfxVolume'] as num?)?.toDouble() ?? 1.0,
+      vibrationEnabled: json['vibrationEnabled'] as bool? ?? true,
+      notificationsEnergyFull: json['notificationsEnergyFull'] as bool? ?? true,
+      notificationsDailyQuest: json['notificationsDailyQuest'] as bool? ?? true,
+      notificationsInvites: json['notificationsInvites'] as bool? ?? true,
+      graphicsQuality: json['graphicsQuality'] as String? ?? 'high',
+      batterySaverMode: json['batterySaverMode'] as bool? ?? false,
+      languageCode: json['languageCode'] as String? ?? 'tr',
+      adsPersonalized: json['adsPersonalized'] as bool? ?? true,
+      analyticsEnabled: json['analyticsEnabled'] as bool? ?? true,
+      achievementIds: loadedAchievements,
+      tilesBrokenTotal: json['tilesBrokenTotal'] as int? ?? 0,
+      bossesDefeatedTotal: json['bossesDefeatedTotal'] as int? ?? 0,
+      favoriteFriends: loadedFriends,
       upgrades: defaultUpgrades(),
     );
   }
@@ -223,23 +353,4 @@ class PlayerStateModel {
       ),
     };
   }
-
-  factory PlayerStateModel.initial() {
-    return PlayerStateModel(
-      gold: 997,
-      gems: 24,
-      hp: 100,
-      maxHp: 100,
-      energy: 80,
-      maxEnergy: 80,
-      rank: 4,
-      lifetimeEarnings: 3210,
-      copper: 0,
-      highestDepth: 93,
-      soundEnabled: true,
-      doubleBonusActive: false,
-      upgrades: defaultUpgrades(),
-    );
-  }
 }
-

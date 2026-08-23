@@ -4,6 +4,8 @@ import '../../../../core/theme/app_colors.dart';
 import '../../../mining/application/game_notifier.dart';
 import '../../../mining/domain/models/stage_config_model.dart';
 import '../../../mining/presentation/screens/stage_select_screen.dart';
+import '../../../profile/presentation/screens/profile_screen.dart';
+import '../../../settings/presentation/screens/settings_screen.dart';
 import 'create_room_screen.dart';
 import 'join_room_screen.dart';
 import 'lobby_screen.dart';
@@ -40,30 +42,77 @@ class _MainMenuScreenState extends ConsumerState<MainMenuScreen> {
           builder: (context, constraints) {
             final bool isLandscape = constraints.maxWidth > constraints.maxHeight;
 
-            return Center(
-              child: Container(
-                constraints: BoxConstraints(
-                  maxWidth: isLandscape ? 820 : 460,
-                  maxHeight: isLandscape ? 400 : double.infinity,
-                ),
-                padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
-                margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                decoration: BoxDecoration(
-                  color: const Color(0xFF0F0F28),
-                  borderRadius: BorderRadius.circular(22),
-                  border: Border.all(color: const Color(0xFF2E2E68), width: 2),
-                  boxShadow: [
-                    BoxShadow(
-                      color: AppColors.neonGreen.withValues(alpha: 0.15),
-                      blurRadius: 25,
-                      spreadRadius: 2,
+            return Stack(
+              children: [
+                Center(
+                  child: Container(
+                    constraints: BoxConstraints(
+                      maxWidth: isLandscape ? 840 : 460,
+                      maxHeight: isLandscape ? 400 : double.infinity,
                     ),
-                  ],
+                    padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+                    margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                    decoration: BoxDecoration(
+                      color: const Color(0xFF0F0F28),
+                      borderRadius: BorderRadius.circular(22),
+                      border: Border.all(color: const Color(0xFF2E2E68), width: 2),
+                      boxShadow: [
+                        BoxShadow(
+                          color: AppColors.neonGreen.withValues(alpha: 0.15),
+                          blurRadius: 25,
+                          spreadRadius: 2,
+                        ),
+                      ],
+                    ),
+                    child: isLandscape
+                        ? _buildLandscapeLayout(unlockedStage, stageConfig.biomeName)
+                        : _buildPortraitLayout(unlockedStage, stageConfig.biomeName),
+                  ),
                 ),
-                child: isLandscape
-                    ? _buildLandscapeLayout(unlockedStage, stageConfig.biomeName)
-                    : _buildPortraitLayout(unlockedStage, stageConfig.biomeName),
-              ),
+
+                // Sol Üst: PROFİL Butonu
+                Positioned(
+                  top: 10,
+                  left: 12,
+                  child: InkWell(
+                    onTap: () {
+                      Navigator.push(context, MaterialPageRoute(builder: (ctx) => const ProfileScreen()));
+                    },
+                    borderRadius: BorderRadius.circular(10),
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                      decoration: BoxDecoration(
+                        color: const Color(0xFF141438),
+                        borderRadius: BorderRadius.circular(10),
+                        border: Border.all(color: AppColors.goldText.withValues(alpha: 0.6)),
+                      ),
+                      child: Row(
+                        children: [
+                          const Icon(Icons.account_circle, color: AppColors.goldText, size: 18),
+                          const SizedBox(width: 6),
+                          Text(
+                            gameState.player.playerName,
+                            style: const TextStyle(color: Colors.white, fontSize: 11, fontWeight: FontWeight.bold),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+
+                // Sağ Üst: AYARLAR Butonu
+                Positioned(
+                  top: 10,
+                  right: 12,
+                  child: IconButton(
+                    icon: const Icon(Icons.settings, color: AppColors.goldText, size: 24),
+                    tooltip: 'Ayarlar',
+                    onPressed: () {
+                      Navigator.push(context, MaterialPageRoute(builder: (ctx) => const SettingsScreen()));
+                    },
+                  ),
+                ),
+              ],
             );
           },
         ),
@@ -124,6 +173,7 @@ class _MainMenuScreenState extends ConsumerState<MainMenuScreen> {
                   ),
                   onChanged: (val) {
                     ref.read(lobbyNotifierProvider.notifier).setPlayerName(val);
+                    ref.read(gameNotifierProvider.notifier).setPlayerName(val);
                   },
                 ),
                 const SizedBox(height: 12),
@@ -295,7 +345,10 @@ class _MainMenuScreenState extends ConsumerState<MainMenuScreen> {
               fillColor: const Color(0xFF16163A),
               border: OutlineInputBorder(borderRadius: BorderRadius.circular(10)),
             ),
-            onChanged: (val) => ref.read(lobbyNotifierProvider.notifier).setPlayerName(val),
+            onChanged: (val) {
+              ref.read(lobbyNotifierProvider.notifier).setPlayerName(val);
+              ref.read(gameNotifierProvider.notifier).setPlayerName(val);
+            },
           ),
           const SizedBox(height: 14),
           _buildMenuButton(

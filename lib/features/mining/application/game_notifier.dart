@@ -578,6 +578,9 @@ class GameNotifier extends StateNotifier<GameState> {
       final int newLifetime = state.player.lifetimeEarnings + goldReward;
       final int finalEnergy = (newEnergy + energyReward).clamp(0, state.player.maxEnergy);
 
+      final int newTilesBroken = state.player.tilesBrokenTotal + 1 + extraCleared;
+      final int newBossesDefeated = state.player.bossesDefeatedTotal + (targetTile.type == TileType.bossCore ? 1 : 0);
+
       state = state.copyWith(
         player: state.player.copyWith(
           gold: newGold,
@@ -592,6 +595,8 @@ class GameNotifier extends StateNotifier<GameState> {
           lifetimeEarnings: newLifetime,
           inventoryTools: currentTools,
           activeToolIndex: activeToolIdx,
+          tilesBrokenTotal: newTilesBroken,
+          bossesDefeatedTotal: newBossesDefeated,
         ),
         grid: state.grid.copyWith(
           tiles: newTiles,
@@ -1347,6 +1352,87 @@ class GameNotifier extends StateNotifier<GameState> {
     );
 
     _trackQuestProgress(prestige: 1);
+    _saveState();
+  }
+
+  void setPlayerName(String name) {
+    state = state.copyWith(player: state.player.copyWith(playerName: name));
+    _saveState();
+  }
+
+  void updateSettings({
+    double? musicVolume,
+    double? sfxVolume,
+    bool? vibrationEnabled,
+    bool? notificationsEnergyFull,
+    bool? notificationsDailyQuest,
+    bool? notificationsInvites,
+    String? graphicsQuality,
+    bool? batterySaverMode,
+    String? languageCode,
+    bool? adsPersonalized,
+    bool? analyticsEnabled,
+  }) {
+    state = state.copyWith(
+      player: state.player.copyWith(
+        musicVolume: musicVolume,
+        sfxVolume: sfxVolume,
+        vibrationEnabled: vibrationEnabled,
+        notificationsEnergyFull: notificationsEnergyFull,
+        notificationsDailyQuest: notificationsDailyQuest,
+        notificationsInvites: notificationsInvites,
+        graphicsQuality: graphicsQuality,
+        batterySaverMode: batterySaverMode,
+        languageCode: languageCode,
+        adsPersonalized: adsPersonalized,
+        analyticsEnabled: analyticsEnabled,
+      ),
+    );
+    _saveState();
+  }
+
+  void claimAchievement(String id, int rewardGems) {
+    if (state.player.achievementIds.contains(id)) return;
+
+    final updated = List<String>.from(state.player.achievementIds)..add(id);
+    state = state.copyWith(
+      player: state.player.copyWith(
+        achievementIds: updated,
+        gems: state.player.gems + rewardGems,
+      ),
+      lastMessage: '🏆 Başarım Kazanıldı! +$rewardGems 💎',
+    );
+    _saveState();
+  }
+
+  void addFavoriteFriend(String name) {
+    if (name.trim().isEmpty || state.player.favoriteFriends.contains(name.trim())) return;
+    final updated = List<String>.from(state.player.favoriteFriends)..add(name.trim());
+    state = state.copyWith(player: state.player.copyWith(favoriteFriends: updated));
+    _saveState();
+  }
+
+  void removeFavoriteFriend(String name) {
+    final updated = List<String>.from(state.player.favoriteFriends)..remove(name);
+    state = state.copyWith(player: state.player.copyWith(favoriteFriends: updated));
+    _saveState();
+  }
+
+  void resetAllProgress() {
+    state = state.copyWith(
+      player: PlayerStateModel(
+        gold: 0,
+        gems: 0,
+        energy: 80,
+        maxEnergy: 80,
+        rank: 1,
+        lifetimeEarnings: 0,
+        upgrades: PlayerStateModel.defaultUpgrades(),
+      ),
+      grid: GridGenerator.generateStage(stage: 1, depth: 1),
+      quests: defaultWeeklyQuests(),
+      lastMessage: 'Tüm oyun ilerlemesi sıfırlandı!',
+    );
     _saveState();
   }
 }

@@ -1,4 +1,4 @@
-﻿import 'package:flutter_test/flutter_test.dart';
+import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:derin_kazi/features/mining/application/game_notifier.dart';
 
@@ -43,7 +43,6 @@ void main() {
 
       // digTargetTile kırılınca _advanceStage çağrılır
       notifier.startStage(1);
-      final initialTiles = notifier.state.grid.tiles;
       // Bir kutuyu kır
       notifier.digTargetTile();
 
