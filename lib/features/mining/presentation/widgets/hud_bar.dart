@@ -233,7 +233,7 @@ class HudBar extends ConsumerWidget {
             const Icon(Icons.terrain, color: AppColors.neonGreen, size: 14),
             const SizedBox(width: 5),
             Text(
-              'AŞAMA ${grid.stage} • ${grid.biomeName} (${grid.tilesClearedInStage}/${grid.totalTilesInStage})',
+              'BÖLÜM ${grid.stage}/500 • ${grid.biomeName}',
               style: const TextStyle(
                 color: AppColors.neonGreen,
                 fontSize: 10,

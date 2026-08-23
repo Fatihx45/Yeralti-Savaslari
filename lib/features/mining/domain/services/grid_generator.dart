@@ -2,38 +2,39 @@ import 'dart:math';
 import '../models/grid_model.dart';
 import '../models/tile_model.dart';
 import '../models/tool_model.dart';
+import '../models/stage_config_model.dart';
 
 class GridGenerator {
   static const int defaultRows = 13;
   static const int defaultCols = 23;
 
   static GridModel generateStage({
-    int stage = 8,
-    int depth = 8,
-    String biomeName = 'Kırmızı Toprak',
+    int stage = 1,
+    int depth = 1,
+    String? biomeName,
     int? seed,
     int playerCount = 1,
-    bool isBossStage = false,
+    bool? isBossStage,
   }) {
-    final Random random = seed != null ? Random(seed) : Random();
+    final StageConfig config = StageConfigService.getConfig(stage);
+    final Random random = seed != null ? Random(seed) : Random(stage);
     final List<List<TileModel>> tiles = [];
 
-    int rows = defaultRows;
-    int cols = defaultCols;
-    double hpMultiplier = 1.0;
+    // Harita Boyutları (500 Bölüm Seviye Tasarımına Göre)
+    int rows = config.rows;
+    int cols = config.columns;
+    double hpMultiplier = config.hpMultiplier;
+    final double rewardMultiplier = config.rewardMultiplier;
+    final String activeBiome = biomeName ?? config.biomeName;
+    final bool activeBossStage = isBossStage ?? config.isBossStage;
 
+    // Çok Oyunculu Oda Boyut / Can Ölçeklemesi
     if (playerCount >= 8) {
-      rows = 17;
-      cols = 31;
-      hpMultiplier = 1.75;
-    } else if (playerCount >= 6) {
-      rows = 17;
-      cols = 27;
-      hpMultiplier = 1.55;
+      rows = max(rows, 17);
+      cols = max(cols, 31);
+      hpMultiplier *= 1.35;
     } else if (playerCount >= 4) {
-      hpMultiplier = 1.35;
-    } else if (playerCount >= 2) {
-      hpMultiplier = 1.15;
+      hpMultiplier *= 1.15;
     }
 
     final int playerRow = rows ~/ 2;
@@ -41,7 +42,7 @@ class GridGenerator {
 
     // 4 Farklı Başlangıç Noktası (Köşeler ve Merkez)
     final spawnPoints = [
-      Position(2, 2),                          // 1. Oyuncu: Sol Üst
+      const Position(2, 2),                          // 1. Oyuncu: Sol Üst
       Position(2, cols - 3),                   // 2. Oyuncu: Sağ Üst
       Position(rows - 3, 2),                   // 3. Oyuncu: Sol Alt
       Position(rows - 3, cols - 3),            // 4. Oyuncu: Sağ Alt
@@ -64,7 +65,25 @@ class GridGenerator {
           }
         }
 
-        if (isNearSpawn) {
+        if (activeBossStage && r == rows ~/ 2 && c == cols ~/ 2) {
+          // 🟣 Titan / Biyom / Mini Boss Çekirdeği (Merkezde)
+          totalMineableTiles++;
+          final int calculatedBossHp = config.bossHp > 0 ? config.bossHp : (350 * hpMultiplier).round();
+          final int rewardGold = ((stage == 500 ? 10000 : 1000) * rewardMultiplier).round();
+          final int rewardGems = stage == 500 ? 100 : (config.bossType == BossType.biomeBoss ? 25 : 15);
+
+          rowTiles.add(TileModel(
+            id: tileId,
+            type: TileType.bossCore,
+            maxHp: calculatedBossHp,
+            currentHp: calculatedBossHp,
+            rewardGold: rewardGold,
+            rewardGems: rewardGems,
+            rewardEmerald: 5,
+            rewardFossil: 2,
+            rewardTool: ToolType.diamondPick,
+          ));
+        } else if (isNearSpawn) {
           rowTiles.add(TileModel(
             id: tileId,
             type: TileType.empty,
@@ -72,23 +91,10 @@ class GridGenerator {
             currentHp: 0,
             isCleared: true,
           ));
-        } else if (isBossStage && r == rows - 4 && c == cols - 4) {
-          // 🟣 Titan Çekirdeği (Boss Core - Zafer Bloğu)
-          totalMineableTiles++;
-          rowTiles.add(TileModel(
-            id: tileId,
-            type: TileType.bossCore,
-            maxHp: (350 * hpMultiplier).round(),
-            currentHp: (350 * hpMultiplier).round(),
-            rewardGold: 1000,
-            rewardGems: 15,
-            rewardEmerald: 5,
-            rewardFossil: 2,
-          ));
         } else {
           final double roll = random.nextDouble();
 
-          if (roll < 0.12) {
+          if (roll < config.solidGoldProbability) {
             // 🟡 Sabit / Kırılmaz Sarı Blok (Kırılamaz Engel)
             rowTiles.add(TileModel(
               id: tileId,
@@ -96,31 +102,31 @@ class GridGenerator {
               maxHp: 999999,
               currentHp: 999999,
             ));
-          } else if (roll < 0.18) {
+          } else if (roll < (config.solidGoldProbability + config.mineProbability)) {
             // 💣 Gizli Bomba (Dışarıdan Toprak Görünür - Patlayıcı)
             totalMineableTiles++;
-            final int baseHp = ((5 + stage) * hpMultiplier).round();
+            final int baseHp = ((6 + (stage * 0.15)) * hpMultiplier).round();
             rowTiles.add(TileModel(
               id: tileId,
               type: TileType.hiddenMine,
               maxHp: baseHp,
               currentHp: baseHp,
-              rewardGold: 15,
+              rewardGold: (15 * rewardMultiplier).round(),
             ));
-          } else if (roll < 0.24) {
+          } else if (roll < 0.40) {
             // 📦 Hazine Sandığı (Büyük Altın, Elmas ve Fosil)
             totalMineableTiles++;
             rowTiles.add(TileModel(
               id: tileId,
               type: TileType.chest,
-              maxHp: ((10 + stage) * hpMultiplier).round(),
-              currentHp: ((10 + stage) * hpMultiplier).round(),
-              rewardGold: 120 + stage * 15,
+              maxHp: ((10 + (stage * 0.2)) * hpMultiplier).round(),
+              currentHp: ((10 + (stage * 0.2)) * hpMultiplier).round(),
+              rewardGold: ((120 + stage * 10) * rewardMultiplier).round(),
               rewardGems: 2 + (random.nextBool() ? 1 : 0),
               rewardFossil: random.nextDouble() < 0.4 ? 1 : 0,
               rewardHp: 5,
             ));
-          } else if (roll < 0.31) {
+          } else if (roll < 0.48) {
             // 🧨 TNT Bloğu (3x3 Patlama ve Dinamit Ödülü)
             totalMineableTiles++;
             rowTiles.add(TileModel(
@@ -128,23 +134,23 @@ class GridGenerator {
               type: TileType.tnt,
               maxHp: 6,
               currentHp: 6,
-              rewardGold: 25,
+              rewardGold: (25 * rewardMultiplier).round(),
               rewardDynamite: 1,
             ));
-          } else if (roll < 0.39) {
+          } else if (roll < 0.58) {
             // 🟢 Zümrüt & Değerli Kristal Damarı
             totalMineableTiles++;
             rowTiles.add(TileModel(
               id: tileId,
               type: TileType.emeraldOre,
-              maxHp: ((10 + stage) * hpMultiplier).round(),
-              currentHp: ((10 + stage) * hpMultiplier).round(),
-              rewardGold: 50 + stage * 10,
+              maxHp: ((10 + (stage * 0.2)) * hpMultiplier).round(),
+              currentHp: ((10 + (stage * 0.2)) * hpMultiplier).round(),
+              rewardGold: ((50 + stage * 5) * rewardMultiplier).round(),
               rewardGems: 1,
               rewardEmerald: 1,
-              rewardHp: random.nextDouble() < 0.2 ? 10 : 0, // Nadir 10 Can
+              rewardHp: random.nextDouble() < 0.2 ? 10 : 0,
             ));
-          } else if (roll < 0.46) {
+          } else if (roll < 0.65) {
             // 🧪 İksir Kapsülü (+35 Enerji)
             totalMineableTiles++;
             rowTiles.add(TileModel(
@@ -152,10 +158,10 @@ class GridGenerator {
               type: TileType.potion,
               maxHp: 4,
               currentHp: 4,
-              rewardEnergy: 35,
+              rewardEnergy: stage >= 350 ? 25 : 35, // Buzul Çekirdeğinde kısık enerji
               rewardHp: 5,
             ));
-          } else if (roll < 0.51) {
+          } else if (roll < 0.70) {
             // 🎯 Özel Eşya (Nadir Taş ve Bol Elmas)
             totalMineableTiles++;
             rowTiles.add(TileModel(
@@ -164,13 +170,13 @@ class GridGenerator {
               maxHp: 6,
               currentHp: 6,
               rewardGems: 2,
-              rewardGold: 40,
+              rewardGold: (40 * rewardMultiplier).round(),
               rewardTool: ToolType.values[random.nextInt(ToolType.values.length)],
             ));
-          } else if (roll < 0.75) {
+          } else if (roll < 0.85) {
             // 🧱 Kaya Bloğu (Bakır ve Demir Madenleri)
             totalMineableTiles++;
-            final int baseHp = ((12 + stage) * hpMultiplier).round();
+            final int baseHp = ((12 + (stage * 0.25)) * hpMultiplier).round();
             final bool getsIron = random.nextDouble() < 0.40;
             final bool getsTool = random.nextDouble() < 0.15;
 
@@ -179,7 +185,7 @@ class GridGenerator {
               type: TileType.rock,
               maxHp: baseHp,
               currentHp: baseHp,
-              rewardGold: 8 + stage * 2,
+              rewardGold: ((8 + stage * 2) * rewardMultiplier).round(),
               rewardCopper: !getsIron ? 1 : 0,
               rewardIron: getsIron ? 1 : 0,
               rewardTool: getsTool ? ToolType.values[random.nextInt(ToolType.values.length)] : null,
@@ -188,7 +194,7 @@ class GridGenerator {
           } else {
             // 🟫 Kazılabilir Toprak (Küçük Altın, Fosil, Can & Enerji)
             totalMineableTiles++;
-            final int baseHp = ((5 + stage) * hpMultiplier).round();
+            final int baseHp = ((5 + (stage * 0.15)) * hpMultiplier).round();
             final bool getsFossil = random.nextDouble() < 0.10;
             final double lootRoll = random.nextDouble();
 
@@ -201,9 +207,9 @@ class GridGenerator {
             } else if (lootRoll < 0.25) {
               hp = 5;
             } else if (lootRoll < 0.28) {
-              hp = 10; // Çok Nadir 10 Can
+              hp = 10;
             } else if (lootRoll < 0.45) {
-              energy = 25;
+              energy = stage >= 350 ? 18 : 25;
             }
 
             rowTiles.add(TileModel(
@@ -211,7 +217,7 @@ class GridGenerator {
               type: TileType.soil,
               maxHp: baseHp,
               currentHp: baseHp,
-              rewardGold: 4 + stage,
+              rewardGold: ((4 + stage) * rewardMultiplier).round(),
               rewardFossil: getsFossil ? 1 : 0,
               rewardEnergy: energy,
               rewardHp: hp,
@@ -226,15 +232,14 @@ class GridGenerator {
     return GridModel(
       stage: stage,
       depth: depth,
-      biomeName: biomeName,
+      biomeName: activeBiome,
       rows: rows,
       columns: cols,
       tiles: tiles,
-      playerPosition: const Position(2, 2), // Sol-Üst Başlangıç Köşesi
+      playerPosition: const Position(2, 2),
       tilesClearedInStage: 9,
       totalTilesInStage: totalMineableTiles + 9,
-      gridSeed: seed,
+      gridSeed: seed ?? stage,
     );
   }
 }
-

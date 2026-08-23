@@ -26,12 +26,13 @@ class TileGridPainter extends CustomPainter {
     final double cellWidth = size.width / cols;
     final double cellHeight = size.height / rows;
 
-    // 1. Genel Turuncu Toprak Zemin (Dotted texture ile)
-    final Paint soilPaint = Paint()..color = AppColors.soilGround;
+    // 1. 10 Biyoma Özel Zemin Dokusu & Renk Paleti
+    final Color groundColor = _getBiomeGroundColor(grid.biomeName);
+    final Paint soilPaint = Paint()..color = groundColor;
     canvas.drawRect(Rect.fromLTWH(0, 0, size.width, size.height), soilPaint);
 
     final Paint dotPaint = Paint()
-      ..color = const Color(0xFF8A3010).withValues(alpha: 0.4)
+      ..color = Colors.black.withValues(alpha: 0.35)
       ..strokeWidth = 1.5;
 
     for (double x = 4; x < size.width; x += 12) {
@@ -453,6 +454,20 @@ class TileGridPainter extends CustomPainter {
         Offset(center.dx - textPainter.width / 2, center.dy - 14 * scale),
       );
     }
+  }
+
+  Color _getBiomeGroundColor(String biomeName) {
+    if (biomeName.contains('Kızıl Toprak')) return const Color(0xFF5A2208);
+    if (biomeName.contains('Bakır Yamaç')) return const Color(0xFF6E3214);
+    if (biomeName.contains('Kömür')) return const Color(0xFF22222E);
+    if (biomeName.contains('Demir')) return const Color(0xFF383848);
+    if (biomeName.contains('Zümrüt')) return const Color(0xFF0F3A22);
+    if (biomeName.contains('Obsidyen')) return const Color(0xFF26123A);
+    if (biomeName.contains('Ejder')) return const Color(0xFF5E1414);
+    if (biomeName.contains('Buzul')) return const Color(0xFF143854);
+    if (biomeName.contains('Volkanik')) return const Color(0xFF6A1A0A);
+    if (biomeName.contains("Titan")) return const Color(0xFF2E1245);
+    return AppColors.soilGround;
   }
 
   @override
