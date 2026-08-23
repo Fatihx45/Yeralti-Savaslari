@@ -1,4 +1,4 @@
-﻿import 'package:flutter/material.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../mining/application/game_notifier.dart';
@@ -65,8 +65,8 @@ class _MainMenuScreenState extends ConsumerState<MainMenuScreen> {
                       ],
                     ),
                     child: isLandscape
-                        ? _buildLandscapeLayout(unlockedStage, stageConfig.biomeName)
-                        : _buildPortraitLayout(unlockedStage, stageConfig.biomeName),
+                        ? _buildLandscapeLayout(unlockedStage, stageConfig.biomeName, gameState)
+                        : _buildPortraitLayout(unlockedStage, stageConfig.biomeName, gameState),
                   ),
                 ),
 
@@ -100,16 +100,84 @@ class _MainMenuScreenState extends ConsumerState<MainMenuScreen> {
                   ),
                 ),
 
-                // Sağ Üst: AYARLAR Butonu
+                // Sağ Üst: ALTIN / ELMAS BAKİYE ROZETİ & AYARLAR Butonu
                 Positioned(
                   top: 10,
                   right: 12,
-                  child: IconButton(
-                    icon: const Icon(Icons.settings, color: AppColors.goldText, size: 24),
-                    tooltip: 'Ayarlar',
-                    onPressed: () {
-                      Navigator.push(context, MaterialPageRoute(builder: (ctx) => const SettingsScreen()));
-                    },
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      // Altın ve Elmas Bakiyesi
+                      Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                        decoration: BoxDecoration(
+                          color: const Color(0xFF141438),
+                          borderRadius: BorderRadius.circular(10),
+                          border: Border.all(color: const Color(0xFF2E2E68), width: 1.2),
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.black.withValues(alpha: 0.3),
+                              blurRadius: 6,
+                            ),
+                          ],
+                        ),
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            // Altın
+                            Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Container(
+                                  width: 11,
+                                  height: 11,
+                                  decoration: const BoxDecoration(
+                                    color: AppColors.goldText,
+                                    shape: BoxShape.circle,
+                                  ),
+                                ),
+                                const SizedBox(width: 5),
+                                Text(
+                                  '${gameState.player.gold}',
+                                  style: const TextStyle(
+                                    color: AppColors.goldText,
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 12,
+                                  ),
+                                ),
+                              ],
+                            ),
+                            const SizedBox(width: 10),
+                            // Elmas
+                            Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                const Icon(Icons.diamond, color: AppColors.cyanText, size: 14),
+                                const SizedBox(width: 4),
+                                Text(
+                                  '${gameState.player.gems}',
+                                  style: const TextStyle(
+                                    color: AppColors.cyanText,
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 12,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ],
+                        ),
+                      ),
+                      const SizedBox(width: 4),
+
+                      // Ayarlar Butonu
+                      IconButton(
+                        icon: const Icon(Icons.settings, color: AppColors.goldText, size: 24),
+                        tooltip: 'Ayarlar',
+                        onPressed: () {
+                          Navigator.push(context, MaterialPageRoute(builder: (ctx) => const SettingsScreen()));
+                        },
+                      ),
+                    ],
                   ),
                 ),
               ],
@@ -121,7 +189,7 @@ class _MainMenuScreenState extends ConsumerState<MainMenuScreen> {
   }
 
   // Yatay (Landscape) 2 Kolonlu Konsol Düzeni
-  Widget _buildLandscapeLayout(int unlockedStage, String biomeName) {
+  Widget _buildLandscapeLayout(int unlockedStage, String biomeName, GameState gameState) {
     return Row(
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
@@ -150,35 +218,67 @@ class _MainMenuScreenState extends ConsumerState<MainMenuScreen> {
                 ),
                 const SizedBox(height: 14),
 
-                // İsim Girişi
-                TextField(
-                  controller: _nameController,
-                  style: const TextStyle(color: Colors.white, fontSize: 13),
-                  decoration: InputDecoration(
-                    labelText: 'Madenci Adınız',
-                    labelStyle: const TextStyle(color: Color(0xFF8E8EAE), fontSize: 11),
-                    prefixIcon: const Icon(Icons.person, color: AppColors.goldText, size: 18),
-                    filled: true,
-                    isDense: true,
-                    contentPadding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
-                    fillColor: const Color(0xFF16163A),
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(10),
-                      borderSide: const BorderSide(color: Color(0xFF2E2E68)),
+                // Madenci Bilgi Kartı (Sadece Okunur - Tıklanınca Profile Yönlendirir)
+                InkWell(
+                  onTap: () {
+                    Navigator.push(context, MaterialPageRoute(builder: (ctx) => const ProfileScreen()));
+                  },
+                  borderRadius: BorderRadius.circular(12),
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                    decoration: BoxDecoration(
+                      color: const Color(0xFF141438),
+                      borderRadius: BorderRadius.circular(12),
+                      border: Border.all(color: const Color(0xFF2E2E68), width: 1.2),
                     ),
-                    focusedBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(10),
-                      borderSide: const BorderSide(color: AppColors.neonGreen, width: 1.5),
+                    child: Row(
+                      children: [
+                        Container(
+                          width: 32,
+                          height: 32,
+                          decoration: BoxDecoration(
+                            color: const Color(0xFF0C0C22),
+                            shape: BoxShape.circle,
+                            border: Border.all(color: AppColors.neonGreen, width: 1.5),
+                          ),
+                          child: const Center(
+                            child: Icon(Icons.person, color: AppColors.goldText, size: 18),
+                          ),
+                        ),
+                        const SizedBox(width: 10),
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Text(
+                                gameState.player.playerName,
+                                style: const TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 13,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                              const Text(
+                                'Profili Düzenle & Rozetler ➔',
+                                style: TextStyle(
+                                  color: AppColors.goldText,
+                                  fontSize: 9.5,
+                                  fontWeight: FontWeight.w600,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                        const Icon(Icons.arrow_forward_ios, size: 12, color: Colors.white38),
+                      ],
                     ),
                   ),
-                  onChanged: (val) {
-                    ref.read(lobbyNotifierProvider.notifier).setPlayerName(val);
-                    ref.read(gameNotifierProvider.notifier).setPlayerName(val);
-                  },
                 ),
                 const SizedBox(height: 12),
 
-                // Görevler & Kostümler Butonları
+                // Görevler, Kostümler & Profil Butonları
                 Row(
                   children: [
                     Expanded(
@@ -189,12 +289,12 @@ class _MainMenuScreenState extends ConsumerState<MainMenuScreen> {
                           padding: const EdgeInsets.symmetric(vertical: 8),
                           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
                         ),
-                        icon: const Icon(Icons.assignment, size: 16),
-                        label: const Text('GÖREVLER', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 10.5)),
+                        icon: const Icon(Icons.assignment, size: 15),
+                        label: const Text('GÖREVLER', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 9.5)),
                         onPressed: () => QuestDialog.showQuestDialog(context),
                       ),
                     ),
-                    const SizedBox(width: 8),
+                    const SizedBox(width: 6),
                     Expanded(
                       child: OutlinedButton.icon(
                         style: OutlinedButton.styleFrom(
@@ -203,12 +303,32 @@ class _MainMenuScreenState extends ConsumerState<MainMenuScreen> {
                           padding: const EdgeInsets.symmetric(vertical: 8),
                           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
                         ),
-                        icon: const Icon(Icons.palette, size: 16),
-                        label: const Text('KOSTÜMLER', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 10.5)),
+                        icon: const Icon(Icons.palette, size: 15),
+                        label: const Text('KOSTÜM', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 9.5)),
                         onPressed: () {
                           Navigator.push(
                             context,
                             MaterialPageRoute(builder: (ctx) => const CosmeticsScreen()),
+                          );
+                        },
+                      ),
+                    ),
+                    const SizedBox(width: 6),
+                    Expanded(
+                      child: ElevatedButton.icon(
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: const Color(0xFF1E2E52),
+                          foregroundColor: AppColors.cyanText,
+                          side: const BorderSide(color: AppColors.cyanText),
+                          padding: const EdgeInsets.symmetric(vertical: 8),
+                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                        ),
+                        icon: const Icon(Icons.account_circle, size: 15, color: AppColors.cyanText),
+                        label: const Text('PROFİL', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 9.5)),
+                        onPressed: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(builder: (ctx) => const ProfileScreen()),
                           );
                         },
                       ),
@@ -317,7 +437,7 @@ class _MainMenuScreenState extends ConsumerState<MainMenuScreen> {
   }
 
   // Dikey (Fallback) Düzen
-  Widget _buildPortraitLayout(int unlockedStage, String biomeName) {
+  Widget _buildPortraitLayout(int unlockedStage, String biomeName, GameState gameState) {
     return SingleChildScrollView(
       child: Column(
         mainAxisSize: MainAxisSize.min,
@@ -333,24 +453,124 @@ class _MainMenuScreenState extends ConsumerState<MainMenuScreen> {
               letterSpacing: 2,
             ),
           ),
-          const SizedBox(height: 16),
-          TextField(
-            controller: _nameController,
-            style: const TextStyle(color: Colors.white, fontSize: 13),
-            decoration: InputDecoration(
-              labelText: 'Madenci Adınız',
-              labelStyle: const TextStyle(color: Color(0xFF8E8EAE), fontSize: 11),
-              prefixIcon: const Icon(Icons.person, color: AppColors.goldText, size: 18),
-              filled: true,
-              fillColor: const Color(0xFF16163A),
-              border: OutlineInputBorder(borderRadius: BorderRadius.circular(10)),
-            ),
-            onChanged: (val) {
-              ref.read(lobbyNotifierProvider.notifier).setPlayerName(val);
-              ref.read(gameNotifierProvider.notifier).setPlayerName(val);
+          // Madenci Bilgi Kartı (Sadece Okunur - Tıklanınca Profile Yönlendirir)
+          InkWell(
+            onTap: () {
+              Navigator.push(context, MaterialPageRoute(builder: (ctx) => const ProfileScreen()));
             },
+            borderRadius: BorderRadius.circular(12),
+            child: Container(
+              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+              decoration: BoxDecoration(
+                color: const Color(0xFF141438),
+                borderRadius: BorderRadius.circular(12),
+                border: Border.all(color: const Color(0xFF2E2E68), width: 1.2),
+              ),
+              child: Row(
+                children: [
+                  Container(
+                    width: 32,
+                    height: 32,
+                    decoration: BoxDecoration(
+                      color: const Color(0xFF0C0C22),
+                      shape: BoxShape.circle,
+                      border: Border.all(color: AppColors.neonGreen, width: 1.5),
+                    ),
+                    child: const Center(
+                      child: Icon(Icons.person, color: AppColors.goldText, size: 18),
+                    ),
+                  ),
+                  const SizedBox(width: 10),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Text(
+                          gameState.player.playerName,
+                          style: const TextStyle(
+                            color: Colors.white,
+                            fontSize: 13,
+                            fontWeight: FontWeight.bold,
+                          ),
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                        const Text(
+                          'Profili Düzenle & Rozetler ➔',
+                          style: TextStyle(
+                            color: AppColors.goldText,
+                            fontSize: 9.5,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  const Icon(Icons.arrow_forward_ios, size: 12, color: Colors.white38),
+                ],
+              ),
+            ),
           ),
-          const SizedBox(height: 14),
+          const SizedBox(height: 10),
+
+          // Görevler, Kostümler & Profil Butonları
+          Row(
+            children: [
+              Expanded(
+                child: OutlinedButton.icon(
+                  style: OutlinedButton.styleFrom(
+                    foregroundColor: AppColors.goldText,
+                    side: const BorderSide(color: AppColors.goldText),
+                    padding: const EdgeInsets.symmetric(vertical: 8),
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                  ),
+                  icon: const Icon(Icons.assignment, size: 15),
+                  label: const Text('GÖREVLER', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 9.5)),
+                  onPressed: () => QuestDialog.showQuestDialog(context),
+                ),
+              ),
+              const SizedBox(width: 6),
+              Expanded(
+                child: OutlinedButton.icon(
+                  style: OutlinedButton.styleFrom(
+                    foregroundColor: const Color(0xFFE040FB),
+                    side: const BorderSide(color: Color(0xFFE040FB)),
+                    padding: const EdgeInsets.symmetric(vertical: 8),
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                  ),
+                  icon: const Icon(Icons.palette, size: 15),
+                  label: const Text('KOSTÜM', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 9.5)),
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (ctx) => const CosmeticsScreen()),
+                    );
+                  },
+                ),
+              ),
+              const SizedBox(width: 6),
+              Expanded(
+                child: ElevatedButton.icon(
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: const Color(0xFF1E2E52),
+                    foregroundColor: AppColors.cyanText,
+                    side: const BorderSide(color: AppColors.cyanText),
+                    padding: const EdgeInsets.symmetric(vertical: 8),
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                  ),
+                  icon: const Icon(Icons.account_circle, size: 15, color: AppColors.cyanText),
+                  label: const Text('PROFİL', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 9.5)),
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (ctx) => const ProfileScreen()),
+                    );
+                  },
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 12),
           _buildMenuButton(
             title: '🎮 OYUNA BAŞLA',
             subtitle: 'Kaldığın Yer: Bölüm $unlockedStage • $biomeName',

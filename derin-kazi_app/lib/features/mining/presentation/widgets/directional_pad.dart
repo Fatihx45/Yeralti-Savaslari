@@ -10,32 +10,42 @@ class DirectionalPad extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     return SizedBox(
-      width: 136,
-      height: 136,
+      width: 120,
+      height: 120,
       child: Stack(
         alignment: Alignment.center,
         children: [
-          // Merkez kazı/parlama butonu
+          // D-Pad Arka Plan Halkası
+          Container(
+            width: 114,
+            height: 114,
+            decoration: BoxDecoration(
+              shape: BoxShape.circle,
+              color: const Color(0x6608081A),
+              border: Border.all(color: const Color(0x334DFF88), width: 1.5),
+            ),
+          ),
+
+          // Merkez Kazı / Hedefe Vurma Butonu
           InkWell(
             onTap: () => ref.read(gameNotifierProvider.notifier).digTargetTile(),
-            borderRadius: BorderRadius.circular(22),
+            borderRadius: BorderRadius.circular(20),
             child: Container(
-              width: 44,
-              height: 44,
+              width: 38,
+              height: 38,
               decoration: BoxDecoration(
-                color: const Color(0xFF0F2B18),
+                color: const Color(0xCC0F2B18),
                 shape: BoxShape.circle,
-                border: Border.all(color: AppColors.neonGreen.withValues(alpha: 0.8), width: 1.5),
+                border: Border.all(color: AppColors.neonGreen.withValues(alpha: 0.9), width: 1.5),
                 boxShadow: [
                   BoxShadow(
-                    color: AppColors.neonGreen.withValues(alpha: 0.35),
-                    blurRadius: 10,
-                    spreadRadius: 2,
+                    color: AppColors.neonGreen.withValues(alpha: 0.3),
+                    blurRadius: 8,
                   ),
                 ],
               ),
               child: const Center(
-                child: Icon(Icons.hardware, color: AppColors.neonGreen, size: 20),
+                child: Icon(Icons.hardware, color: AppColors.neonGreen, size: 18),
               ),
             ),
           ),
@@ -88,28 +98,28 @@ class DirectionalPad extends ConsumerWidget {
       color: Colors.transparent,
       child: InkWell(
         onTap: onTap,
-        borderRadius: BorderRadius.circular(6),
+        borderRadius: BorderRadius.circular(8),
         child: Container(
-          width: 42,
-          height: 42,
+          width: 38,
+          height: 38,
           decoration: BoxDecoration(
-            color: const Color(0xFF164424),
+            color: const Color(0xB3164424),
             borderRadius: BorderRadius.circular(8),
             border: Border.all(
-              color: AppColors.neonGreen,
-              width: 1.5,
+              color: AppColors.neonGreen.withValues(alpha: 0.8),
+              width: 1.2,
             ),
             boxShadow: [
               BoxShadow(
-                color: AppColors.neonGreen.withValues(alpha: 0.4),
-                blurRadius: 6,
+                color: AppColors.neonGreen.withValues(alpha: 0.25),
+                blurRadius: 4,
               ),
             ],
           ),
           child: Icon(
             icon,
             color: AppColors.neonGreen,
-            size: 26,
+            size: 24,
           ),
         ),
       ),

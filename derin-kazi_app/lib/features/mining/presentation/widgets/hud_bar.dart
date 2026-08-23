@@ -4,6 +4,10 @@ import '../../../../core/theme/app_colors.dart';
 import '../../domain/models/player_state_model.dart';
 import '../../domain/models/grid_model.dart';
 import '../../application/game_notifier.dart';
+import '../../../quests/presentation/widgets/quest_dialog.dart';
+import '../../../cosmetics/presentation/screens/cosmetics_screen.dart';
+import '../../../profile/presentation/screens/profile_screen.dart';
+import '../../../settings/presentation/screens/settings_screen.dart';
 
 class HudBar extends ConsumerWidget {
   const HudBar({super.key});
@@ -15,43 +19,39 @@ class HudBar extends ConsumerWidget {
     final grid = gameState.grid;
 
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-      decoration: const BoxDecoration(
-        color: AppColors.hudPanel,
-        border: Border(
-          bottom: BorderSide(color: Color(0xFF1F1F55), width: 1.5),
+      height: 42,
+      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+      decoration: BoxDecoration(
+        color: const Color(0xD90A0A20),
+        border: const Border(
+          bottom: BorderSide(color: Color(0x661F1F55), width: 1.5),
         ),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.4),
+            blurRadius: 6,
+            offset: const Offset(0, 2),
+          ),
+        ],
       ),
-      child: LayoutBuilder(
-        builder: (context, constraints) {
-          final isNarrow = constraints.maxWidth < 900;
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          // Sol Bölüm: Profil Avatarı, Altın, Elmas, 2x Bonus, Ses
+          _buildLeftSection(context, ref, player),
 
-          if (isNarrow) {
-            return Column(
-              children: [
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    _buildLeftSection(context, ref, player),
-                    _buildRightSection(context, ref, player),
-                  ],
-                ),
-                const SizedBox(height: 4),
-                _buildCenterSection(grid, player, gameState),
-              ],
-            );
-          }
+          // Orta Bölüm: Bölüm & Biyom Rozeti / BR Zamanı
+          Flexible(
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 4),
+              child: _buildCenterSection(grid, player, gameState),
+            ),
+          ),
 
-          return Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              _buildLeftSection(context, ref, player),
-              _buildCenterSection(grid, player, gameState),
-              _buildRightSection(context, ref, player),
-            ],
-          );
-        },
+          // Sağ Bölüm: Rütbe, Sıfırla, Görevler, Kostümler, Ayarlar
+          _buildRightSection(context, ref, player),
+        ],
       ),
     );
   }
@@ -60,46 +60,67 @@ class HudBar extends ConsumerWidget {
     return Row(
       mainAxisSize: MainAxisSize.min,
       children: [
+        // Profil / Avatar Hızlı Erişim Butonu
+        InkWell(
+          onTap: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (ctx) => const ProfileScreen()),
+            );
+          },
+          borderRadius: BorderRadius.circular(14),
+          child: Container(
+            padding: const EdgeInsets.all(3),
+            decoration: BoxDecoration(
+              color: const Color(0xFF141438),
+              shape: BoxShape.circle,
+              border: Border.all(color: AppColors.goldText, width: 1.2),
+            ),
+            child: const Icon(Icons.account_circle, color: AppColors.goldText, size: 20),
+          ),
+        ),
+        const SizedBox(width: 6),
         // Altın ve Elmas Kutusu
         Container(
-          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+          padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
           decoration: BoxDecoration(
             color: const Color(0xFF0F0F30),
-            borderRadius: BorderRadius.circular(4),
+            borderRadius: BorderRadius.circular(5),
             border: Border.all(color: const Color(0xFF2A2A6A), width: 1),
           ),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
+          child: Row(
             mainAxisSize: MainAxisSize.min,
             children: [
+              // Altın
               Row(
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   Container(
-                    width: 10,
-                    height: 10,
+                    width: 9,
+                    height: 9,
                     decoration: const BoxDecoration(
                       color: AppColors.goldText,
                       shape: BoxShape.circle,
                     ),
                   ),
-                  const SizedBox(width: 5),
+                  const SizedBox(width: 4),
                   Text(
                     '${player.gold}',
                     style: const TextStyle(
                       color: AppColors.goldText,
                       fontWeight: FontWeight.bold,
-                      fontSize: 12,
+                      fontSize: 11,
                     ),
                   ),
                 ],
               ),
-              const SizedBox(height: 2),
+              const SizedBox(width: 8),
+              // Elmas
               Row(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  const Icon(Icons.diamond, color: AppColors.cyanText, size: 11),
-                  const SizedBox(width: 4),
+                  const Icon(Icons.diamond, color: AppColors.cyanText, size: 12),
+                  const SizedBox(width: 3),
                   Text(
                     '${player.gems}',
                     style: const TextStyle(
@@ -113,69 +134,16 @@ class HudBar extends ConsumerWidget {
             ],
           ),
         ),
-        const SizedBox(width: 8),
-
-        // Biyom ve Derinlik Rozeti
-        Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Container(
-              padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
-              decoration: BoxDecoration(
-                color: AppColors.badgeRed,
-                borderRadius: BorderRadius.circular(3),
-              ),
-              child: const Text(
-                'Kırmızı Toprak',
-                style: TextStyle(
-                  color: Colors.white,
-                  fontSize: 9,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-            ),
-            const SizedBox(height: 2),
-            Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                const Icon(Icons.hardware, color: Color(0xFF9E9E9E), size: 10),
-                const SizedBox(width: 2),
-                Text(
-                  '${player.highestDepth} derinlik',
-                  style: const TextStyle(
-                    color: Color(0xFFB0B0D0),
-                    fontSize: 9,
-                  ),
-                ),
-              ],
-            ),
-          ],
-        ),
-        const SizedBox(width: 8),
-
-        // Ses Butonu
-        IconButton(
-          padding: EdgeInsets.zero,
-          constraints: const BoxConstraints(minWidth: 26, minHeight: 26),
-          icon: Icon(
-            player.soundEnabled ? Icons.volume_up : Icons.volume_off,
-            color: Colors.white70,
-            size: 16,
-          ),
-          onPressed: () {
-            ref.read(gameNotifierProvider.notifier).toggleSound();
-          },
-        ),
-        const SizedBox(width: 4),
+        const SizedBox(width: 6),
 
         // 2x Bonus Butonu
         InkWell(
           onTap: () {
             ref.read(gameNotifierProvider.notifier).activateDoubleBonus();
           },
+          borderRadius: BorderRadius.circular(4),
           child: Container(
-            padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 4),
+            padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 3),
             decoration: BoxDecoration(
               color: player.doubleBonusActive
                   ? const Color(0xFF1B5E20)
@@ -188,31 +156,37 @@ class HudBar extends ConsumerWidget {
                 width: 1,
               ),
             ),
-            child: Column(
+            child: Row(
               mainAxisSize: MainAxisSize.min,
               children: [
                 Text(
-                  player.doubleBonusActive ? '2x AKTİF' : 'x2 Bonus',
+                  player.doubleBonusActive ? '2x' : '2x (500)',
                   style: TextStyle(
                     color: player.doubleBonusActive
                         ? AppColors.neonGreen
-                        : const Color(0xFF81C784),
-                    fontSize: 8,
+                        : AppColors.goldText,
+                    fontSize: 10,
                     fontWeight: FontWeight.bold,
                   ),
                 ),
-                if (!player.doubleBonusActive)
-                  const Text(
-                    '500',
-                    style: TextStyle(
-                      color: AppColors.goldText,
-                      fontSize: 8,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
               ],
             ),
           ),
+        ),
+        const SizedBox(width: 4),
+
+        // Ses Butonu
+        IconButton(
+          padding: EdgeInsets.zero,
+          constraints: const BoxConstraints(minWidth: 26, minHeight: 26),
+          icon: Icon(
+            player.soundEnabled ? Icons.volume_up : Icons.volume_off,
+            color: Colors.white70,
+            size: 17,
+          ),
+          onPressed: () {
+            ref.read(gameNotifierProvider.notifier).toggleSound();
+          },
         ),
       ],
     );
@@ -221,24 +195,27 @@ class HudBar extends ConsumerWidget {
   Widget _buildCenterSection(GridModel grid, PlayerStateModel player, GameState state) {
     if (state.gameMode == GameMode.solo) {
       return Container(
-        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 3),
         decoration: BoxDecoration(
           color: const Color(0xFF0F0F28),
           borderRadius: BorderRadius.circular(6),
-          border: Border.all(color: AppColors.neonGreen.withValues(alpha: 0.6), width: 1),
+          border: Border.all(color: AppColors.neonGreen.withValues(alpha: 0.7), width: 1),
         ),
         child: Row(
           mainAxisSize: MainAxisSize.min,
           children: [
-            const Icon(Icons.terrain, color: AppColors.neonGreen, size: 14),
+            const Icon(Icons.terrain, color: AppColors.neonGreen, size: 13),
             const SizedBox(width: 5),
-            Text(
-              'BÖLÜM ${grid.stage}/500 • ${grid.biomeName}',
-              style: const TextStyle(
-                color: AppColors.neonGreen,
-                fontSize: 10,
-                fontWeight: FontWeight.bold,
-                letterSpacing: 0.5,
+            Flexible(
+              child: Text(
+                'BÖLÜM ${grid.stage}/500 • ${grid.biomeName}',
+                overflow: TextOverflow.ellipsis,
+                style: const TextStyle(
+                  color: AppColors.neonGreen,
+                  fontSize: 10,
+                  fontWeight: FontWeight.bold,
+                  letterSpacing: 0.4,
+                ),
               ),
             ),
           ],
@@ -257,12 +234,12 @@ class HudBar extends ConsumerWidget {
       decoration: BoxDecoration(
         color: const Color(0xFF0F0F28),
         borderRadius: BorderRadius.circular(6),
-        border: Border.all(color: phaseColor.withValues(alpha: 0.6), width: 1),
+        border: Border.all(color: phaseColor.withValues(alpha: 0.7), width: 1),
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Icon(Icons.timer, color: phaseColor, size: 14),
+          Icon(Icons.timer, color: phaseColor, size: 13),
           const SizedBox(width: 4),
           Text(
             '$phaseTitle (${phase.formattedTime})',
@@ -270,7 +247,7 @@ class HudBar extends ConsumerWidget {
               color: phaseColor,
               fontSize: 10,
               fontWeight: FontWeight.bold,
-              letterSpacing: 0.5,
+              letterSpacing: 0.4,
             ),
           ),
         ],
@@ -280,56 +257,94 @@ class HudBar extends ConsumerWidget {
 
   Widget _buildRightSection(BuildContext context, WidgetRef ref, PlayerStateModel player) {
     final String earningsDisplay = player.lifetimeEarnings >= 1000
-        ? '${(player.lifetimeEarnings / 1000).toStringAsFixed(2)}K'
+        ? '${(player.lifetimeEarnings / 1000).toStringAsFixed(1)}K'
         : '${player.lifetimeEarnings}';
 
     return Row(
       mainAxisSize: MainAxisSize.min,
       children: [
+        // Rütbe & Toplam
         Column(
+          mainAxisAlignment: MainAxisAlignment.center,
           crossAxisAlignment: CrossAxisAlignment.end,
-          mainAxisSize: MainAxisSize.min,
           children: [
             Text(
               'Rütbe ${player.rank}',
               style: const TextStyle(
                 color: AppColors.goldText,
                 fontWeight: FontWeight.bold,
-                fontSize: 12,
+                fontSize: 11,
               ),
             ),
             Text(
-              'Toplam $earningsDisplay',
+              earningsDisplay,
               style: const TextStyle(
                 color: Color(0xFFB0B0D0),
-                fontSize: 10,
+                fontSize: 9,
               ),
             ),
           ],
         ),
-        const SizedBox(width: 10),
-        ElevatedButton(
-          style: ElevatedButton.styleFrom(
-            backgroundColor: AppColors.resetRed,
-            foregroundColor: Colors.white,
-            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
-            minimumSize: Size.zero,
-            tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-            shape: RoundedRectangleBorder(
+        const SizedBox(width: 6),
+
+        // Sıfırla Butonu
+        InkWell(
+          onTap: () => _showResetDialog(context, ref, player),
+          borderRadius: BorderRadius.circular(4),
+          child: Container(
+            padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 4),
+            decoration: BoxDecoration(
+              color: AppColors.resetRed,
               borderRadius: BorderRadius.circular(4),
             ),
-          ),
-          onPressed: () {
-            _showResetDialog(context, ref, player);
-          },
-          child: const Text(
-            'SIFIRLA',
-            style: TextStyle(
-              fontSize: 11,
-              fontWeight: FontWeight.bold,
-              letterSpacing: 0.5,
+            child: const Text(
+              'SIFIRLA',
+              style: TextStyle(
+                color: Colors.white,
+                fontSize: 9,
+                fontWeight: FontWeight.bold,
+              ),
             ),
           ),
+        ),
+        const SizedBox(width: 6),
+
+        // Günlük Görevler Butonu
+        IconButton(
+          padding: EdgeInsets.zero,
+          constraints: const BoxConstraints(minWidth: 28, minHeight: 28),
+          icon: const Icon(Icons.assignment, color: AppColors.goldText, size: 20),
+          tooltip: 'Günlük Görevler',
+          onPressed: () => QuestDialog.showQuestDialog(context),
+        ),
+
+        // Kostümler Butonu
+        IconButton(
+          padding: EdgeInsets.zero,
+          constraints: const BoxConstraints(minWidth: 28, minHeight: 28),
+          icon: const Icon(Icons.palette, color: Color(0xFFE040FB), size: 20),
+          tooltip: 'Kostümler & Skinler',
+          onPressed: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (ctx) => const CosmeticsScreen()),
+            );
+          },
+        ),
+        const SizedBox(width: 4),
+
+        // Ayarlar Butonu
+        IconButton(
+          padding: EdgeInsets.zero,
+          constraints: const BoxConstraints(minWidth: 28, minHeight: 28),
+          icon: const Icon(Icons.settings, color: Colors.white70, size: 20),
+          tooltip: 'Ayarlar',
+          onPressed: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (ctx) => const SettingsScreen()),
+            );
+          },
         ),
       ],
     );

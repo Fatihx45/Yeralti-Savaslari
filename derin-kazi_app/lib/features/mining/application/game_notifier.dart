@@ -1405,6 +1405,22 @@ class GameNotifier extends StateNotifier<GameState> {
     _saveState();
   }
 
+  void toggleShowcaseBadge(String badgeId) {
+    final currentShowcase = List<String>.from(state.player.showcaseBadgeIds);
+    if (currentShowcase.contains(badgeId)) {
+      currentShowcase.remove(badgeId);
+    } else {
+      if (currentShowcase.length >= 3) {
+        currentShowcase.removeAt(0); // En eskisini çıkar
+      }
+      currentShowcase.add(badgeId);
+    }
+    state = state.copyWith(
+      player: state.player.copyWith(showcaseBadgeIds: currentShowcase),
+    );
+    _saveState();
+  }
+
   void addFavoriteFriend(String name) {
     if (name.trim().isEmpty || state.player.favoriteFriends.contains(name.trim())) return;
     final updated = List<String>.from(state.player.favoriteFriends)..add(name.trim());

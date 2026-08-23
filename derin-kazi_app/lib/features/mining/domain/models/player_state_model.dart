@@ -38,6 +38,7 @@ class PlayerStateModel {
   final bool adsPersonalized;
   final bool analyticsEnabled;
   final List<String> achievementIds;
+  final List<String> showcaseBadgeIds; // Vitrinde sergilenen rozetler (Max 3)
   final int tilesBrokenTotal;
   final int bossesDefeatedTotal;
   final List<String> favoriteFriends;
@@ -77,6 +78,7 @@ class PlayerStateModel {
     this.adsPersonalized = true,
     this.analyticsEnabled = true,
     this.achievementIds = const [],
+    this.showcaseBadgeIds = const ['ach_first_dig'],
     this.tilesBrokenTotal = 0,
     this.bossesDefeatedTotal = 0,
     this.favoriteFriends = const [],
@@ -154,6 +156,7 @@ class PlayerStateModel {
     bool? adsPersonalized,
     bool? analyticsEnabled,
     List<String>? achievementIds,
+    List<String>? showcaseBadgeIds,
     int? tilesBrokenTotal,
     int? bossesDefeatedTotal,
     List<String>? favoriteFriends,
@@ -193,6 +196,7 @@ class PlayerStateModel {
       adsPersonalized: adsPersonalized ?? this.adsPersonalized,
       analyticsEnabled: analyticsEnabled ?? this.analyticsEnabled,
       achievementIds: achievementIds ?? this.achievementIds,
+      showcaseBadgeIds: showcaseBadgeIds ?? this.showcaseBadgeIds,
       tilesBrokenTotal: tilesBrokenTotal ?? this.tilesBrokenTotal,
       bossesDefeatedTotal: bossesDefeatedTotal ?? this.bossesDefeatedTotal,
       favoriteFriends: favoriteFriends ?? this.favoriteFriends,
@@ -234,6 +238,7 @@ class PlayerStateModel {
       'adsPersonalized': adsPersonalized,
       'analyticsEnabled': analyticsEnabled,
       'achievementIds': achievementIds,
+      'showcaseBadgeIds': showcaseBadgeIds,
       'tilesBrokenTotal': tilesBrokenTotal,
       'bossesDefeatedTotal': bossesDefeatedTotal,
       'favoriteFriends': favoriteFriends,
@@ -254,6 +259,13 @@ class PlayerStateModel {
     if (json['achievementIds'] != null) {
       for (final a in json['achievementIds']) {
         loadedAchievements.add(a.toString());
+      }
+    }
+
+    final List<String> loadedShowcase = [];
+    if (json['showcaseBadgeIds'] != null) {
+      for (final s in json['showcaseBadgeIds']) {
+        loadedShowcase.add(s.toString());
       }
     }
 
@@ -298,6 +310,7 @@ class PlayerStateModel {
       adsPersonalized: json['adsPersonalized'] as bool? ?? true,
       analyticsEnabled: json['analyticsEnabled'] as bool? ?? true,
       achievementIds: loadedAchievements,
+      showcaseBadgeIds: loadedShowcase.isNotEmpty ? loadedShowcase : const ['ach_first_dig'],
       tilesBrokenTotal: json['tilesBrokenTotal'] as int? ?? 0,
       bossesDefeatedTotal: json['bossesDefeatedTotal'] as int? ?? 0,
       favoriteFriends: loadedFriends,
