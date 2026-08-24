@@ -382,29 +382,51 @@ class _WeaponShopScreenState extends ConsumerState<WeaponShopScreen>
     return ListView(
       padding: const EdgeInsets.all(12),
       children: [
-        // Mermi Paketi (Küçük)
+        // 1. Tabanca Mermisi Paketi
         _buildUpgradeCard(
           emoji: '🔫',
-          title: 'Küçük Cephane Paketi',
-          desc: '+15 Adet Mermi ekler.',
-          costText: '150 🟡',
+          title: 'Tabanca Mermisi Paketi',
+          desc: 'Standart 9mm tabanca mermisi (+15 Mermi ekler).',
+          costText: '120 🟡',
           onBuy: () {
-            ref.read(gameNotifierProvider.notifier).buyAmmopack(15, 150);
+            ref.read(gameNotifierProvider.notifier).buyAmmopack(15, 120);
           },
         ),
 
-        // Mermi Paketi (Büyük)
+        // 2. Tüfek Mermisi Kasası
         _buildUpgradeCard(
-          emoji: '📦',
-          title: 'Büyük Cephane Kasası',
-          desc: '+40 Adet Mermi ekler.',
-          costText: '350 🟡',
+          emoji: '⚡🔫',
+          title: 'Tüfek Yüksek Kalibre Mermisi',
+          desc: 'Yüksek delici güce sahip tüfek mermisi şarjörü (+30 Mermi ekler).',
+          costText: '220 🟡',
           onBuy: () {
-            ref.read(gameNotifierProvider.notifier).buyAmmopack(40, 350);
+            ref.read(gameNotifierProvider.notifier).buyAmmopack(30, 220);
           },
         ),
 
-        // Envanter Genişletme
+        // 3. Pompalı Saçma Fişeği
+        _buildUpgradeCard(
+          emoji: '💥',
+          title: 'Pompalı Saçma Fişekleri',
+          desc: 'Geniş saçılımlı ağır av fişeği paketi (+20 Mermi ekler).',
+          costText: '280 🟡',
+          onBuy: () {
+            ref.read(gameNotifierProvider.notifier).buyAmmopack(20, 280);
+          },
+        ),
+
+        // 4. Ağır Roket & Lazer Hücresi
+        _buildUpgradeCard(
+          emoji: '🚀',
+          title: 'Roket & Lazer Enerji Paketi',
+          desc: 'Yıkıcı patlayıcı roketler ve lazer hücreleri (+10 Mermi ekler).',
+          costText: '380 🟡',
+          onBuy: () {
+            ref.read(gameNotifierProvider.notifier).buyAmmopack(10, 380);
+          },
+        ),
+
+        // 5. Envanter Genişletme
         _buildUpgradeCard(
           emoji: '🎒',
           title: 'Envanter Çantası Genişletme',
@@ -416,7 +438,7 @@ class _WeaponShopScreenState extends ConsumerState<WeaponShopScreen>
           },
         ),
 
-        // Çelik Zırh
+        // 6. Çelik Zırh
         _buildUpgradeCard(
           emoji: '🛡️',
           title: 'Titanyum Madenci Zırhı',
