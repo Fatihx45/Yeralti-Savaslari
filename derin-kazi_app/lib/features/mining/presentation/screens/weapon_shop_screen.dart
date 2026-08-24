@@ -4,6 +4,7 @@ import '../../../../core/theme/app_colors.dart';
 import '../../application/game_notifier.dart';
 import '../../domain/models/weapon_model.dart';
 import '../../domain/models/tool_model.dart';
+import 'forge_screen.dart';
 
 class WeaponShopScreen extends ConsumerStatefulWidget {
   const WeaponShopScreen({super.key});
@@ -51,12 +52,32 @@ class _WeaponShopScreenState extends ConsumerState<WeaponShopScreen>
               style: TextStyle(
                 color: Colors.white,
                 fontWeight: FontWeight.bold,
-                fontSize: 16,
-                letterSpacing: 1.1,
+                fontSize: 15,
+                letterSpacing: 1.0,
               ),
             ),
           ],
         ),
+        actions: [
+          TextButton.icon(
+            icon: const Text('🔨', style: TextStyle(fontSize: 16)),
+            label: const Text(
+              'DEMİRCİ',
+              style: TextStyle(
+                color: Color(0xFFE040FB),
+                fontWeight: FontWeight.bold,
+                fontSize: 12,
+              ),
+            ),
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (ctx) => const ForgeScreen()),
+              );
+            },
+          ),
+          const SizedBox(width: 6),
+        ],
         bottom: TabBar(
           controller: _tabController,
           indicatorColor: AppColors.neonGreen,

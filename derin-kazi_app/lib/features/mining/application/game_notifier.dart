@@ -1720,7 +1720,7 @@ class GameNotifier extends StateNotifier<GameState> {
 
     // 1. DÜŞMANA İSABET ETTİ
     if (hitEnemy != null) {
-      final int dmg = weapon.damage;
+      final int dmg = state.player.getWeaponDamage(weapon);
       final int newEnemyHp = max(0, hitEnemy.currentHp - dmg);
       final bool isDead = newEnemyHp <= 0;
 
@@ -1766,7 +1766,7 @@ class GameNotifier extends StateNotifier<GameState> {
 
     // 2. KUTU / BLOK VURULDU
     if (hitTile != null) {
-      final int tileDmg = weapon.tileDamage;
+      final int tileDmg = state.player.getWeaponTileDamage(weapon);
       final int newTileHp = max(0, hitTile.currentHp - tileDmg);
       final bool isTileBroken = newTileHp <= 0;
 
@@ -2065,6 +2065,145 @@ class GameNotifier extends StateNotifier<GameState> {
         hp: newHp,
       ),
       lastMessage: '🛡️ Çelik Zırh satın alındı! (+30 Max Can ❤️)',
+    );
+    _saveState();
+    return true;
+  }
+
+  // ==========================================
+  // 🔨 DEMİRCİ / FORGE GÜÇLENDİRME SİSTEMİ
+  // ==========================================
+  bool upgradeWeapon(WeaponType weapon) {
+    final currentLvl = state.player.getWeaponLevel(weapon);
+    if (currentLvl >= 5) {
+      state = state.copyWith(lastMessage: 'Bu silah maksimum seviyede (Seviye 5)! ⭐');
+      return false;
+    }
+
+    int goldCost = 300;
+    int copperCost = 0;
+    int ironCost = 0;
+    int emeraldCost = 0;
+    int fossilCost = 0;
+    int gemCost = 0;
+
+    switch (currentLvl) {
+      case 1:
+        goldCost = 300;
+        copperCost = 3;
+        break;
+      case 2:
+        goldCost = 700;
+        copperCost = 5;
+        ironCost = 3;
+        break;
+      case 3:
+        goldCost = 1500;
+        ironCost = 5;
+        emeraldCost = 2;
+        gemCost = 2;
+        break;
+      case 4:
+        goldCost = 3200;
+        emeraldCost = 4;
+        fossilCost = 1;
+        gemCost = 6;
+        break;
+    }
+
+    final p = state.player;
+    if (p.gold < goldCost ||
+        p.copper < copperCost ||
+        p.iron < ironCost ||
+        p.emeralds < emeraldCost ||
+        p.fossils < fossilCost ||
+        p.gems < gemCost) {
+      state = state.copyWith(lastMessage: '❌ Yetersiz Maden veya Altın! Demircide gereksinimleri kontrol edin.');
+      return false;
+    }
+
+    final nextLvl = currentLvl + 1;
+    final updatedWeaponLevels = Map<WeaponType, int>.from(p.weaponLevels);
+    updatedWeaponLevels[weapon] = nextLvl;
+
+    _triggerHaptic('heavy');
+    state = state.copyWith(
+      player: p.copyWith(
+        gold: p.gold - goldCost,
+        copper: p.copper - copperCost,
+        iron: p.iron - ironCost,
+        emeralds: p.emeralds - emeraldCost,
+        fossils: p.fossils - fossilCost,
+        gems: p.gems - gemCost,
+        weaponLevels: updatedWeaponLevels,
+      ),
+      lastMessage: '🔨 ${weapon.displayName} Seviye $nextLvl\'e Yükseltildi! Hasar ve blok kırma gücü arttı! 🔥',
+    );
+    _saveState();
+    return true;
+  }
+
+  bool upgradeTool(ToolType tool) {
+    final currentLvl = state.player.getToolLevel(tool);
+    if (currentLvl >= 5) {
+      state = state.copyWith(lastMessage: 'Bu alet maksimum seviyede (Seviye 5)! ⭐');
+      return false;
+    }
+
+    int goldCost = 250;
+    int copperCost = 0;
+    int ironCost = 0;
+    int emeraldCost = 0;
+    int gemCost = 0;
+
+    switch (currentLvl) {
+      case 1:
+        goldCost = 250;
+        copperCost = 2;
+        break;
+      case 2:
+        goldCost = 550;
+        copperCost = 4;
+        ironCost = 2;
+        break;
+      case 3:
+        goldCost = 1100;
+        ironCost = 4;
+        emeraldCost = 2;
+        gemCost = 1;
+        break;
+      case 4:
+        goldCost = 2400;
+        emeraldCost = 3;
+        gemCost = 4;
+        break;
+    }
+
+    final p = state.player;
+    if (p.gold < goldCost ||
+        p.copper < copperCost ||
+        p.iron < ironCost ||
+        p.emeralds < emeraldCost ||
+        p.gems < gemCost) {
+      state = state.copyWith(lastMessage: '❌ Yetersiz Maden veya Altın! Demircide gereksinimleri kontrol edin.');
+      return false;
+    }
+
+    final nextLvl = currentLvl + 1;
+    final updatedToolLevels = Map<ToolType, int>.from(p.toolLevels);
+    updatedToolLevels[tool] = nextLvl;
+
+    _triggerHaptic('heavy');
+    state = state.copyWith(
+      player: p.copyWith(
+        gold: p.gold - goldCost,
+        copper: p.copper - copperCost,
+        iron: p.iron - ironCost,
+        emeralds: p.emeralds - emeraldCost,
+        gems: p.gems - gemCost,
+        toolLevels: updatedToolLevels,
+      ),
+      lastMessage: '🔨 ${tool.displayName} Seviye $nextLvl\'e Dövüldü! Kazma gücü arttı! 🔥',
     );
     _saveState();
     return true;

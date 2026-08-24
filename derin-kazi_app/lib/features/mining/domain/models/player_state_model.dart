@@ -32,6 +32,8 @@ class PlayerStateModel {
   final List<WeaponType> ownedWeapons;
   final int maxInventorySlots;
   final int enemiesKilledTotal;
+  final Map<WeaponType, int> weaponLevels;
+  final Map<ToolType, int> toolLevels;
 
   // Yeni Ayarlar ve Profil Alanları (15 Alan)
   final double musicVolume;
@@ -79,6 +81,21 @@ class PlayerStateModel {
     this.ownedWeapons = const [WeaponType.pistol],
     this.maxInventorySlots = 6,
     this.enemiesKilledTotal = 0,
+    this.weaponLevels = const {
+      WeaponType.pistol: 1,
+      WeaponType.rifle: 1,
+      WeaponType.shotgun: 1,
+      WeaponType.laserGun: 1,
+      WeaponType.rocketLauncher: 1,
+    },
+    this.toolLevels = const {
+      ToolType.screwdriver: 1,
+      ToolType.shovel: 1,
+      ToolType.pickaxe: 1,
+      ToolType.axe: 1,
+      ToolType.baseballBat: 1,
+      ToolType.diamondPick: 1,
+    },
     this.musicVolume = 0.8,
     this.sfxVolume = 1.0,
     this.vibrationEnabled = true,
@@ -97,6 +114,35 @@ class PlayerStateModel {
     this.favoriteFriends = const [],
   });
 
+  int getWeaponLevel(WeaponType weapon) => weaponLevels[weapon] ?? 1;
+
+  int getWeaponDamage(WeaponType weapon) {
+    final lvl = getWeaponLevel(weapon);
+    return weapon.damage + ((lvl - 1) * 12);
+  }
+
+  int getWeaponTileDamage(WeaponType weapon) {
+    final lvl = getWeaponLevel(weapon);
+    return weapon.tileDamage + ((lvl - 1) * 6);
+  }
+
+  int getWeaponMaxAmmo(WeaponType weapon) {
+    final lvl = getWeaponLevel(weapon);
+    return weapon.maxAmmo + ((lvl - 1) * 3);
+  }
+
+  int getToolLevel(ToolType tool) => toolLevels[tool] ?? 1;
+
+  int getToolTileDamage(ToolType tool) {
+    final lvl = getToolLevel(tool);
+    return tool.tileDamage + ((lvl - 1) * 4);
+  }
+
+  int getToolPvpDamage(ToolType tool) {
+    final lvl = getToolLevel(tool);
+    return tool.pvpDamage + ((lvl - 1) * 6);
+  }
+
   ToolType? get activeTool {
     if (inventoryTools.isEmpty || activeToolIndex < 0 || activeToolIndex >= inventoryTools.length) {
       return null;
@@ -106,12 +152,12 @@ class PlayerStateModel {
 
   int get tileDamageBonus {
     final tool = activeTool;
-    return tool != null ? tool.tileDamage : 2;
+    return tool != null ? getToolTileDamage(tool) : 2;
   }
 
   int get pvpDamageBonus {
     final tool = activeTool;
-    return tool != null ? tool.pvpDamage : 15;
+    return tool != null ? getToolPvpDamage(tool) : 15;
   }
 
   bool get isAlive => hp > 0;
@@ -136,6 +182,21 @@ class PlayerStateModel {
       ownedWeapons: const [WeaponType.pistol],
       maxInventorySlots: 6,
       enemiesKilledTotal: 0,
+      weaponLevels: const {
+        WeaponType.pistol: 1,
+        WeaponType.rifle: 1,
+        WeaponType.shotgun: 1,
+        WeaponType.laserGun: 1,
+        WeaponType.rocketLauncher: 1,
+      },
+      toolLevels: const {
+        ToolType.screwdriver: 1,
+        ToolType.shovel: 1,
+        ToolType.pickaxe: 1,
+        ToolType.axe: 1,
+        ToolType.baseballBat: 1,
+        ToolType.diamondPick: 1,
+      },
     );
   }
 
@@ -167,6 +228,8 @@ class PlayerStateModel {
     List<WeaponType>? ownedWeapons,
     int? maxInventorySlots,
     int? enemiesKilledTotal,
+    Map<WeaponType, int>? weaponLevels,
+    Map<ToolType, int>? toolLevels,
     double? musicVolume,
     double? sfxVolume,
     bool? vibrationEnabled,
@@ -212,6 +275,8 @@ class PlayerStateModel {
       ownedWeapons: ownedWeapons ?? this.ownedWeapons,
       maxInventorySlots: maxInventorySlots ?? this.maxInventorySlots,
       enemiesKilledTotal: enemiesKilledTotal ?? this.enemiesKilledTotal,
+      weaponLevels: weaponLevels ?? this.weaponLevels,
+      toolLevels: toolLevels ?? this.toolLevels,
       musicVolume: musicVolume ?? this.musicVolume,
       sfxVolume: sfxVolume ?? this.sfxVolume,
       vibrationEnabled: vibrationEnabled ?? this.vibrationEnabled,
@@ -259,6 +324,8 @@ class PlayerStateModel {
       'ownedWeapons': ownedWeapons.map((w) => w.name).toList(),
       'maxInventorySlots': maxInventorySlots,
       'enemiesKilledTotal': enemiesKilledTotal,
+      'weaponLevels': weaponLevels.map((k, v) => MapEntry(k.name, v)),
+      'toolLevels': toolLevels.map((k, v) => MapEntry(k.name, v)),
       'musicVolume': musicVolume,
       'sfxVolume': sfxVolume,
       'vibrationEnabled': vibrationEnabled,
@@ -305,6 +372,41 @@ class PlayerStateModel {
       try {
         currentWeapon = WeaponType.values.firstWhere((w) => w.name == json['equippedWeapon']);
       } catch (_) {}
+    }
+
+    final Map<WeaponType, int> wLevels = {
+      WeaponType.pistol: 1,
+      WeaponType.rifle: 1,
+      WeaponType.shotgun: 1,
+      WeaponType.laserGun: 1,
+      WeaponType.rocketLauncher: 1,
+    };
+    if (json['weaponLevels'] != null && json['weaponLevels'] is Map) {
+      final map = json['weaponLevels'] as Map;
+      for (final entry in map.entries) {
+        try {
+          final w = WeaponType.values.firstWhere((t) => t.name == entry.key);
+          wLevels[w] = (entry.value as num).toInt();
+        } catch (_) {}
+      }
+    }
+
+    final Map<ToolType, int> tLevels = {
+      ToolType.screwdriver: 1,
+      ToolType.shovel: 1,
+      ToolType.pickaxe: 1,
+      ToolType.axe: 1,
+      ToolType.baseballBat: 1,
+      ToolType.diamondPick: 1,
+    };
+    if (json['toolLevels'] != null && json['toolLevels'] is Map) {
+      final map = json['toolLevels'] as Map;
+      for (final entry in map.entries) {
+        try {
+          final t = ToolType.values.firstWhere((item) => item.name == entry.key);
+          tLevels[t] = (entry.value as num).toInt();
+        } catch (_) {}
+      }
     }
 
     final List<String> loadedAchievements = [];

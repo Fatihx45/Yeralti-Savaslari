@@ -5,6 +5,7 @@ import '../../../mining/application/game_notifier.dart';
 import '../../../mining/domain/models/stage_config_model.dart';
 import '../../../mining/presentation/screens/stage_select_screen.dart';
 import '../../../mining/presentation/screens/weapon_shop_screen.dart';
+import '../../../mining/presentation/screens/forge_screen.dart';
 import '../../../profile/presentation/screens/profile_screen.dart';
 import '../../../settings/presentation/screens/settings_screen.dart';
 import 'create_room_screen.dart';
@@ -180,7 +181,7 @@ class _MainMenuScreenState extends ConsumerState<MainMenuScreen> {
                         },
                         borderRadius: BorderRadius.circular(10),
                         child: Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                          padding: const EdgeInsets.symmetric(horizontal: 9, vertical: 5),
                           decoration: BoxDecoration(
                             gradient: const LinearGradient(
                               colors: [Color(0xFF2E1A0A), Color(0xFF5A3510)],
@@ -197,14 +198,58 @@ class _MainMenuScreenState extends ConsumerState<MainMenuScreen> {
                           child: const Row(
                             mainAxisSize: MainAxisSize.min,
                             children: [
-                              Text('🛒', style: TextStyle(fontSize: 13)),
+                              Text('🛒', style: TextStyle(fontSize: 12)),
                               SizedBox(width: 4),
                               Text(
                                 'MAĞAZA',
                                 style: TextStyle(
                                   color: AppColors.goldText,
                                   fontWeight: FontWeight.w900,
-                                  fontSize: 11,
+                                  fontSize: 10.5,
+                                  letterSpacing: 0.8,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                      const SizedBox(width: 5),
+
+                      // 🔨 Demirci / Forge Butonu
+                      InkWell(
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(builder: (ctx) => const ForgeScreen()),
+                          );
+                        },
+                        borderRadius: BorderRadius.circular(10),
+                        child: Container(
+                          padding: const EdgeInsets.symmetric(horizontal: 9, vertical: 5),
+                          decoration: BoxDecoration(
+                            gradient: const LinearGradient(
+                              colors: [Color(0xFF2E1345), Color(0xFF5C2068)],
+                            ),
+                            borderRadius: BorderRadius.circular(10),
+                            border: Border.all(color: const Color(0xFFE040FB), width: 1.2),
+                            boxShadow: [
+                              BoxShadow(
+                                color: const Color(0xFFE040FB).withValues(alpha: 0.3),
+                                blurRadius: 6,
+                              ),
+                            ],
+                          ),
+                          child: const Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Text('🔨', style: TextStyle(fontSize: 12)),
+                              SizedBox(width: 4),
+                              Text(
+                                'DEMİRCİ',
+                                style: TextStyle(
+                                  color: Color(0xFFE040FB),
+                                  fontWeight: FontWeight.w900,
+                                  fontSize: 10.5,
                                   letterSpacing: 0.8,
                                 ),
                               ),
