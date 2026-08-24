@@ -29,19 +29,25 @@ class BottomProgressBar extends ConsumerWidget {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Row(
-                      children: [
-                        const Icon(Icons.favorite, color: Color(0xFFFF5252), size: 13),
-                        const SizedBox(width: 4),
-                        Text(
-                          'Can: $hp / $maxHp',
-                          style: const TextStyle(
-                            color: Color(0xFFFF5252),
-                            fontSize: 10,
-                            fontWeight: FontWeight.bold,
+                    Flexible(
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          const Icon(Icons.favorite, color: Color(0xFFFF5252), size: 14),
+                          const SizedBox(width: 4),
+                          Flexible(
+                            child: Text(
+                              'Can: $hp / $maxHp',
+                              overflow: TextOverflow.ellipsis,
+                              style: const TextStyle(
+                                color: Color(0xFFFF5252),
+                                fontSize: 10,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
                           ),
-                        ),
-                      ],
+                        ],
+                      ),
                     ),
                   ],
                 ),
@@ -84,19 +90,25 @@ class BottomProgressBar extends ConsumerWidget {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Row(
-                      children: [
-                        const Icon(Icons.bolt, color: AppColors.neonGreen, size: 14),
-                        const SizedBox(width: 4),
-                        Text(
-                          'Enerji: $energy / $maxEnergy',
-                          style: const TextStyle(
-                            color: AppColors.neonGreen,
-                            fontSize: 10,
-                            fontWeight: FontWeight.bold,
+                    Flexible(
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          const Icon(Icons.bolt, color: AppColors.neonGreen, size: 14),
+                          const SizedBox(width: 4),
+                          Flexible(
+                            child: Text(
+                              'Enerji: $energy / $maxEnergy',
+                              overflow: TextOverflow.ellipsis,
+                              style: const TextStyle(
+                                color: AppColors.neonGreen,
+                                fontSize: 10,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
                           ),
-                        ),
-                      ],
+                        ],
+                      ),
                     ),
                     const Text(
                       '25s / +1 ⚡',

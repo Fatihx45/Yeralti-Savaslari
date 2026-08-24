@@ -1,5 +1,6 @@
 import 'upgrade_model.dart';
 import 'tool_model.dart';
+import 'weapon_model.dart';
 
 class PlayerStateModel {
   final String playerName;
@@ -24,6 +25,13 @@ class PlayerStateModel {
   final List<ToolType> inventoryTools;
   final int activeToolIndex;
   final String equippedSkinId;
+
+  // Silah ve Mermi Sistemi Alanları
+  final int currentAmmo;
+  final WeaponType equippedWeapon;
+  final List<WeaponType> ownedWeapons;
+  final int maxInventorySlots;
+  final int enemiesKilledTotal;
 
   // Yeni Ayarlar ve Profil Alanları (15 Alan)
   final double musicVolume;
@@ -66,6 +74,11 @@ class PlayerStateModel {
     this.inventoryTools = const [],
     this.activeToolIndex = 0,
     this.equippedSkinId = 'default_blue',
+    this.currentAmmo = 12,
+    this.equippedWeapon = WeaponType.pistol,
+    this.ownedWeapons = const [WeaponType.pistol],
+    this.maxInventorySlots = 6,
+    this.enemiesKilledTotal = 0,
     this.musicVolume = 0.8,
     this.sfxVolume = 1.0,
     this.vibrationEnabled = true,
@@ -118,6 +131,11 @@ class PlayerStateModel {
       activeToolIndex: 0,
       equippedSkinId: 'default_blue',
       unlockedStage: 1,
+      currentAmmo: 12,
+      equippedWeapon: WeaponType.pistol,
+      ownedWeapons: const [WeaponType.pistol],
+      maxInventorySlots: 6,
+      enemiesKilledTotal: 0,
     );
   }
 
@@ -144,6 +162,11 @@ class PlayerStateModel {
     List<ToolType>? inventoryTools,
     int? activeToolIndex,
     String? equippedSkinId,
+    int? currentAmmo,
+    WeaponType? equippedWeapon,
+    List<WeaponType>? ownedWeapons,
+    int? maxInventorySlots,
+    int? enemiesKilledTotal,
     double? musicVolume,
     double? sfxVolume,
     bool? vibrationEnabled,
@@ -184,6 +207,11 @@ class PlayerStateModel {
       inventoryTools: inventoryTools ?? this.inventoryTools,
       activeToolIndex: activeToolIndex ?? this.activeToolIndex,
       equippedSkinId: equippedSkinId ?? this.equippedSkinId,
+      currentAmmo: currentAmmo ?? this.currentAmmo,
+      equippedWeapon: equippedWeapon ?? this.equippedWeapon,
+      ownedWeapons: ownedWeapons ?? this.ownedWeapons,
+      maxInventorySlots: maxInventorySlots ?? this.maxInventorySlots,
+      enemiesKilledTotal: enemiesKilledTotal ?? this.enemiesKilledTotal,
       musicVolume: musicVolume ?? this.musicVolume,
       sfxVolume: sfxVolume ?? this.sfxVolume,
       vibrationEnabled: vibrationEnabled ?? this.vibrationEnabled,
@@ -226,6 +254,11 @@ class PlayerStateModel {
       'equippedSkinId': equippedSkinId,
       'inventoryTools': inventoryTools.map((t) => t.name).toList(),
       'activeToolIndex': activeToolIndex,
+      'currentAmmo': currentAmmo,
+      'equippedWeapon': equippedWeapon.name,
+      'ownedWeapons': ownedWeapons.map((w) => w.name).toList(),
+      'maxInventorySlots': maxInventorySlots,
+      'enemiesKilledTotal': enemiesKilledTotal,
       'musicVolume': musicVolume,
       'sfxVolume': sfxVolume,
       'vibrationEnabled': vibrationEnabled,
@@ -253,6 +286,25 @@ class PlayerStateModel {
           tools.add(ToolType.values.firstWhere((t) => t.name == name));
         } catch (_) {}
       }
+    }
+
+    final List<WeaponType> weapons = [];
+    if (json['ownedWeapons'] != null) {
+      for (final name in json['ownedWeapons']) {
+        try {
+          weapons.add(WeaponType.values.firstWhere((w) => w.name == name));
+        } catch (_) {}
+      }
+    }
+    if (weapons.isEmpty) {
+      weapons.add(WeaponType.pistol);
+    }
+
+    WeaponType currentWeapon = WeaponType.pistol;
+    if (json['equippedWeapon'] != null) {
+      try {
+        currentWeapon = WeaponType.values.firstWhere((w) => w.name == json['equippedWeapon']);
+      } catch (_) {}
     }
 
     final List<String> loadedAchievements = [];
@@ -298,6 +350,11 @@ class PlayerStateModel {
       equippedSkinId: json['equippedSkinId'] as String? ?? 'default_blue',
       inventoryTools: tools,
       activeToolIndex: json['activeToolIndex'] as int? ?? 0,
+      currentAmmo: json['currentAmmo'] as int? ?? 12,
+      equippedWeapon: currentWeapon,
+      ownedWeapons: weapons,
+      maxInventorySlots: json['maxInventorySlots'] as int? ?? 6,
+      enemiesKilledTotal: json['enemiesKilledTotal'] as int? ?? 0,
       musicVolume: (json['musicVolume'] as num?)?.toDouble() ?? 0.8,
       sfxVolume: (json['sfxVolume'] as num?)?.toDouble() ?? 1.0,
       vibrationEnabled: json['vibrationEnabled'] as bool? ?? true,

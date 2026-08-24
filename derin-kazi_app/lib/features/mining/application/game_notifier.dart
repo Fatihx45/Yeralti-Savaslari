@@ -6,6 +6,8 @@ import '../domain/models/grid_model.dart';
 import '../domain/models/player_state_model.dart';
 import '../domain/models/tile_model.dart';
 import '../domain/models/upgrade_model.dart';
+import '../domain/models/enemy_model.dart';
+import '../domain/models/weapon_model.dart';
 import '../domain/services/grid_generator.dart';
 import 'package:derin_kazi/features/multiplayer/domain/models/remote_player_model.dart';
 
@@ -168,6 +170,14 @@ class GameState {
   final int lastQuestResetTimestamp;
   final List<DailyQuestModel> quests;
 
+  // Diyalog ve Loot Durumları
+  final bool showStageCompleteDialog;
+  final String? pendingLootName;
+  final String? pendingLootMessage;
+  final WeaponType? pendingLootWeapon;
+  final ToolType? pendingLootTool;
+  final int pendingLootAmmo;
+
   const GameState({
     required this.player,
     required this.grid,
@@ -180,6 +190,12 @@ class GameState {
     this.activeReactionEmoji,
     this.lastQuestResetTimestamp = 0,
     this.quests = const [],
+    this.showStageCompleteDialog = false,
+    this.pendingLootName,
+    this.pendingLootMessage,
+    this.pendingLootWeapon,
+    this.pendingLootTool,
+    this.pendingLootAmmo = 0,
   });
 
   GameState copyWith({
@@ -194,6 +210,12 @@ class GameState {
     String? activeReactionEmoji,
     int? lastQuestResetTimestamp,
     List<DailyQuestModel>? quests,
+    bool? showStageCompleteDialog,
+    String? pendingLootName,
+    String? pendingLootMessage,
+    WeaponType? pendingLootWeapon,
+    ToolType? pendingLootTool,
+    int? pendingLootAmmo,
   }) {
     return GameState(
       player: player ?? this.player,
@@ -207,6 +229,12 @@ class GameState {
       activeReactionEmoji: activeReactionEmoji ?? this.activeReactionEmoji,
       lastQuestResetTimestamp: lastQuestResetTimestamp ?? this.lastQuestResetTimestamp,
       quests: quests ?? this.quests,
+      showStageCompleteDialog: showStageCompleteDialog ?? this.showStageCompleteDialog,
+      pendingLootName: pendingLootName,
+      pendingLootMessage: pendingLootMessage,
+      pendingLootWeapon: pendingLootWeapon,
+      pendingLootTool: pendingLootTool,
+      pendingLootAmmo: pendingLootAmmo ?? this.pendingLootAmmo,
     );
   }
 }
@@ -214,6 +242,7 @@ class GameState {
 class GameNotifier extends StateNotifier<GameState> {
   Timer? _energyTimer;
   Timer? _battleTimer;
+  Timer? _enemyAiTimer;
 
   GameNotifier()
       : super(
@@ -226,6 +255,7 @@ class GameNotifier extends StateNotifier<GameState> {
           ),
         ) {
     _startEnergyTimer();
+    _startEnemyAiTimer();
     loadSavedPlayer();
   }
 
@@ -235,10 +265,17 @@ class GameNotifier extends StateNotifier<GameState> {
     });
   }
 
+  void _startEnemyAiTimer() {
+    _enemyAiTimer = Timer.periodic(const Duration(milliseconds: 2500), (_) {
+      _simulateEnemiesAction();
+    });
+  }
+
   @override
   void dispose() {
     _energyTimer?.cancel();
     _battleTimer?.cancel();
+    _enemyAiTimer?.cancel();
     super.dispose();
   }
 
@@ -335,7 +372,100 @@ class GameNotifier extends StateNotifier<GameState> {
     final targetRow = targetPos.row;
     final targetCol = targetPos.col;
 
-    // 1. Önce hedeflenen hücrede rakip bir oyuncu var mı kontrol et (PvP Saldırısı)
+    // 1. Önce hedeflenen hücrede Canlı bir Düşman / Canavar / Boss var mı kontrol et
+    EnemyModel? targetEnemy;
+    for (final e in state.grid.enemies) {
+      if (e.position.row == targetRow && e.position.col == targetCol && e.isAlive) {
+        targetEnemy = e;
+        break;
+      }
+    }
+
+    if (targetEnemy != null) {
+      // Düşmana Saldırı!
+      if (state.player.energy <= 0) {
+        state = state.copyWith(lastMessage: 'Saldırmak için enerji gerekli! ⚡');
+        return;
+      }
+
+      final int nowMs = DateTime.now().millisecondsSinceEpoch;
+      int currentCombo = (nowMs - state.lastDigTimestamp < 2500) ? state.comboCount + 1 : 1;
+      double comboMultiplier = currentCombo >= 5 ? 1.5 : (currentCombo >= 3 ? 1.25 : 1.0);
+
+      final int attackDmg = ((state.player.pvpDamageBonus > 0 ? state.player.pvpDamageBonus : 15) * comboMultiplier).round();
+      final int newEnemyHp = max(0, targetEnemy.currentHp - attackDmg);
+      final bool isEnemyDead = newEnemyHp <= 0;
+
+      final updatedEnemies = state.grid.enemies.map((e) {
+        if (e.id == targetEnemy!.id) {
+          return e.copyWith(
+            currentHp: newEnemyHp,
+            isAlive: !isEnemyDead,
+          );
+        }
+        return e;
+      }).toList();
+
+      final newEnergy = max(0, state.player.energy - 1);
+      int newGold = state.player.gold;
+      int newGems = state.player.gems;
+      int newHp = state.player.hp;
+      int finalEnergy = newEnergy;
+      int bossesDefeated = state.player.bossesDefeatedTotal;
+
+      String attackMsg = '';
+
+      if (isEnemyDead) {
+        newGold += targetEnemy.rewardGold;
+        newGems += targetEnemy.rewardGems;
+        finalEnergy = (finalEnergy + targetEnemy.rewardEnergy).clamp(0, state.player.maxEnergy);
+        if (targetEnemy.rewardHp > 0) {
+          newHp = (newHp + targetEnemy.rewardHp).clamp(0, state.player.maxHp);
+        }
+        if (targetEnemy.isBoss) {
+          bossesDefeated += 1;
+        }
+
+        final String gemText = targetEnemy.rewardGems > 0 ? ' +${targetEnemy.rewardGems} 💎' : '';
+        attackMsg = '💀 ${targetEnemy.emoji} ${targetEnemy.name} YENİLDİ! (+${targetEnemy.rewardGold} 🟡$gemText)';
+        _triggerHaptic('heavy');
+      } else {
+        attackMsg = '⚔️ ${targetEnemy.emoji} ${targetEnemy.name}\'a $attackDmg Hasar! (Kalan Canı: $newEnemyHp ❤️)';
+        _triggerHaptic('selection');
+      }
+
+      state = state.copyWith(
+        player: state.player.copyWith(
+          gold: newGold,
+          gems: newGems,
+          hp: newHp,
+          energy: finalEnergy,
+          bossesDefeatedTotal: bossesDefeated,
+        ),
+        grid: state.grid.copyWith(enemies: updatedEnemies),
+        comboCount: currentCombo,
+        lastDigTimestamp: nowMs,
+        lastMessage: attackMsg,
+      );
+
+      _trackQuestProgress(
+        gold: isEnemyDead ? targetEnemy.rewardGold : 0,
+        boss: (isEnemyDead && targetEnemy.isBoss) ? 1 : 0,
+      );
+      _saveState();
+
+      // TÜM DÜŞMANLAR ÖLDÜYSE ONAY DİYALOĞUNU GÖSTER
+      final bool allDead = updatedEnemies.every((e) => !e.isAlive);
+      if (allDead) {
+        state = state.copyWith(
+          showStageCompleteDialog: true,
+          lastMessage: '🏆 Bölümdeki tüm canavarlar yenildi! Sonraki bölüme geçilsin mi?',
+        );
+      }
+      return;
+    }
+
+    // 2. Hedeflenen hücrede rakip bir oyuncu var mı kontrol et (PvP Saldırısı)
     RemotePlayerModel? targetPlayer;
     for (final p in state.grid.otherPlayers) {
       if (p.position.row == targetRow && p.position.col == targetCol && p.isAlive) {
@@ -985,6 +1115,91 @@ class GameNotifier extends StateNotifier<GameState> {
     );
   }
 
+  void _simulateEnemiesAction() {
+    if (state.gameMode != GameMode.solo || state.grid.enemies.isEmpty) return;
+    if (state.grid.allEnemiesDefeated) return;
+
+    final pPos = state.grid.playerPosition;
+    final updatedEnemies = <EnemyModel>[];
+    int damageTaken = 0;
+    String? attackInfo;
+    final random = Random();
+
+    for (final enemy in state.grid.enemies) {
+      if (!enemy.isAlive) {
+        updatedEnemies.add(enemy);
+        continue;
+      }
+
+      final int dr = pPos.row - enemy.position.row;
+      final int dc = pPos.col - enemy.position.col;
+      final int dist = dr.abs() + dc.abs();
+
+      if (dist == 1) {
+        // Düşman oyuncunun bitişiğinde, yakın dövüş saldırısı!
+        damageTaken += enemy.attackDamage;
+        attackInfo = '⚠️ ${enemy.emoji} ${enemy.name} size saldırdı! (-${enemy.attackDamage} Can ❤️)';
+        updatedEnemies.add(enemy);
+      } else if (enemy.canShoot && dist <= 4 && random.nextInt(100) < enemy.shootChance) {
+        // 💥 Düşman Uzaktan Ateş Ediyor!
+        damageTaken += enemy.bulletDamage;
+        attackInfo = '💥 ${enemy.emoji} ${enemy.name} size ATEŞ ETTİ! (-${enemy.bulletDamage} Can ❤️)';
+        updatedEnemies.add(enemy);
+      } else {
+        // Oyuncuya doğru 1 adım yaklaşmayı dene
+        int stepR = 0;
+        int stepC = 0;
+        if (dr.abs() > dc.abs()) {
+          stepR = dr > 0 ? 1 : -1;
+        } else {
+          stepC = dc > 0 ? 1 : -1;
+        }
+
+        final int targetR = (enemy.position.row + stepR).clamp(0, state.grid.rows - 1);
+        final int targetC = (enemy.position.col + stepC).clamp(0, state.grid.columns - 1);
+
+        // Kendi hücrelerinde başka düşman var mı kontrol et
+        bool isOccupied = false;
+        for (final other in state.grid.enemies) {
+          if (other.isAlive && other.id != enemy.id && other.position.row == targetR && other.position.col == targetC) {
+            isOccupied = true;
+            break;
+          }
+        }
+
+        if (!isOccupied) {
+          final targetTile = state.grid.tiles[targetR][targetC];
+          // Eğer hedef boşsa veya sabit sarı blok değilse adım at
+          if (targetTile.isCleared || targetTile.type == TileType.empty || !targetTile.isUnbreakable) {
+            updatedEnemies.add(enemy.copyWith(
+              position: Position(targetR, targetC),
+            ));
+          } else {
+            updatedEnemies.add(enemy);
+          }
+        } else {
+          updatedEnemies.add(enemy);
+        }
+      }
+    }
+
+    int newPlayerHp = state.player.hp;
+    if (damageTaken > 0) {
+      newPlayerHp = max(0, state.player.hp - damageTaken);
+      _triggerHaptic('heavy');
+      if (newPlayerHp <= 0) {
+        newPlayerHp = 40; // Acil toparlanma
+        attackInfo = '💀 Ağır hasar aldınız! Canınız acil yenilendi (+40 ❤️)';
+      }
+    }
+
+    state = state.copyWith(
+      player: state.player.copyWith(hp: newPlayerHp),
+      grid: state.grid.copyWith(enemies: updatedEnemies),
+      lastMessage: attackInfo ?? state.lastMessage,
+    );
+  }
+
   void selectInventoryTool(int index) {
     if (index >= 0 && index < state.player.inventoryTools.length) {
       _triggerHaptic('selection');
@@ -1432,6 +1647,427 @@ class GameNotifier extends StateNotifier<GameState> {
     final updated = List<String>.from(state.player.favoriteFriends)..remove(name);
     state = state.copyWith(player: state.player.copyWith(favoriteFriends: updated));
     _saveState();
+  }
+
+  // ==========================================
+  // 🔫 SİLAH & MERMİ SİSTEMİ
+  // ==========================================
+  void fireWeapon() {
+    if (state.player.currentAmmo <= 0) {
+      _triggerHaptic('selection');
+      state = state.copyWith(lastMessage: '❌ Merminiz bitti! Kutulardan bulun veya Mağazadan mermi alın! 🔫');
+      return;
+    }
+
+    final weapon = state.player.equippedWeapon;
+    final int newAmmo = max(0, state.player.currentAmmo - 1);
+    final pPos = state.grid.playerPosition;
+    final facing = state.grid.playerFacing;
+
+    int dRow = 0;
+    int dCol = 0;
+    switch (facing) {
+      case PlayerDirection.up:
+        dRow = -1;
+        break;
+      case PlayerDirection.down:
+        dRow = 1;
+        break;
+      case PlayerDirection.left:
+        dCol = -1;
+        break;
+      case PlayerDirection.right:
+        dCol = 1;
+        break;
+    }
+
+    _triggerHaptic('heavy');
+
+    // Menzil boyunca ilk hedefe (düşman veya blok) çarpana kadar tara (Maksimum 5 kare)
+    int hitRow = -1;
+    int hitCol = -1;
+    EnemyModel? hitEnemy;
+    TileModel? hitTile;
+
+    for (int step = 1; step <= 5; step++) {
+      final checkR = pPos.row + (dRow * step);
+      final checkC = pPos.col + (dCol * step);
+
+      if (checkR < 0 || checkR >= state.grid.rows || checkC < 0 || checkC >= state.grid.columns) {
+        break;
+      }
+
+      // Canlı düşman var mı?
+      for (final e in state.grid.enemies) {
+        if (e.isAlive && e.position.row == checkR && e.position.col == checkC) {
+          hitEnemy = e;
+          hitRow = checkR;
+          hitCol = checkC;
+          break;
+        }
+      }
+      if (hitEnemy != null) break;
+
+      // Blok / Kutu var mı?
+      final tile = state.grid.tiles[checkR][checkC];
+      if (!tile.isCleared && tile.type != TileType.empty) {
+        hitTile = tile;
+        hitRow = checkR;
+        hitCol = checkC;
+        break;
+      }
+    }
+
+    // 1. DÜŞMANA İSABET ETTİ
+    if (hitEnemy != null) {
+      final int dmg = weapon.damage;
+      final int newEnemyHp = max(0, hitEnemy.currentHp - dmg);
+      final bool isDead = newEnemyHp <= 0;
+
+      final updatedEnemies = state.grid.enemies.map((e) {
+        if (e.id == hitEnemy!.id) {
+          return e.copyWith(currentHp: newEnemyHp, isAlive: !isDead);
+        }
+        return e;
+      }).toList();
+
+      int newGold = state.player.gold;
+      int newGems = state.player.gems;
+      int killedTotal = state.player.enemiesKilledTotal;
+      String msg = '';
+
+      if (isDead) {
+        newGold += hitEnemy.rewardGold;
+        newGems += hitEnemy.rewardGems;
+        killedTotal += 1;
+        msg = '💥 ${weapon.iconEmoji} ${hitEnemy.emoji} ${hitEnemy.name} VURULUP YENİLDİ! (+${hitEnemy.rewardGold} 🟡)';
+      } else {
+        msg = '🎯 ${weapon.iconEmoji} ${hitEnemy.emoji} ${hitEnemy.name}\'a $dmg Mermi Hasarı! (Kalan Can: $newEnemyHp ❤️)';
+      }
+
+      final bool allDead = updatedEnemies.every((e) => !e.isAlive);
+
+      state = state.copyWith(
+        player: state.player.copyWith(
+          currentAmmo: newAmmo,
+          gold: newGold,
+          gems: newGems,
+          enemiesKilledTotal: killedTotal,
+        ),
+        grid: state.grid.copyWith(enemies: updatedEnemies),
+        showStageCompleteDialog: allDead,
+        lastMessage: msg,
+      );
+
+      _trackQuestProgress(gold: isDead ? hitEnemy.rewardGold : 0);
+      _saveState();
+      return;
+    }
+
+    // 2. KUTU / BLOK VURULDU
+    if (hitTile != null) {
+      final int tileDmg = weapon.tileDamage;
+      final int newTileHp = max(0, hitTile.currentHp - tileDmg);
+      final bool isTileBroken = newTileHp <= 0;
+
+      final currentTiles = [
+        for (int r = 0; r < state.grid.rows; r++)
+          [
+            for (int c = 0; c < state.grid.columns; c++)
+              if (r == hitRow && c == hitCol)
+                isTileBroken
+                    ? hitTile.copyWith(currentHp: 0, isCleared: true, type: TileType.empty)
+                    : hitTile.copyWith(currentHp: newTileHp)
+              else
+                state.grid.tiles[r][c]
+          ]
+      ];
+
+      String msg = isTileBroken
+          ? '💥 ${weapon.iconEmoji} Kutu/Blok mermiyle parçalandı!'
+          : '🎯 ${weapon.iconEmoji} Blok isabet aldı! (-$tileDmg Dayanıklılık)';
+
+      // Kutu veya sandıktan eşya / mermi / alet çıkma şansı
+      String? lootName;
+      String? lootMsg;
+      WeaponType? lootWeapon;
+      ToolType? lootTool;
+      int lootAmmo = 0;
+
+      if (isTileBroken) {
+        final rand = Random();
+        if (hitTile.type == TileType.chest || rand.nextDouble() < 0.35) {
+          // Loot bulma olasılığı
+          final lootChoice = rand.nextInt(3);
+          if (lootChoice == 0) {
+            // Mermi paketi
+            lootAmmo = 8 + rand.nextInt(8);
+            lootName = 'Mermi Paketi (+$lootAmmo 🔫)';
+            lootMsg = 'Kutunun altından $lootAmmo adet mermi çıktı! Alalım mı?';
+          } else if (lootChoice == 1) {
+            // Alet
+            final tools = ToolType.values;
+            lootTool = tools[rand.nextInt(tools.length)];
+            lootName = '${lootTool.displayName} ${lootTool.iconEmoji}';
+            lootMsg = 'Kutunun altından ${lootTool.displayName} çıktı! Envantere ekleyelim mi?';
+          } else {
+            // Silah
+            final weapons = WeaponType.values.where((w) => !state.player.ownedWeapons.contains(w)).toList();
+            if (weapons.isNotEmpty) {
+              lootWeapon = weapons[rand.nextInt(weapons.length)];
+              lootName = '${lootWeapon.displayName} ${lootWeapon.iconEmoji}';
+              lootMsg = 'Nadir bir silah (${lootWeapon.displayName}) bulundu! Teçhizata alalım mı?';
+            } else {
+              lootAmmo = 10;
+              lootName = 'Mermi Pakesi (+10 🔫)';
+              lootMsg = 'Kutunun altından 10 adet mermi çıktı! Alalım mı?';
+            }
+          }
+        }
+      }
+
+      state = state.copyWith(
+        player: state.player.copyWith(
+          currentAmmo: newAmmo,
+          tilesBrokenTotal: state.player.tilesBrokenTotal + (isTileBroken ? 1 : 0),
+        ),
+        grid: state.grid.copyWith(
+          tiles: currentTiles,
+          tilesClearedInStage: state.grid.tilesClearedInStage + (isTileBroken ? 1 : 0),
+        ),
+        pendingLootName: lootName,
+        pendingLootMessage: lootMsg,
+        pendingLootWeapon: lootWeapon,
+        pendingLootTool: lootTool,
+        pendingLootAmmo: lootAmmo,
+        lastMessage: msg,
+      );
+
+      _saveState();
+      return;
+    }
+
+    // Boşa gitti
+    state = state.copyWith(
+      player: state.player.copyWith(currentAmmo: newAmmo),
+      lastMessage: '💨 ${weapon.iconEmoji} Mermi boşluğa gitti! (Kalan Mermi: $newAmmo)',
+    );
+    _saveState();
+  }
+
+  // ==========================================
+  // 🏆 BÖLÜM GEÇİŞ VE LOOT DİYALOGLARI
+  // ==========================================
+  void advanceStageConfirmed() {
+    _advanceStage();
+    // Yeni bölüme geçişte mermi tazeleme (+6 mermi)
+    final int refreshedAmmo = (state.player.currentAmmo + 6).clamp(0, 50);
+    state = state.copyWith(
+      showStageCompleteDialog: false,
+      player: state.player.copyWith(currentAmmo: refreshedAmmo),
+      lastMessage: '🎉 Yeni bölüme geçildi! +6 Mermi eklendi! 🔫',
+    );
+    _saveState();
+  }
+
+  void declineStageAdvance() {
+    state = state.copyWith(
+      showStageCompleteDialog: false,
+      lastMessage: 'Mevcut bölümde kalındı. Kalan madenleri kazabilirsiniz!',
+    );
+  }
+
+  void acceptLoot() {
+    final w = state.pendingLootWeapon;
+    final t = state.pendingLootTool;
+    final ammo = state.pendingLootAmmo;
+
+    final p = state.player;
+    List<ToolType> tools = List<ToolType>.from(p.inventoryTools);
+    List<WeaponType> weapons = List<WeaponType>.from(p.ownedWeapons);
+    int currentAmmo = p.currentAmmo;
+
+    if (ammo > 0) {
+      currentAmmo += ammo;
+    }
+    if (w != null && !weapons.contains(w)) {
+      weapons.add(w);
+    }
+    if (t != null && !tools.contains(t)) {
+      if (tools.length < p.maxInventorySlots) {
+        tools.add(t);
+      } else {
+        // Envanter doluysa aktif olanın yerine al
+        tools[p.activeToolIndex.clamp(0, tools.length - 1)] = t;
+      }
+    }
+
+    _triggerHaptic('selection');
+    state = state.copyWith(
+      player: p.copyWith(
+        inventoryTools: tools,
+        ownedWeapons: weapons,
+        currentAmmo: currentAmmo,
+      ),
+      pendingLootName: null,
+      pendingLootMessage: null,
+      pendingLootWeapon: null,
+      pendingLootTool: null,
+      pendingLootAmmo: 0,
+      lastMessage: '✅ Eşya envantere eklendi!',
+    );
+    _saveState();
+  }
+
+  void declineLoot() {
+    state = state.copyWith(
+      pendingLootName: null,
+      pendingLootMessage: null,
+      pendingLootWeapon: null,
+      pendingLootTool: null,
+      pendingLootAmmo: 0,
+      lastMessage: 'Eşya bırakıldı.',
+    );
+  }
+
+  // ==========================================
+  // 🛒 MAĞAZA VE EKİPMAN YÖNETİMİ
+  // ==========================================
+  bool buyWeapon(WeaponType weapon) {
+    if (state.player.ownedWeapons.contains(weapon)) {
+      // Zaten sahip, kuşan
+      equipWeapon(weapon);
+      return true;
+    }
+
+    final int gCost = weapon.goldPrice;
+    final int gemCost = weapon.gemPrice;
+
+    if (state.player.gold < gCost || state.player.gems < gemCost) {
+      state = state.copyWith(lastMessage: '❌ Yetersiz Bakiye! (Gereken: $gCost 🟡 $gemCost 💎)');
+      return false;
+    }
+
+    final updatedWeapons = List<WeaponType>.from(state.player.ownedWeapons)..add(weapon);
+    final updatedGold = state.player.gold - gCost;
+    final updatedGems = state.player.gems - gemCost;
+    final updatedAmmo = state.player.currentAmmo + weapon.maxAmmo;
+
+    _triggerHaptic('heavy');
+    state = state.copyWith(
+      player: state.player.copyWith(
+        gold: updatedGold,
+        gems: updatedGems,
+        ownedWeapons: updatedWeapons,
+        equippedWeapon: weapon,
+        currentAmmo: updatedAmmo,
+      ),
+      lastMessage: '🎉 ${weapon.displayName} satın alındı ve kuşandı! (+${weapon.maxAmmo} Mermi 🔫)',
+    );
+    _saveState();
+    return true;
+  }
+
+  void equipWeapon(WeaponType weapon) {
+    if (!state.player.ownedWeapons.contains(weapon)) return;
+    _triggerHaptic('selection');
+    state = state.copyWith(
+      player: state.player.copyWith(equippedWeapon: weapon),
+      lastMessage: '🔫 Aktif Silah: ${weapon.displayName} ${weapon.iconEmoji}',
+    );
+    _saveState();
+  }
+
+  bool buyAmmopack(int amount, int goldCost) {
+    if (state.player.gold < goldCost) {
+      state = state.copyWith(lastMessage: '❌ Yetersiz Altın! ($goldCost 🟡 gerekli)');
+      return false;
+    }
+
+    _triggerHaptic('selection');
+    state = state.copyWith(
+      player: state.player.copyWith(
+        gold: state.player.gold - goldCost,
+        currentAmmo: state.player.currentAmmo + amount,
+      ),
+      lastMessage: '🔫 +$amount Mermi satın alındı! (Toplam: ${state.player.currentAmmo + amount})',
+    );
+    _saveState();
+    return true;
+  }
+
+  bool buyInventorySlotExpansion() {
+    const int cost = 750;
+    if (state.player.maxInventorySlots >= 12) {
+      state = state.copyWith(lastMessage: 'Maksimum envanter kapasitesine ulaşıldı (12 Yuva)!');
+      return false;
+    }
+    if (state.player.gold < cost) {
+      state = state.copyWith(lastMessage: '❌ Yetersiz Altın! ($cost 🟡 gerekli)');
+      return false;
+    }
+
+    final newSlots = state.player.maxInventorySlots + 2;
+    _triggerHaptic('heavy');
+    state = state.copyWith(
+      player: state.player.copyWith(
+        gold: state.player.gold - cost,
+        maxInventorySlots: newSlots,
+      ),
+      lastMessage: '🎒 Envanter genişletildi! Yeni Kapasite: $newSlots Yuva!',
+    );
+    _saveState();
+    return true;
+  }
+
+  bool buyTool(ToolType tool, int goldCost) {
+    if (state.player.gold < goldCost) {
+      state = state.copyWith(lastMessage: '❌ Yetersiz Altın! ($goldCost 🟡 gerekli)');
+      return false;
+    }
+
+    List<ToolType> tools = List<ToolType>.from(state.player.inventoryTools);
+    if (!tools.contains(tool)) {
+      if (tools.length < state.player.maxInventorySlots) {
+        tools.add(tool);
+      } else {
+        tools[state.player.activeToolIndex.clamp(0, tools.length - 1)] = tool;
+      }
+    }
+
+    _triggerHaptic('selection');
+    state = state.copyWith(
+      player: state.player.copyWith(
+        gold: state.player.gold - goldCost,
+        inventoryTools: tools,
+      ),
+      lastMessage: '🛠️ ${tool.displayName} satın alındı ve envantere eklendi!',
+    );
+    _saveState();
+    return true;
+  }
+
+  bool buyShieldUpgrade() {
+    const int cost = 600;
+    if (state.player.gold < cost) {
+      state = state.copyWith(lastMessage: '❌ Yetersiz Altın! ($cost 🟡 gerekli)');
+      return false;
+    }
+
+    final newMaxHp = state.player.maxHp + 30;
+    final newHp = state.player.hp + 30;
+
+    _triggerHaptic('heavy');
+    state = state.copyWith(
+      player: state.player.copyWith(
+        gold: state.player.gold - cost,
+        maxHp: newMaxHp,
+        hp: newHp,
+      ),
+      lastMessage: '🛡️ Çelik Zırh satın alındı! (+30 Max Can ❤️)',
+    );
+    _saveState();
+    return true;
   }
 
   void resetAllProgress() {

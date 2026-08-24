@@ -4,6 +4,7 @@ import '../../../../core/theme/app_colors.dart';
 import '../../../mining/application/game_notifier.dart';
 import '../../../mining/domain/models/stage_config_model.dart';
 import '../../../mining/presentation/screens/stage_select_screen.dart';
+import '../../../mining/presentation/screens/weapon_shop_screen.dart';
 import '../../../profile/presentation/screens/profile_screen.dart';
 import '../../../settings/presentation/screens/settings_screen.dart';
 import 'create_room_screen.dart';
@@ -165,6 +166,50 @@ class _MainMenuScreenState extends ConsumerState<MainMenuScreen> {
                               ],
                             ),
                           ],
+                        ),
+                      ),
+                      const SizedBox(width: 6),
+
+                      // 🛒 Mağaza Butonu
+                      InkWell(
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(builder: (ctx) => const WeaponShopScreen()),
+                          );
+                        },
+                        borderRadius: BorderRadius.circular(10),
+                        child: Container(
+                          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                          decoration: BoxDecoration(
+                            gradient: const LinearGradient(
+                              colors: [Color(0xFF2E1A0A), Color(0xFF5A3510)],
+                            ),
+                            borderRadius: BorderRadius.circular(10),
+                            border: Border.all(color: AppColors.goldText, width: 1.2),
+                            boxShadow: [
+                              BoxShadow(
+                                color: AppColors.goldText.withValues(alpha: 0.3),
+                                blurRadius: 6,
+                              ),
+                            ],
+                          ),
+                          child: const Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Text('🛒', style: TextStyle(fontSize: 13)),
+                              SizedBox(width: 4),
+                              Text(
+                                'MAĞAZA',
+                                style: TextStyle(
+                                  color: AppColors.goldText,
+                                  fontWeight: FontWeight.w900,
+                                  fontSize: 11,
+                                  letterSpacing: 0.8,
+                                ),
+                              ),
+                            ],
+                          ),
                         ),
                       ),
                       const SizedBox(width: 4),

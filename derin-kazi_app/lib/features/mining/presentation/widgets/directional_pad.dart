@@ -1,88 +1,126 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../domain/models/grid_model.dart';
 import '../../application/game_notifier.dart';
 
-class DirectionalPad extends ConsumerWidget {
+class DirectionalPad extends ConsumerStatefulWidget {
   const DirectionalPad({super.key});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<DirectionalPad> createState() => _DirectionalPadState();
+}
+
+class _DirectionalPadState extends ConsumerState<DirectionalPad> {
+  Timer? _initialDelayTimer;
+  Timer? _rapidRepeatTimer;
+
+  @override
+  void dispose() {
+    _stopAction();
+    super.dispose();
+  }
+
+  void _startAction(VoidCallback action) {
+    _stopAction();
+    // İlk dokunuşta anında 1 adım at
+    action();
+
+    // 140 milisaniye sonra hızlı seri tekrar moduna geç (her 80ms'de bir adım)
+    _initialDelayTimer = Timer(const Duration(milliseconds: 140), () {
+      _rapidRepeatTimer = Timer.periodic(const Duration(milliseconds: 80), (_) {
+        action();
+      });
+    });
+  }
+
+  void _stopAction() {
+    _initialDelayTimer?.cancel();
+    _initialDelayTimer = null;
+    _rapidRepeatTimer?.cancel();
+    _rapidRepeatTimer = null;
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    const double dpadSize = 126.0;
+    const double btnSize = 42.0;
+
     return SizedBox(
-      width: 120,
-      height: 120,
+      width: dpadSize,
+      height: dpadSize,
       child: Stack(
-        alignment: Alignment.center,
         children: [
           // D-Pad Arka Plan Halkası
-          Container(
-            width: 114,
-            height: 114,
-            decoration: BoxDecoration(
-              shape: BoxShape.circle,
-              color: const Color(0x6608081A),
-              border: Border.all(color: const Color(0x334DFF88), width: 1.5),
-            ),
-          ),
-
-          // Merkez Kazı / Hedefe Vurma Butonu
-          InkWell(
-            onTap: () => ref.read(gameNotifierProvider.notifier).digTargetTile(),
-            borderRadius: BorderRadius.circular(20),
+          Center(
             child: Container(
-              width: 38,
-              height: 38,
+              width: dpadSize - 6,
+              height: dpadSize - 6,
               decoration: BoxDecoration(
-                color: const Color(0xCC0F2B18),
                 shape: BoxShape.circle,
-                border: Border.all(color: AppColors.neonGreen.withValues(alpha: 0.9), width: 1.5),
-                boxShadow: [
-                  BoxShadow(
-                    color: AppColors.neonGreen.withValues(alpha: 0.3),
-                    blurRadius: 8,
-                  ),
-                ],
-              ),
-              child: const Center(
-                child: Icon(Icons.hardware, color: AppColors.neonGreen, size: 18),
+                color: const Color(0x6608081A),
+                border: Border.all(color: const Color(0x334DFF88), width: 1.5),
               ),
             ),
           ),
 
-          // Yukarı Butonu
+          // 1. YUKARI BUTONU
           Positioned(
-            top: 2,
+            top: 0,
+            left: (dpadSize - btnSize) / 2,
+            width: btnSize,
+            height: btnSize,
             child: _buildArrowButton(
-              onTap: () => ref.read(gameNotifierProvider.notifier).changeDirection(PlayerDirection.up),
+              onAction: () => ref.read(gameNotifierProvider.notifier).changeDirection(PlayerDirection.up),
               icon: Icons.keyboard_arrow_up,
             ),
           ),
 
-          // Aşağı Butonu
+          // 2. AŞAĞI BUTONU
           Positioned(
-            bottom: 2,
+            bottom: 0,
+            left: (dpadSize - btnSize) / 2,
+            width: btnSize,
+            height: btnSize,
             child: _buildArrowButton(
-              onTap: () => ref.read(gameNotifierProvider.notifier).changeDirection(PlayerDirection.down),
+              onAction: () => ref.read(gameNotifierProvider.notifier).changeDirection(PlayerDirection.down),
               icon: Icons.keyboard_arrow_down,
             ),
           ),
 
-          // Sol Butonu
+          // 3. SOL BUTONU
           Positioned(
-            left: 2,
+            left: 0,
+            top: (dpadSize - btnSize) / 2,
+            width: btnSize,
+            height: btnSize,
             child: _buildArrowButton(
-              onTap: () => ref.read(gameNotifierProvider.notifier).changeDirection(PlayerDirection.left),
+              onAction: () => ref.read(gameNotifierProvider.notifier).changeDirection(PlayerDirection.left),
               icon: Icons.keyboard_arrow_left,
             ),
           ),
 
-          // Sağ Butonu
+          // 4. SAĞ BUTONU
           Positioned(
-            right: 2,
+            right: 0,
+            top: (dpadSize - btnSize) / 2,
+            width: btnSize,
+            height: btnSize,
             child: _buildArrowButton(
-              onTap: () => ref.read(gameNotifierProvider.notifier).changeDirection(PlayerDirection.right),
+              onAction: () => ref.read(gameNotifierProvider.notifier).changeDirection(PlayerDirection.right),
               icon: Icons.keyboard_arrow_right,
+            ),
+          ),
+
+          // 5. MERKEZ KAZ / VUR BUTONU
+          Positioned(
+            left: (dpadSize - btnSize) / 2,
+            top: (dpadSize - btnSize) / 2,
+            width: btnSize,
+            height: btnSize,
+            child: _buildCenterButton(
+              onAction: () => ref.read(gameNotifierProvider.notifier).digTargetTile(),
             ),
           ),
         ],
@@ -91,39 +129,64 @@ class DirectionalPad extends ConsumerWidget {
   }
 
   Widget _buildArrowButton({
-    required VoidCallback onTap,
+    required VoidCallback onAction,
     required IconData icon,
   }) {
-    return Material(
-      color: Colors.transparent,
-      child: InkWell(
-        onTap: onTap,
-        borderRadius: BorderRadius.circular(8),
-        child: Container(
-          width: 38,
-          height: 38,
-          decoration: BoxDecoration(
-            color: const Color(0xB3164424),
-            borderRadius: BorderRadius.circular(8),
-            border: Border.all(
-              color: AppColors.neonGreen.withValues(alpha: 0.8),
-              width: 1.2,
-            ),
-            boxShadow: [
-              BoxShadow(
-                color: AppColors.neonGreen.withValues(alpha: 0.25),
-                blurRadius: 4,
-              ),
-            ],
+    return Listener(
+      onPointerDown: (_) => _startAction(onAction),
+      onPointerUp: (_) => _stopAction(),
+      onPointerCancel: (_) => _stopAction(),
+      child: Container(
+        decoration: BoxDecoration(
+          color: const Color(0xB3164424),
+          borderRadius: BorderRadius.circular(10),
+          border: Border.all(
+            color: AppColors.neonGreen.withValues(alpha: 0.8),
+            width: 1.2,
           ),
+          boxShadow: [
+            BoxShadow(
+              color: AppColors.neonGreen.withValues(alpha: 0.25),
+              blurRadius: 4,
+            ),
+          ],
+        ),
+        child: Center(
           child: Icon(
             icon,
             color: AppColors.neonGreen,
-            size: 24,
+            size: 26,
           ),
         ),
       ),
     );
   }
+
+  Widget _buildCenterButton({
+    required VoidCallback onAction,
+  }) {
+    return Listener(
+      onPointerDown: (_) => _startAction(onAction),
+      onPointerUp: (_) => _stopAction(),
+      onPointerCancel: (_) => _stopAction(),
+      child: Container(
+        decoration: BoxDecoration(
+          color: const Color(0xCC0F2B18),
+          shape: BoxShape.circle,
+          border: Border.all(color: AppColors.neonGreen.withValues(alpha: 0.9), width: 1.5),
+          boxShadow: [
+            BoxShadow(
+              color: AppColors.neonGreen.withValues(alpha: 0.3),
+              blurRadius: 8,
+            ),
+          ],
+        ),
+        child: const Center(
+          child: Icon(Icons.hardware, color: AppColors.neonGreen, size: 20),
+        ),
+      ),
+    );
+  }
 }
+
 

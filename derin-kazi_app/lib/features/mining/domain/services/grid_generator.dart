@@ -3,6 +3,7 @@ import '../models/grid_model.dart';
 import '../models/tile_model.dart';
 import '../models/tool_model.dart';
 import '../models/stage_config_model.dart';
+import 'enemy_spawner.dart';
 
 class GridGenerator {
   static const int defaultRows = 13;
@@ -229,6 +230,14 @@ class GridGenerator {
       tiles.add(rowTiles);
     }
 
+    final enemies = EnemySpawner.spawnForStage(
+      stage: stage,
+      rows: rows,
+      columns: cols,
+      playerPos: const Position(2, 2),
+      seed: seed ?? stage,
+    );
+
     return GridModel(
       stage: stage,
       depth: depth,
@@ -240,6 +249,7 @@ class GridGenerator {
       tilesClearedInStage: 9,
       totalTilesInStage: totalMineableTiles + 9,
       gridSeed: seed ?? stage,
+      enemies: enemies,
     );
   }
 }

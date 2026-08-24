@@ -3,7 +3,9 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../domain/models/player_state_model.dart';
 import '../../domain/models/grid_model.dart';
+import '../../domain/models/weapon_model.dart';
 import '../../application/game_notifier.dart';
+import '../screens/weapon_shop_screen.dart';
 import '../../../quests/presentation/widgets/quest_dialog.dart';
 import '../../../cosmetics/presentation/screens/cosmetics_screen.dart';
 import '../../../profile/presentation/screens/profile_screen.dart';
@@ -45,7 +47,7 @@ class HudBar extends ConsumerWidget {
           Flexible(
             child: Padding(
               padding: const EdgeInsets.symmetric(horizontal: 4),
-              child: _buildCenterSection(grid, player, gameState),
+              child: _buildCenterSection(context, grid, player, gameState),
             ),
           ),
 
@@ -192,24 +194,24 @@ class HudBar extends ConsumerWidget {
     );
   }
 
-  Widget _buildCenterSection(GridModel grid, PlayerStateModel player, GameState state) {
+  Widget _buildCenterSection(BuildContext context, GridModel grid, PlayerStateModel player, GameState state) {
     if (state.gameMode == GameMode.solo) {
       return Container(
-        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 3),
+        padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 3),
         decoration: BoxDecoration(
           color: const Color(0xFF0F0F28),
           borderRadius: BorderRadius.circular(6),
           border: Border.all(color: AppColors.neonGreen.withValues(alpha: 0.7), width: 1),
         ),
-        child: Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            const Icon(Icons.terrain, color: AppColors.neonGreen, size: 13),
-            const SizedBox(width: 5),
-            Flexible(
-              child: Text(
+        child: SingleChildScrollView(
+          scrollDirection: Axis.horizontal,
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              const Icon(Icons.terrain, color: AppColors.neonGreen, size: 13),
+              const SizedBox(width: 4),
+              Text(
                 'BÖLÜM ${grid.stage}/500 • ${grid.biomeName}',
-                overflow: TextOverflow.ellipsis,
                 style: const TextStyle(
                   color: AppColors.neonGreen,
                   fontSize: 10,
@@ -217,8 +219,61 @@ class HudBar extends ConsumerWidget {
                   letterSpacing: 0.4,
                 ),
               ),
-            ),
-          ],
+              if (grid.enemies.isNotEmpty) ...[
+                const SizedBox(width: 5),
+                Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 1),
+                  decoration: BoxDecoration(
+                    color: grid.aliveEnemiesCount > 0 ? const Color(0xFF5C1010) : const Color(0xFF104A10),
+                    borderRadius: BorderRadius.circular(4),
+                    border: Border.all(
+                      color: grid.aliveEnemiesCount > 0 ? const Color(0xFFFF5252) : AppColors.neonGreen,
+                      width: 0.8,
+                    ),
+                  ),
+                  child: Text(
+                    grid.aliveEnemiesCount > 0 ? '⚔️ ${grid.aliveEnemiesCount}' : '🏆 TEMİZ!',
+                    style: TextStyle(
+                      color: grid.aliveEnemiesCount > 0 ? const Color(0xFFFF8A80) : AppColors.neonGreen,
+                      fontSize: 9,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ),
+              ],
+
+              // 🔫 Mermi ve Aktif Silah Rozeti
+              const SizedBox(width: 5),
+              InkWell(
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (ctx) => const WeaponShopScreen()),
+                  );
+                },
+                borderRadius: BorderRadius.circular(4),
+                child: Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 1),
+                  decoration: BoxDecoration(
+                    color: player.currentAmmo > 0 ? const Color(0xFF1E1038) : const Color(0xFF4A1010),
+                    borderRadius: BorderRadius.circular(4),
+                    border: Border.all(
+                      color: player.currentAmmo > 0 ? const Color(0xFFE040FB) : Colors.redAccent,
+                      width: 0.8,
+                    ),
+                  ),
+                  child: Text(
+                    '${player.equippedWeapon.iconEmoji} ${player.currentAmmo}',
+                    style: TextStyle(
+                      color: player.currentAmmo > 0 ? const Color(0xFFEA80FC) : Colors.redAccent,
+                      fontSize: 9.5,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ),
         ),
       );
     }
@@ -287,33 +342,48 @@ class HudBar extends ConsumerWidget {
         ),
         const SizedBox(width: 6),
 
-        // Sıfırla Butonu
+        // Prestij Sıfırlama Butonu
         InkWell(
           onTap: () => _showResetDialog(context, ref, player),
           borderRadius: BorderRadius.circular(4),
           child: Container(
-            padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 4),
+            padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 3),
             decoration: BoxDecoration(
-              color: AppColors.resetRed,
+              color: AppColors.resetRed.withValues(alpha: 0.8),
               borderRadius: BorderRadius.circular(4),
             ),
             child: const Text(
               'SIFIRLA',
               style: TextStyle(
                 color: Colors.white,
-                fontSize: 9,
+                fontSize: 8.5,
                 fontWeight: FontWeight.bold,
               ),
             ),
           ),
         ),
-        const SizedBox(width: 6),
+        const SizedBox(width: 4),
+
+        // 🛒 Mağaza Hızlı Erişim Butonu
+        IconButton(
+          padding: EdgeInsets.zero,
+          constraints: const BoxConstraints(minWidth: 26, minHeight: 26),
+          icon: const Icon(Icons.shopping_cart, color: AppColors.goldText, size: 19),
+          tooltip: 'Silah & Ekipman Mağazası',
+          onPressed: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (ctx) => const WeaponShopScreen()),
+            );
+          },
+        ),
+        const SizedBox(width: 2),
 
         // Günlük Görevler Butonu
         IconButton(
           padding: EdgeInsets.zero,
-          constraints: const BoxConstraints(minWidth: 28, minHeight: 28),
-          icon: const Icon(Icons.assignment, color: AppColors.goldText, size: 20),
+          constraints: const BoxConstraints(minWidth: 26, minHeight: 26),
+          icon: const Icon(Icons.assignment, color: AppColors.goldText, size: 19),
           tooltip: 'Günlük Görevler',
           onPressed: () => QuestDialog.showQuestDialog(context),
         ),
@@ -321,8 +391,8 @@ class HudBar extends ConsumerWidget {
         // Kostümler Butonu
         IconButton(
           padding: EdgeInsets.zero,
-          constraints: const BoxConstraints(minWidth: 28, minHeight: 28),
-          icon: const Icon(Icons.palette, color: Color(0xFFE040FB), size: 20),
+          constraints: const BoxConstraints(minWidth: 26, minHeight: 26),
+          icon: const Icon(Icons.palette, color: Color(0xFFE040FB), size: 19),
           tooltip: 'Kostümler & Skinler',
           onPressed: () {
             Navigator.push(
@@ -331,13 +401,13 @@ class HudBar extends ConsumerWidget {
             );
           },
         ),
-        const SizedBox(width: 4),
+        const SizedBox(width: 2),
 
         // Ayarlar Butonu
         IconButton(
           padding: EdgeInsets.zero,
-          constraints: const BoxConstraints(minWidth: 28, minHeight: 28),
-          icon: const Icon(Icons.settings, color: Colors.white70, size: 20),
+          constraints: const BoxConstraints(minWidth: 26, minHeight: 26),
+          icon: const Icon(Icons.settings, color: Colors.white70, size: 19),
           tooltip: 'Ayarlar',
           onPressed: () {
             Navigator.push(

@@ -1,4 +1,5 @@
 import 'tile_model.dart';
+import 'enemy_model.dart';
 import 'package:derin_kazi/features/multiplayer/domain/models/remote_player_model.dart';
 
 enum PlayerDirection { up, down, left, right }
@@ -33,6 +34,7 @@ class GridModel {
   final int totalTilesInStage;
   final int? gridSeed;
   final List<RemotePlayerModel> otherPlayers;
+  final List<EnemyModel> enemies;
 
   const GridModel({
     required this.stage,
@@ -47,7 +49,11 @@ class GridModel {
     required this.totalTilesInStage,
     this.gridSeed,
     this.otherPlayers = const [],
+    this.enemies = const [],
   });
+
+  int get aliveEnemiesCount => enemies.where((e) => e.isAlive).length;
+  bool get allEnemiesDefeated => enemies.isNotEmpty && enemies.every((e) => !e.isAlive);
 
   Position get targetCellPosition {
     int dRow = 0;
@@ -85,6 +91,7 @@ class GridModel {
     int? totalTilesInStage,
     int? gridSeed,
     List<RemotePlayerModel>? otherPlayers,
+    List<EnemyModel>? enemies,
   }) {
     return GridModel(
       stage: stage ?? this.stage,
@@ -99,7 +106,9 @@ class GridModel {
       totalTilesInStage: totalTilesInStage ?? this.totalTilesInStage,
       gridSeed: gridSeed ?? this.gridSeed,
       otherPlayers: otherPlayers ?? this.otherPlayers,
+      enemies: enemies ?? this.enemies,
     );
   }
 }
+
 

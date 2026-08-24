@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../domain/models/grid_model.dart';
 import '../../domain/models/tile_model.dart';
+import '../../domain/models/enemy_model.dart';
 import 'package:derin_kazi/features/multiplayer/domain/models/remote_player_model.dart';
 
 class TileGridPainter extends CustomPainter {
@@ -56,14 +57,121 @@ class TileGridPainter extends CustomPainter {
       }
     }
 
-    // 3. Hedeflenen Hücre Çerçevesi (Target Reticle)
+    // 3. Düşmanları / Canavarları Çiz
+    _drawEnemies(canvas, grid.enemies, cellWidth, cellHeight);
+
+    // 4. Hedeflenen Hücre Çerçevesi (Target Reticle)
     _drawTargetReticle(canvas, grid.targetCellPosition, cellWidth, cellHeight);
 
-    // 4. Diğer Çoklu Oyuncuları Çiz (Ekip Kazısı)
+    // 5. Diğer Çoklu Oyuncuları Çiz (Ekip Kazısı)
     _drawOtherPlayers(canvas, grid.otherPlayers, cellWidth, cellHeight);
 
-    // 5. Oyuncu Karakterini Çiz
+    // 6. Oyuncu Karakterini Çiz
     _drawPlayer(canvas, grid.playerPosition, cellWidth, cellHeight);
+  }
+
+  void _drawEnemies(Canvas canvas, List<EnemyModel> enemies, double cellWidth, double cellHeight) {
+    for (final enemy in enemies) {
+      if (!enemy.isAlive) continue;
+
+      final double cx = enemy.position.col * cellWidth + cellWidth / 2;
+      final double cy = enemy.position.row * cellHeight + cellHeight / 2;
+      final double scale = min(cellWidth, cellHeight) / 24.0;
+      final double radius = min(cellWidth, cellHeight) * 0.45;
+
+      // 1. Düşman Tehlike Aurası
+      final Paint auraPaint = Paint()
+        ..color = enemy.isBoss
+            ? const Color(0xFFFFD700).withValues(alpha: 0.45)
+            : const Color(0xFFFF1744).withValues(alpha: 0.35)
+        ..maskFilter = MaskFilter.blur(BlurStyle.normal, enemy.isBoss ? 6 : 3);
+      canvas.drawCircle(Offset(cx, cy), radius, auraPaint);
+
+      // Boss Çerçeve Parıltısı
+      if (enemy.isBoss) {
+        final Paint bossRing = Paint()
+          ..color = const Color(0xFFFFD700)
+          ..style = PaintingStyle.stroke
+          ..strokeWidth = 1.5;
+        canvas.drawCircle(Offset(cx, cy), radius + 2, bossRing);
+      }
+
+      // 2. Düşman Emojisi
+      final textSpan = TextSpan(
+        text: enemy.emoji,
+        style: TextStyle(
+          fontSize: (enemy.isBoss ? 16 : 13) * scale,
+        ),
+      );
+      final textPainter = TextPainter(
+        text: textSpan,
+        textDirection: TextDirection.ltr,
+      )..layout();
+      textPainter.paint(
+        canvas,
+        Offset(cx - textPainter.width / 2, cy - textPainter.height / 2),
+      );
+
+      // 3. Baş Üstü Mini Can Barı (HP Bar)
+      final double barWidth = min(cellWidth * 0.9, 28 * scale);
+      final double barHeight = 3.5 * scale;
+      final double barLeft = cx - barWidth / 2;
+      final double barTop = cy - radius - 5 * scale;
+
+      final double hpRatio = (enemy.currentHp / max(1, enemy.maxHp)).clamp(0.0, 1.0);
+
+      // Can Barı Arka Planı (Koyu Kırmızı/Siyah)
+      final Paint bgPaint = Paint()..color = const Color(0xFF2E0808);
+      canvas.drawRRect(
+        RRect.fromRectAndRadius(Rect.fromLTWH(barLeft, barTop, barWidth, barHeight), const Radius.circular(2)),
+        bgPaint,
+      );
+
+      // Can Barı Doluluk (Yeşil / Sarı / Kırmızı)
+      Color hpColor = const Color(0xFF00E676);
+      if (hpRatio < 0.3) {
+        hpColor = const Color(0xFFFF1744);
+      } else if (hpRatio < 0.6) {
+        hpColor = const Color(0xFFFFD600);
+      }
+
+      final Paint fillPaint = Paint()..color = hpColor;
+      canvas.drawRRect(
+        RRect.fromRectAndRadius(Rect.fromLTWH(barLeft, barTop, barWidth * hpRatio, barHeight), const Radius.circular(2)),
+        fillPaint,
+      );
+
+      // Can Barı Çerçevesi
+      final Paint borderPaint = Paint()
+        ..color = Colors.black.withValues(alpha: 0.8)
+        ..style = PaintingStyle.stroke
+        ..strokeWidth = 0.8;
+      canvas.drawRRect(
+        RRect.fromRectAndRadius(Rect.fromLTWH(barLeft, barTop, barWidth, barHeight), const Radius.circular(2)),
+        borderPaint,
+      );
+
+      // 4. Boss ise Baş Üstü Küçük İsim Etiketi
+      if (enemy.isBoss) {
+        final nameSpan = TextSpan(
+          text: enemy.name.length > 12 ? '${enemy.name.substring(0, 10)}..' : enemy.name,
+          style: TextStyle(
+            color: const Color(0xFFFFD700),
+            fontSize: 7 * scale,
+            fontWeight: FontWeight.bold,
+            shadows: const [Shadow(color: Colors.black, blurRadius: 3)],
+          ),
+        );
+        final namePainter = TextPainter(
+          text: nameSpan,
+          textDirection: TextDirection.ltr,
+        )..layout();
+        namePainter.paint(
+          canvas,
+          Offset(cx - namePainter.width / 2, barTop - 9 * scale),
+        );
+      }
+    }
   }
 
   void _drawOtherPlayers(Canvas canvas, List<RemotePlayerModel> players, double cellWidth, double cellHeight) {
