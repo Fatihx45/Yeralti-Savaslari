@@ -60,9 +60,9 @@ class _WeaponShopScreenState extends ConsumerState<WeaponShopScreen>
         ),
         actions: [
           TextButton.icon(
-            icon: const Text('🔨', style: TextStyle(fontSize: 16)),
+            icon: const Text('⚡', style: TextStyle(fontSize: 16)),
             label: const Text(
-              'DEMİRCİ',
+              'GÜÇLENDİR',
               style: TextStyle(
                 color: Color(0xFFE040FB),
                 fontWeight: FontWeight.bold,

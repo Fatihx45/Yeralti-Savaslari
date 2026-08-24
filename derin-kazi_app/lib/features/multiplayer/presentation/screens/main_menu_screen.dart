@@ -215,7 +215,7 @@ class _MainMenuScreenState extends ConsumerState<MainMenuScreen> {
                       ),
                       const SizedBox(width: 5),
 
-                      // 🔨 Demirci / Forge Butonu
+                      // ⚡ Güçlendir / Atölye Butonu
                       InkWell(
                         onTap: () {
                           Navigator.push(
@@ -242,10 +242,10 @@ class _MainMenuScreenState extends ConsumerState<MainMenuScreen> {
                           child: const Row(
                             mainAxisSize: MainAxisSize.min,
                             children: [
-                              Text('🔨', style: TextStyle(fontSize: 12)),
+                              Text('⚡', style: TextStyle(fontSize: 12)),
                               SizedBox(width: 4),
                               Text(
-                                'DEMİRCİ',
+                                'GÜÇLENDİR',
                                 style: TextStyle(
                                   color: Color(0xFFE040FB),
                                   fontWeight: FontWeight.w900,

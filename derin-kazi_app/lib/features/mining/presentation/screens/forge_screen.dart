@@ -44,14 +44,14 @@ class _ForgeScreenState extends ConsumerState<ForgeScreen>
         ),
         title: const Row(
           children: [
-            Text('🔨', style: TextStyle(fontSize: 22)),
+            Text('⚡', style: TextStyle(fontSize: 22)),
             SizedBox(width: 8),
             Text(
-              'MADENCİ DEMİRHANESİ & FORGE',
+              'MADENCİ ATÖLYESİ & GÜÇLENDİRME',
               style: TextStyle(
                 color: Colors.white,
                 fontWeight: FontWeight.bold,
-                fontSize: 16,
+                fontSize: 15,
                 letterSpacing: 1.1,
               ),
             ),
