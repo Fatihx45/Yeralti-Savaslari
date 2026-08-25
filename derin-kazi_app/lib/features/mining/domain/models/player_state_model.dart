@@ -1,9 +1,61 @@
 import 'upgrade_model.dart';
 import 'tool_model.dart';
 import 'weapon_model.dart';
+import '../../../friends/domain/models/friend_model.dart';
+
+List<FriendModel> defaultFriendsList() => const [
+  FriendModel(
+    uid: 'friend_1',
+    name: 'KayaKıran',
+    playerTag: '#1042',
+    stage: 45,
+    trophies: 420,
+    equippedSkinId: 'skin_cyber_digger',
+    status: FriendStatus.online,
+    hasGiftAvailable: true,
+    enemiesKilled: 14,
+  ),
+  FriendModel(
+    uid: 'friend_2',
+    name: 'AltınAvcısı',
+    playerTag: '#2093',
+    stage: 112,
+    trophies: 890,
+    equippedSkinId: 'skin_lava_lord',
+    status: FriendStatus.inMining,
+    hasGiftAvailable: false,
+    enemiesKilled: 38,
+  ),
+  FriendModel(
+    uid: 'friend_3',
+    name: 'ElmasKralı',
+    playerTag: '#7741',
+    stage: 260,
+    trophies: 1650,
+    equippedSkinId: 'skin_emerald_king',
+    status: FriendStatus.inBattleRoyale,
+    hasGiftAvailable: true,
+    enemiesKilled: 85,
+  ),
+  FriendModel(
+    uid: 'friend_4',
+    name: 'DemirYumruk',
+    playerTag: '#8812',
+    stage: 18,
+    trophies: 180,
+    equippedSkinId: 'skin_miner_default',
+    status: FriendStatus.offline,
+    hasGiftAvailable: false,
+    enemiesKilled: 5,
+  ),
+];
 
 class PlayerStateModel {
   final String playerName;
+  final String playerTag;
+  final int trophies;
+  final List<FriendModel> friends;
+  final List<String> friendRequests;
   final int gold;
   final int gems;
   final int hp;
@@ -55,6 +107,55 @@ class PlayerStateModel {
 
   const PlayerStateModel({
     this.playerName = 'Madenci Usta',
+    this.playerTag = '#5839',
+    this.trophies = 240,
+    this.friends = const [
+      FriendModel(
+        uid: 'friend_1',
+        name: 'KayaKıran',
+        playerTag: '#1042',
+        stage: 45,
+        trophies: 420,
+        equippedSkinId: 'skin_cyber_digger',
+        status: FriendStatus.online,
+        hasGiftAvailable: true,
+        enemiesKilled: 14,
+      ),
+      FriendModel(
+        uid: 'friend_2',
+        name: 'AltınAvcısı',
+        playerTag: '#2093',
+        stage: 112,
+        trophies: 890,
+        equippedSkinId: 'skin_lava_lord',
+        status: FriendStatus.inMining,
+        hasGiftAvailable: false,
+        enemiesKilled: 38,
+      ),
+      FriendModel(
+        uid: 'friend_3',
+        name: 'ElmasKralı',
+        playerTag: '#7741',
+        stage: 260,
+        trophies: 1650,
+        equippedSkinId: 'skin_emerald_king',
+        status: FriendStatus.inBattleRoyale,
+        hasGiftAvailable: true,
+        enemiesKilled: 85,
+      ),
+      FriendModel(
+        uid: 'friend_4',
+        name: 'DemirYumruk',
+        playerTag: '#8812',
+        stage: 18,
+        trophies: 180,
+        equippedSkinId: 'skin_miner_default',
+        status: FriendStatus.offline,
+        hasGiftAvailable: false,
+        enemiesKilled: 5,
+      ),
+    ],
+    this.friendRequests = const ['MadenAvcısı #9901'],
     required this.gold,
     required this.gems,
     this.hp = 100,
@@ -202,6 +303,10 @@ class PlayerStateModel {
 
   PlayerStateModel copyWith({
     String? playerName,
+    String? playerTag,
+    int? trophies,
+    List<FriendModel>? friends,
+    List<String>? friendRequests,
     int? gold,
     int? gems,
     int? hp,
@@ -249,6 +354,10 @@ class PlayerStateModel {
   }) {
     return PlayerStateModel(
       playerName: playerName ?? this.playerName,
+      playerTag: playerTag ?? this.playerTag,
+      trophies: trophies ?? this.trophies,
+      friends: friends ?? this.friends,
+      friendRequests: friendRequests ?? this.friendRequests,
       gold: gold ?? this.gold,
       gems: gems ?? this.gems,
       hp: hp ?? this.hp,
@@ -299,6 +408,10 @@ class PlayerStateModel {
   Map<String, dynamic> toJson() {
     return {
       'playerName': playerName,
+      'playerTag': playerTag,
+      'trophies': trophies,
+      'friends': friends.map((f) => f.toJson()).toList(),
+      'friendRequests': friendRequests,
       'gold': gold,
       'gems': gems,
       'hp': hp,
@@ -430,8 +543,28 @@ class PlayerStateModel {
       }
     }
 
+    final List<FriendModel> loadedFriendsList = [];
+    if (json['friends'] != null && json['friends'] is List) {
+      for (final item in json['friends']) {
+        try {
+          loadedFriendsList.add(FriendModel.fromJson(item as Map<String, dynamic>));
+        } catch (_) {}
+      }
+    }
+
+    final List<String> loadedRequests = [];
+    if (json['friendRequests'] != null && json['friendRequests'] is List) {
+      for (final item in json['friendRequests']) {
+        loadedRequests.add(item.toString());
+      }
+    }
+
     return PlayerStateModel(
       playerName: json['playerName'] as String? ?? 'Madenci Usta',
+      playerTag: json['playerTag'] as String? ?? '#5839',
+      trophies: json['trophies'] as int? ?? 240,
+      friends: loadedFriendsList.isNotEmpty ? loadedFriendsList : defaultFriendsList(),
+      friendRequests: loadedRequests.isNotEmpty ? loadedRequests : const ['MadenAvcısı #9901'],
       gold: json['gold'] as int? ?? 997,
       gems: json['gems'] as int? ?? 24,
       hp: json['hp'] as int? ?? 100,

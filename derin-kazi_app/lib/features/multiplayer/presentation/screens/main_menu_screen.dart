@@ -14,6 +14,7 @@ import 'lobby_screen.dart';
 import '../../application/lobby_notifier.dart';
 import '../../../cosmetics/presentation/screens/cosmetics_screen.dart';
 import '../../../quests/presentation/widgets/quest_dialog.dart';
+import '../../../friends/presentation/screens/friends_screen.dart';
 
 class MainMenuScreen extends ConsumerStatefulWidget {
   const MainMenuScreen({super.key});
@@ -253,6 +254,64 @@ class _MainMenuScreenState extends ConsumerState<MainMenuScreen> {
                                   letterSpacing: 0.8,
                                 ),
                               ),
+                            ],
+                          ),
+                        ),
+                      ),
+                      const SizedBox(width: 4),
+
+                      // 👥 Arkadaşlar Butonu
+                      InkWell(
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(builder: (ctx) => const FriendsScreen()),
+                          );
+                        },
+                        borderRadius: BorderRadius.circular(10),
+                        child: Container(
+                          padding: const EdgeInsets.symmetric(horizontal: 9, vertical: 5),
+                          decoration: BoxDecoration(
+                            gradient: const LinearGradient(
+                              colors: [Color(0xFF0D233A), Color(0xFF194A75)],
+                            ),
+                            borderRadius: BorderRadius.circular(10),
+                            border: Border.all(color: const Color(0xFF00E5FF), width: 1.2),
+                            boxShadow: [
+                              BoxShadow(
+                                color: const Color(0xFF00E5FF).withValues(alpha: 0.25),
+                                blurRadius: 6,
+                              ),
+                            ],
+                          ),
+                          child: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              const Text('👥', style: TextStyle(fontSize: 12)),
+                              const SizedBox(width: 4),
+                              const Text(
+                                'ARKADAŞLAR',
+                                style: TextStyle(
+                                  color: Color(0xFF00E5FF),
+                                  fontWeight: FontWeight.w900,
+                                  fontSize: 10.5,
+                                  letterSpacing: 0.8,
+                                ),
+                              ),
+                              if (gameState.player.friendRequests.isNotEmpty) ...[
+                                const SizedBox(width: 4),
+                                Container(
+                                  padding: const EdgeInsets.all(3),
+                                  decoration: const BoxDecoration(
+                                    color: Color(0xFFFF5252),
+                                    shape: BoxShape.circle,
+                                  ),
+                                  child: Text(
+                                    '${gameState.player.friendRequests.length}',
+                                    style: const TextStyle(color: Colors.white, fontSize: 8, fontWeight: FontWeight.bold),
+                                  ),
+                                ),
+                              ],
                             ],
                           ),
                         ),

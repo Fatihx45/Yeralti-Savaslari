@@ -17,6 +17,7 @@ import '../domain/models/tool_model.dart';
 import 'package:derin_kazi/features/quests/domain/models/daily_quest_model.dart';
 import 'package:derin_kazi/core/persistence/save_service.dart';
 import 'package:derin_kazi/core/audio/audio_service.dart';
+import 'package:derin_kazi/features/friends/domain/models/friend_model.dart';
 
 enum GameMode {
   solo,
@@ -1697,6 +1698,138 @@ class GameNotifier extends StateNotifier<GameState> {
     final updated = List<String>.from(state.player.favoriteFriends)..remove(name);
     state = state.copyWith(player: state.player.copyWith(favoriteFriends: updated));
     _saveState();
+  }
+
+  // ==========================================
+  // 👥 ARKADAŞLIK & SOSYAL MERKEZ METOTLARI
+  // ==========================================
+  bool sendFriendRequest(String tagOrName) {
+    final input = tagOrName.trim();
+    if (input.isEmpty) return false;
+
+    // Kendisi olamaz
+    if (input == state.player.playerName || input == state.player.playerTag) {
+      state = state.copyWith(lastMessage: '❌ Kendinize arkadaşlık isteği gönderemezsiniz!');
+      return false;
+    }
+
+    // Zaten arkadaş mı?
+    if (state.player.friends.any((f) => f.name.toLowerCase() == input.toLowerCase() || f.playerTag == input)) {
+      state = state.copyWith(lastMessage: 'ℹ️ Bu oyuncu zaten arkadaş listenizde!');
+      return false;
+    }
+
+    _triggerHaptic('light');
+    AudioService().playClick();
+    state = state.copyWith(lastMessage: '📨 $input oyuncusuna arkadaşlık isteği gönderildi!');
+    return true;
+  }
+
+  void acceptFriendRequest(String requestName) {
+    final updatedRequests = List<String>.from(state.player.friendRequests)..remove(requestName);
+    
+    // İsmi ve etiketi ayrıştır
+    final parts = requestName.split(' ');
+    final name = parts.isNotEmpty ? parts[0] : 'Madenci';
+    final tag = parts.length > 1 ? parts[1] : '#${Random().nextInt(9000) + 1000}';
+
+    final newFriend = FriendModel(
+      uid: 'friend_${DateTime.now().millisecondsSinceEpoch}',
+      name: name,
+      playerTag: tag,
+      stage: Random().nextInt(50) + 5,
+      trophies: Random().nextInt(500) + 150,
+      equippedSkinId: 'skin_cyber_digger',
+      status: FriendStatus.online,
+      hasGiftAvailable: true,
+      enemiesKilled: Random().nextInt(20) + 5,
+    );
+
+    final updatedFriends = List<FriendModel>.from(state.player.friends)..add(newFriend);
+
+    _triggerHaptic('heavy');
+    AudioService().playUpgrade();
+
+    state = state.copyWith(
+      player: state.player.copyWith(
+        friends: updatedFriends,
+        friendRequests: updatedRequests,
+      ),
+      lastMessage: '🤝 $name arkadaş olarak eklendi!',
+    );
+    _saveState();
+  }
+
+  void rejectFriendRequest(String requestName) {
+    final updatedRequests = List<String>.from(state.player.friendRequests)..remove(requestName);
+    _triggerHaptic('selection');
+    state = state.copyWith(
+      player: state.player.copyWith(friendRequests: updatedRequests),
+      lastMessage: 'İstek reddedildi.',
+    );
+    _saveState();
+  }
+
+  void removeFriend(String uid) {
+    final updatedFriends = state.player.friends.where((f) => f.uid != uid).toList();
+    _triggerHaptic('selection');
+    state = state.copyWith(
+      player: state.player.copyWith(friends: updatedFriends),
+      lastMessage: 'Arkadaş listeden çıkarıldı.',
+    );
+    _saveState();
+  }
+
+  bool sendFriendGift(String uid) {
+    final idx = state.player.friends.indexWhere((f) => f.uid == uid);
+    if (idx < 0) return false;
+
+    final friend = state.player.friends[idx];
+    if (friend.giftSentToday) {
+      state = state.copyWith(lastMessage: 'Bu arkadaşınıza bugün zaten hediye gönderdiniz!');
+      return false;
+    }
+
+    final updatedList = List<FriendModel>.from(state.player.friends);
+    updatedList[idx] = friend.copyWith(giftSentToday: true);
+
+    _triggerHaptic('light');
+    AudioService().playGold();
+
+    state = state.copyWith(
+      player: state.player.copyWith(friends: updatedList),
+      lastMessage: '🎁 ${friend.name}\'a ⚡ +15 Enerji Hediyesi Gönderildi!',
+    );
+    _saveState();
+    return true;
+  }
+
+  bool claimFriendGift(String uid) {
+    final idx = state.player.friends.indexWhere((f) => f.uid == uid);
+    if (idx < 0) return false;
+
+    final friend = state.player.friends[idx];
+    if (!friend.hasGiftAvailable) return false;
+
+    final updatedList = List<FriendModel>.from(state.player.friends);
+    updatedList[idx] = friend.copyWith(hasGiftAvailable: false);
+
+    final int newEnergy = (state.player.energy + 15).clamp(0, state.player.maxEnergy);
+    final int newGold = state.player.gold + 50;
+
+    _triggerHaptic('heavy');
+    AudioService().playGold();
+
+    state = state.copyWith(
+      player: state.player.copyWith(
+        friends: updatedList,
+        energy: newEnergy,
+        gold: newGold,
+      ),
+      lastMessage: '🎁 ${friend.name}\'ın hediyesi alındı: +15 ⚡ Enerji, +50 🟡 Altın!',
+    );
+    _saveState();
+    return true;
   }
 
   // ==========================================
