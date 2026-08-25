@@ -378,33 +378,19 @@ class _MainMenuScreenState extends ConsumerState<MainMenuScreen> {
                 ),
                 const SizedBox(height: 8),
 
-                // Görevler, Kostümler & Profil Butonları
+                // Kostümler & Profil Butonları
                 Row(
                   children: [
                     Expanded(
                       child: OutlinedButton.icon(
                         style: OutlinedButton.styleFrom(
-                          foregroundColor: AppColors.goldText,
-                          side: const BorderSide(color: AppColors.goldText),
-                          padding: const EdgeInsets.symmetric(vertical: 7),
-                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-                        ),
-                        icon: const Icon(Icons.assignment, size: 14),
-                        label: const Text('GÖREVLER', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 9)),
-                        onPressed: () => QuestDialog.showQuestDialog(context),
-                      ),
-                    ),
-                    const SizedBox(width: 5),
-                    Expanded(
-                      child: OutlinedButton.icon(
-                        style: OutlinedButton.styleFrom(
                           foregroundColor: const Color(0xFFE040FB),
-                          side: const BorderSide(color: Color(0xFFE040FB)),
-                          padding: const EdgeInsets.symmetric(vertical: 7),
+                          side: const BorderSide(color: Color(0xFFE040FB), width: 1.2),
+                          padding: const EdgeInsets.symmetric(vertical: 8),
                           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
                         ),
-                        icon: const Icon(Icons.palette, size: 14),
-                        label: const Text('KOSTÜM', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 9)),
+                        icon: const Icon(Icons.palette, size: 16),
+                        label: const Text('KOSTÜMLER', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 10)),
                         onPressed: () {
                           Navigator.push(
                             context,
@@ -413,18 +399,18 @@ class _MainMenuScreenState extends ConsumerState<MainMenuScreen> {
                         },
                       ),
                     ),
-                    const SizedBox(width: 5),
+                    const SizedBox(width: 8),
                     Expanded(
                       child: ElevatedButton.icon(
                         style: ElevatedButton.styleFrom(
                           backgroundColor: const Color(0xFF1E2E52),
                           foregroundColor: AppColors.cyanText,
-                          side: const BorderSide(color: AppColors.cyanText),
-                          padding: const EdgeInsets.symmetric(vertical: 7),
+                          side: const BorderSide(color: AppColors.cyanText, width: 1.2),
+                          padding: const EdgeInsets.symmetric(vertical: 8),
                           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
                         ),
-                        icon: const Icon(Icons.account_circle, size: 14, color: AppColors.cyanText),
-                        label: const Text('PROFİL', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 9)),
+                        icon: const Icon(Icons.account_circle, size: 16, color: AppColors.cyanText),
+                        label: const Text('PROFİL & ROZET', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 10)),
                         onPressed: () {
                           Navigator.push(
                             context,
@@ -475,7 +461,19 @@ class _MainMenuScreenState extends ConsumerState<MainMenuScreen> {
                 ),
                 const SizedBox(height: 8),
 
-                // 2. SİLAH VE MERMİ MAĞAZASI
+                // 2. GÖREVLER & ÖDÜLLER
+                _buildMenuButton(
+                  title: '📋 GÖREVLER & ÖDÜLLER',
+                  subtitle: 'Haftalık Görevler • Elmas & Altın Kazan',
+                  icon: Icons.assignment_turned_in,
+                  buttonColor: const Color(0xFF2E2208),
+                  borderColor: AppColors.goldText,
+                  textColor: AppColors.goldText,
+                  onTap: () => QuestDialog.showQuestDialog(context),
+                ),
+                const SizedBox(height: 8),
+
+                // 3. SİLAH VE MERMİ MAĞAZASI
                 _buildMenuButton(
                   title: '🛒 SİLAH & MERMİ MAĞAZASI',
                   subtitle: 'Tabanca, Tüfek, Pompalı & Cephane Al',
@@ -616,27 +614,13 @@ class _MainMenuScreenState extends ConsumerState<MainMenuScreen> {
               Expanded(
                 child: OutlinedButton.icon(
                   style: OutlinedButton.styleFrom(
-                    foregroundColor: AppColors.goldText,
-                    side: const BorderSide(color: AppColors.goldText),
-                    padding: const EdgeInsets.symmetric(vertical: 8),
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-                  ),
-                  icon: const Icon(Icons.assignment, size: 15),
-                  label: const Text('GÖREVLER', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 9.5)),
-                  onPressed: () => QuestDialog.showQuestDialog(context),
-                ),
-              ),
-              const SizedBox(width: 6),
-              Expanded(
-                child: OutlinedButton.icon(
-                  style: OutlinedButton.styleFrom(
                     foregroundColor: const Color(0xFFE040FB),
-                    side: const BorderSide(color: Color(0xFFE040FB)),
+                    side: const BorderSide(color: Color(0xFFE040FB), width: 1.2),
                     padding: const EdgeInsets.symmetric(vertical: 8),
                     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
                   ),
-                  icon: const Icon(Icons.palette, size: 15),
-                  label: const Text('KOSTÜM', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 9.5)),
+                  icon: const Icon(Icons.palette, size: 16),
+                  label: const Text('KOSTÜMLER', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 10)),
                   onPressed: () {
                     Navigator.push(
                       context,
@@ -645,18 +629,18 @@ class _MainMenuScreenState extends ConsumerState<MainMenuScreen> {
                   },
                 ),
               ),
-              const SizedBox(width: 6),
+              const SizedBox(width: 8),
               Expanded(
                 child: ElevatedButton.icon(
                   style: ElevatedButton.styleFrom(
                     backgroundColor: const Color(0xFF1E2E52),
                     foregroundColor: AppColors.cyanText,
-                    side: const BorderSide(color: AppColors.cyanText),
+                    side: const BorderSide(color: AppColors.cyanText, width: 1.2),
                     padding: const EdgeInsets.symmetric(vertical: 8),
                     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
                   ),
-                  icon: const Icon(Icons.account_circle, size: 15, color: AppColors.cyanText),
-                  label: const Text('PROFİL', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 9.5)),
+                  icon: const Icon(Icons.account_circle, size: 16, color: AppColors.cyanText),
+                  label: const Text('PROFİL & ROZET', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 10)),
                   onPressed: () {
                     Navigator.push(
                       context,
@@ -680,6 +664,16 @@ class _MainMenuScreenState extends ConsumerState<MainMenuScreen> {
               ref.read(lobbyNotifierProvider.notifier).setPlayerName(_nameController.text);
               Navigator.push(context, MaterialPageRoute(builder: (ctx) => const StageSelectScreen()));
             },
+          ),
+          const SizedBox(height: 8),
+          _buildMenuButton(
+            title: '📋 GÖREVLER & ÖDÜLLER',
+            subtitle: 'Haftalık Görevler • Elmas & Altın Kazan',
+            icon: Icons.assignment_turned_in,
+            buttonColor: const Color(0xFF2E2208),
+            borderColor: AppColors.goldText,
+            textColor: AppColors.goldText,
+            onTap: () => QuestDialog.showQuestDialog(context),
           ),
           const SizedBox(height: 8),
           _buildMenuButton(
