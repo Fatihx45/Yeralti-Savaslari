@@ -17,8 +17,8 @@ void main() {
     // Ana Menü Elemanları
     expect(find.byType(Image), findsWidgets);
     expect(find.textContaining('OYUNA BAŞLA'), findsOneWidget);
-    expect(find.textContaining('SİLAH & MERMİ MAĞAZASI'), findsOneWidget);
-    expect(find.textContaining('ATÖLYE & GÜÇLENDİRME'), findsOneWidget);
+    expect(find.textContaining('EKİP KAZISI'), findsOneWidget);
+    expect(find.textContaining('GÖREVLER & ÖDÜLLER'), findsOneWidget);
 
     // Oyuna Başla'ya tıkla (Bölüm Seçim Ekranı Açılır)
     await tester.tap(find.textContaining('OYUNA BAŞLA'));
@@ -40,11 +40,11 @@ void main() {
     await tester.tap(find.text('MAĞAZA'));
     await tester.pumpAndSettle();
 
-    // Dialog açıldı mı?
+    // Mağaza dialogu açık mı?
     expect(find.text('MAĞAZA & YÜKSELTMELER'), findsOneWidget);
 
-    // Temizlik
+    // Temizle
+    await tester.pumpWidget(const SizedBox());
     container.dispose();
   });
 }
-
