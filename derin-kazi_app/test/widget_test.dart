@@ -16,9 +16,8 @@ void main() {
     // Ana Menü Elemanları
     expect(find.text('DERİN KAZI'), findsOneWidget);
     expect(find.textContaining('OYUNA BAŞLA'), findsOneWidget);
-    expect(find.textContaining('MULTIPLAYER'), findsOneWidget);
-    expect(find.text('EKİP KAZISI (ODA KUR)'), findsOneWidget);
-    expect(find.text('ODAYA KATIL'), findsOneWidget);
+    expect(find.textContaining('SİLAH & MERMİ MAĞAZASI'), findsOneWidget);
+    expect(find.textContaining('ATÖLYE & GÜÇLENDİRME'), findsOneWidget);
 
     // Oyuna Başla'ya tıkla (Bölüm Seçim Ekranı Açılır)
     await tester.tap(find.textContaining('OYUNA BAŞLA'));

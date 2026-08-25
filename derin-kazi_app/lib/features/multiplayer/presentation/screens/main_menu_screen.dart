@@ -8,13 +8,9 @@ import '../../../mining/presentation/screens/weapon_shop_screen.dart';
 import '../../../mining/presentation/screens/forge_screen.dart';
 import '../../../profile/presentation/screens/profile_screen.dart';
 import '../../../settings/presentation/screens/settings_screen.dart';
-import 'create_room_screen.dart';
-import 'join_room_screen.dart';
-import 'lobby_screen.dart';
 import '../../application/lobby_notifier.dart';
 import '../../../cosmetics/presentation/screens/cosmetics_screen.dart';
 import '../../../quests/presentation/widgets/quest_dialog.dart';
-import '../../../friends/presentation/screens/friends_screen.dart';
 
 class MainMenuScreen extends ConsumerStatefulWidget {
   const MainMenuScreen({super.key});
@@ -260,64 +256,6 @@ class _MainMenuScreenState extends ConsumerState<MainMenuScreen> {
                       ),
                       const SizedBox(width: 4),
 
-                      // 👥 Arkadaşlar Butonu
-                      InkWell(
-                        onTap: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(builder: (ctx) => const FriendsScreen()),
-                          );
-                        },
-                        borderRadius: BorderRadius.circular(10),
-                        child: Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 9, vertical: 5),
-                          decoration: BoxDecoration(
-                            gradient: const LinearGradient(
-                              colors: [Color(0xFF0D233A), Color(0xFF194A75)],
-                            ),
-                            borderRadius: BorderRadius.circular(10),
-                            border: Border.all(color: const Color(0xFF00E5FF), width: 1.2),
-                            boxShadow: [
-                              BoxShadow(
-                                color: const Color(0xFF00E5FF).withValues(alpha: 0.25),
-                                blurRadius: 6,
-                              ),
-                            ],
-                          ),
-                          child: Row(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              const Text('👥', style: TextStyle(fontSize: 12)),
-                              const SizedBox(width: 4),
-                              const Text(
-                                'ARKADAŞLAR',
-                                style: TextStyle(
-                                  color: Color(0xFF00E5FF),
-                                  fontWeight: FontWeight.w900,
-                                  fontSize: 10.5,
-                                  letterSpacing: 0.8,
-                                ),
-                              ),
-                              if (gameState.player.friendRequests.isNotEmpty) ...[
-                                const SizedBox(width: 4),
-                                Container(
-                                  padding: const EdgeInsets.all(3),
-                                  decoration: const BoxDecoration(
-                                    color: Color(0xFFFF5252),
-                                    shape: BoxShape.circle,
-                                  ),
-                                  child: Text(
-                                    '${gameState.player.friendRequests.length}',
-                                    style: const TextStyle(color: Colors.white, fontSize: 8, fontWeight: FontWeight.bold),
-                                  ),
-                                ),
-                              ],
-                            ],
-                          ),
-                        ),
-                      ),
-                      const SizedBox(width: 4),
-
                       // Ayarlar Butonu
                       IconButton(
                         icon: const Icon(Icons.settings, color: AppColors.goldText, size: 24),
@@ -524,56 +462,54 @@ class _MainMenuScreenState extends ConsumerState<MainMenuScreen> {
                 ),
                 const SizedBox(height: 8),
 
-                // 2. MULTIPLAYER
+                // 2. SİLAH VE MERMİ MAĞAZASI
                 _buildMenuButton(
-                  title: '🌐 MULTIPLAYER (ÇOK OYUNCULU)',
-                  subtitle: '4 Kişilik Battle Royale Hayatta Kalma',
-                  icon: Icons.sports_kabaddi,
-                  buttonColor: const Color(0xFF381424),
-                  borderColor: const Color(0xFFFF5252),
-                  textColor: const Color(0xFFFF5252),
-                  onTap: () {
-                    ref.read(lobbyNotifierProvider.notifier).setPlayerName(_nameController.text);
-                    ref.read(lobbyNotifierProvider.notifier).createRoom(maxPlayers: 4);
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(builder: (ctx) => const LobbyScreen()),
-                    );
-                  },
-                ),
-                const SizedBox(height: 8),
-
-                // 3. EKİP KAZISI
-                _buildMenuButton(
-                  title: 'EKİP KAZISI (ODA KUR)',
-                  subtitle: '1-10 Kişilik Özel Arkadaş Odası',
-                  icon: Icons.group_add,
+                  title: '🛒 SİLAH & MERMİ MAĞAZASI',
+                  subtitle: 'Tabanca, Tüfek, Pompalı & Cephane Al',
+                  icon: Icons.shopping_bag,
                   buttonColor: const Color(0xFF2E1A0A),
                   borderColor: AppColors.goldText,
                   textColor: AppColors.goldText,
                   onTap: () {
-                    ref.read(lobbyNotifierProvider.notifier).setPlayerName(_nameController.text);
                     Navigator.push(
                       context,
-                      MaterialPageRoute(builder: (ctx) => const CreateRoomScreen()),
+                      MaterialPageRoute(builder: (ctx) => const WeaponShopScreen()),
                     );
                   },
                 ),
                 const SizedBox(height: 8),
 
-                // 4. ODAYA KATIL
+                // 3. ATÖLYE VE GÜÇLENDİRME
                 _buildMenuButton(
-                  title: 'ODAYA KATIL',
-                  subtitle: '6 Haneli Oda Kodu ile Bağlan',
-                  icon: Icons.login,
+                  title: '⚡ ATÖLYE & GÜÇLENDİRME',
+                  subtitle: 'Kazma, Çekiç & Maden Güçlendirmeleri',
+                  icon: Icons.hardware,
                   buttonColor: const Color(0xFF1E1038),
                   borderColor: const Color(0xFFE040FB),
                   textColor: const Color(0xFFE040FB),
                   onTap: () {
-                    ref.read(lobbyNotifierProvider.notifier).setPlayerName(_nameController.text);
                     Navigator.push(
                       context,
-                      MaterialPageRoute(builder: (ctx) => const JoinRoomScreen()),
+                      MaterialPageRoute(builder: (ctx) => const ForgeScreen()),
+                    );
+                  },
+                ),
+                const SizedBox(height: 8),
+
+                // 4. ÇOK OYUNCULU (v1.1 ÇOK YAKINDA)
+                _buildMenuButton(
+                  title: '🌐 ÇOK OYUNCULU & ARKADAŞLAR',
+                  subtitle: '🔒 v1.1 Büyük Güncellemesinde Açılacak!',
+                  icon: Icons.lock_clock,
+                  buttonColor: const Color(0xFF1A1A3A),
+                  borderColor: const Color(0xFF4A4A7A),
+                  textColor: Colors.white60,
+                  onTap: () {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(
+                        content: Text('🌐 Çok Oyunculu Mod ve Arkadaş Sistemi v1.1 Büyük Güncellemesinde Geliyor!'),
+                        duration: Duration(seconds: 3),
+                      ),
                     );
                   },
                 ),
@@ -735,42 +671,43 @@ class _MainMenuScreenState extends ConsumerState<MainMenuScreen> {
           ),
           const SizedBox(height: 8),
           _buildMenuButton(
-            title: '🌐 MULTIPLAYER (ÇOK OYUNCULU)',
-            subtitle: '4 Kişilik Battle Royale',
-            icon: Icons.sports_kabaddi,
-            buttonColor: const Color(0xFF381424),
-            borderColor: const Color(0xFFFF5252),
-            textColor: const Color(0xFFFF5252),
-            onTap: () {
-              ref.read(lobbyNotifierProvider.notifier).setPlayerName(_nameController.text);
-              ref.read(lobbyNotifierProvider.notifier).createRoom(maxPlayers: 4);
-              Navigator.push(context, MaterialPageRoute(builder: (ctx) => const LobbyScreen()));
-            },
-          ),
-          const SizedBox(height: 8),
-          _buildMenuButton(
-            title: 'EKİP KAZISI (ODA KUR)',
-            subtitle: 'Özel Arkadaş Odası Kur',
-            icon: Icons.group_add,
+            title: '🛒 SİLAH & MERMİ MAĞAZASI',
+            subtitle: 'Tabanca, Tüfek, Pompalı & Cephane Al',
+            icon: Icons.shopping_bag,
             buttonColor: const Color(0xFF2E1A0A),
             borderColor: AppColors.goldText,
             textColor: AppColors.goldText,
             onTap: () {
-              ref.read(lobbyNotifierProvider.notifier).setPlayerName(_nameController.text);
-              Navigator.push(context, MaterialPageRoute(builder: (ctx) => const CreateRoomScreen()));
+              Navigator.push(context, MaterialPageRoute(builder: (ctx) => const WeaponShopScreen()));
             },
           ),
           const SizedBox(height: 8),
           _buildMenuButton(
-            title: 'ODAYA KATIL',
-            subtitle: '6 Haneli Kod ile Katıl',
-            icon: Icons.login,
+            title: '⚡ ATÖLYE & GÜÇLENDİRME',
+            subtitle: 'Kazma, Çekiç & Maden Güçlendirmeleri',
+            icon: Icons.hardware,
             buttonColor: const Color(0xFF1E1038),
             borderColor: const Color(0xFFE040FB),
             textColor: const Color(0xFFE040FB),
             onTap: () {
-              ref.read(lobbyNotifierProvider.notifier).setPlayerName(_nameController.text);
-              Navigator.push(context, MaterialPageRoute(builder: (ctx) => const JoinRoomScreen()));
+              Navigator.push(context, MaterialPageRoute(builder: (ctx) => const ForgeScreen()));
+            },
+          ),
+          const SizedBox(height: 8),
+          _buildMenuButton(
+            title: '🌐 ÇOK OYUNCULU & ARKADAŞLAR',
+            subtitle: '🔒 v1.1 Büyük Güncellemesinde Açılacak!',
+            icon: Icons.lock_clock,
+            buttonColor: const Color(0xFF1A1A3A),
+            borderColor: const Color(0xFF4A4A7A),
+            textColor: Colors.white60,
+            onTap: () {
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(
+                  content: Text('🌐 Çok Oyunculu Mod ve Arkadaş Sistemi v1.1 Büyük Güncellemesinde Geliyor!'),
+                  duration: Duration(seconds: 3),
+                ),
+              );
             },
           ),
         ],
