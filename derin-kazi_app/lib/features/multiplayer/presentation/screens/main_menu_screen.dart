@@ -291,16 +291,16 @@ class _MainMenuScreenState extends ConsumerState<MainMenuScreen> {
                 const Icon(Icons.hardware, size: 44, color: AppColors.goldText),
                 const SizedBox(height: 4),
                 const Text(
-                  'DERİN KAZI',
+                  'YERALTI SAVAŞLARI',
                   style: TextStyle(
                     color: Colors.white,
-                    fontSize: 22,
+                    fontSize: 21,
                     fontWeight: FontWeight.bold,
                     letterSpacing: 2,
                   ),
                 ),
                 const Text(
-                  '500 Bölüm • Madencilik & Battle Royale',
+                  '500 Bölüm • Hayatta Kalma & Maden Savaşı',
                   style: TextStyle(color: Color(0xFF8E8EAE), fontSize: 10),
                 ),
                 const SizedBox(height: 14),
@@ -530,10 +530,10 @@ class _MainMenuScreenState extends ConsumerState<MainMenuScreen> {
           const Icon(Icons.hardware, size: 48, color: AppColors.goldText),
           const SizedBox(height: 6),
           const Text(
-            'DERİN KAZI',
+            'YERALTI SAVAŞLARI',
             style: TextStyle(
               color: Colors.white,
-              fontSize: 24,
+              fontSize: 22,
               fontWeight: FontWeight.bold,
               letterSpacing: 2,
             ),

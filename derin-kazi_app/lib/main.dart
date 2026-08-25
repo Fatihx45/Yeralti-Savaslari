@@ -1,4 +1,4 @@
-﻿import 'package:flutter/material.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'core/theme/app_theme.dart';
@@ -29,7 +29,7 @@ class DerinKaziApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Derin Kazı',
+      title: 'Yeraltı Savaşları',
       debugShowCheckedModeBanner: false,
       theme: AppTheme.darkTheme,
       home: const MainMenuScreen(),

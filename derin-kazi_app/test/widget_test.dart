@@ -14,7 +14,7 @@ void main() {
     );
 
     // Ana Menü Elemanları
-    expect(find.text('DERİN KAZI'), findsOneWidget);
+    expect(find.text('YERALTI SAVAŞLARI'), findsOneWidget);
     expect(find.textContaining('OYUNA BAŞLA'), findsOneWidget);
     expect(find.textContaining('SİLAH & MERMİ MAĞAZASI'), findsOneWidget);
     expect(find.textContaining('ATÖLYE & GÜÇLENDİRME'), findsOneWidget);
