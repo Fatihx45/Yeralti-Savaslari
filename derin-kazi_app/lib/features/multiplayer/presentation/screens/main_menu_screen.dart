@@ -230,37 +230,39 @@ class _MainMenuScreenState extends ConsumerState<MainMenuScreen> {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                // 🌋 RESMİ OYUN LOGOSU (Sinematik Akkor Kor Ateşi Parıltısı)
-                Container(
-                  height: 145,
-                  width: double.infinity,
-                  decoration: BoxDecoration(
-                    color: const Color(0xFF100A15),
-                    borderRadius: BorderRadius.circular(18),
-                    border: Border.all(color: const Color(0xFFFF6D00), width: 1.8),
-                    boxShadow: [
-                      BoxShadow(
-                        color: const Color(0xFFFF3D00).withValues(alpha: 0.45),
-                        blurRadius: 25,
-                        spreadRadius: 3,
+                // 🌋 RESMİ OYUN LOGOSU (Kare Volkanik Arma & Akkor Kor Ateşi)
+                Center(
+                  child: Container(
+                    height: 150,
+                    width: 170,
+                    decoration: BoxDecoration(
+                      color: const Color(0xFF100A15),
+                      borderRadius: BorderRadius.circular(20),
+                      border: Border.all(color: const Color(0xFFFF6D00), width: 2.0),
+                      boxShadow: [
+                        BoxShadow(
+                          color: const Color(0xFFFF3D00).withValues(alpha: 0.5),
+                          blurRadius: 28,
+                          spreadRadius: 3,
+                        ),
+                        BoxShadow(
+                          color: const Color(0xFFFFAB00).withValues(alpha: 0.3),
+                          blurRadius: 12,
+                          spreadRadius: 1,
+                        ),
+                        BoxShadow(
+                          color: Colors.black.withValues(alpha: 0.85),
+                          blurRadius: 14,
+                          offset: const Offset(0, 6),
+                        ),
+                      ],
+                    ),
+                    child: ClipRRect(
+                      borderRadius: BorderRadius.circular(18),
+                      child: Image.asset(
+                        'assets/image/logo.jpg',
+                        fit: BoxFit.cover,
                       ),
-                      BoxShadow(
-                        color: const Color(0xFFFFAB00).withValues(alpha: 0.25),
-                        blurRadius: 10,
-                        spreadRadius: 1,
-                      ),
-                      BoxShadow(
-                        color: Colors.black.withValues(alpha: 0.8),
-                        blurRadius: 12,
-                        offset: const Offset(0, 5),
-                      ),
-                    ],
-                  ),
-                  child: ClipRRect(
-                    borderRadius: BorderRadius.circular(16),
-                    child: Image.asset(
-                      'assets/image/logo.jpg',
-                      fit: BoxFit.contain,
                     ),
                   ),
                 ),
@@ -486,38 +488,40 @@ class _MainMenuScreenState extends ConsumerState<MainMenuScreen> {
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          // 🌋 RESMİ OYUN LOGOSU (Sinematik Akkor Kor Ateşi Parıltısı)
-          Container(
-            height: 155,
-            width: double.infinity,
-            margin: const EdgeInsets.only(bottom: 12),
-            decoration: BoxDecoration(
-              color: const Color(0xFF100A15),
-              borderRadius: BorderRadius.circular(18),
-              border: Border.all(color: const Color(0xFFFF6D00), width: 1.8),
-              boxShadow: [
-                BoxShadow(
-                  color: const Color(0xFFFF3D00).withValues(alpha: 0.45),
-                  blurRadius: 25,
-                  spreadRadius: 3,
+          // 🌋 RESMİ OYUN LOGOSU (Kare Volkanik Arma & Akkor Kor Ateşi)
+          Center(
+            child: Container(
+              height: 155,
+              width: 175,
+              margin: const EdgeInsets.only(bottom: 12),
+              decoration: BoxDecoration(
+                color: const Color(0xFF100A15),
+                borderRadius: BorderRadius.circular(20),
+                border: Border.all(color: const Color(0xFFFF6D00), width: 2.0),
+                boxShadow: [
+                  BoxShadow(
+                    color: const Color(0xFFFF3D00).withValues(alpha: 0.5),
+                    blurRadius: 28,
+                    spreadRadius: 3,
+                  ),
+                  BoxShadow(
+                    color: const Color(0xFFFFAB00).withValues(alpha: 0.3),
+                    blurRadius: 12,
+                    spreadRadius: 1,
+                  ),
+                  BoxShadow(
+                    color: Colors.black.withValues(alpha: 0.85),
+                    blurRadius: 14,
+                    offset: const Offset(0, 6),
+                  ),
+                ],
+              ),
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(18),
+                child: Image.asset(
+                  'assets/image/logo.jpg',
+                  fit: BoxFit.cover,
                 ),
-                BoxShadow(
-                  color: const Color(0xFFFFAB00).withValues(alpha: 0.25),
-                  blurRadius: 10,
-                  spreadRadius: 1,
-                ),
-                BoxShadow(
-                  color: Colors.black.withValues(alpha: 0.8),
-                  blurRadius: 12,
-                  offset: const Offset(0, 5),
-                ),
-              ],
-            ),
-            child: ClipRRect(
-              borderRadius: BorderRadius.circular(16),
-              child: Image.asset(
-                'assets/image/logo.jpg',
-                fit: BoxFit.contain,
               ),
             ),
           ),
