@@ -127,12 +127,12 @@ class TileGridPainter extends CustomPainter {
         bgPaint,
       );
 
-      // Can Barı Doluluk (Yeşil / Sarı / Kırmızı)
-      Color hpColor = const Color(0xFF00E676);
+      // Can Barı Doluluk (Düşmanlar için Kırmızı/Bordo Tonları)
+      Color hpColor = const Color(0xFFFF1744);
       if (hpRatio < 0.3) {
-        hpColor = const Color(0xFFFF1744);
+        hpColor = const Color(0xFFFF0033);
       } else if (hpRatio < 0.6) {
-        hpColor = const Color(0xFFFFD600);
+        hpColor = const Color(0xFFFF5252);
       }
 
       final Paint fillPaint = Paint()..color = hpColor;
@@ -143,7 +143,7 @@ class TileGridPainter extends CustomPainter {
 
       // Can Barı Çerçevesi
       final Paint borderPaint = Paint()
-        ..color = Colors.black.withValues(alpha: 0.8)
+        ..color = const Color(0xFFFF1744).withValues(alpha: 0.6)
         ..style = PaintingStyle.stroke
         ..strokeWidth = 0.8;
       canvas.drawRRect(
@@ -151,54 +151,74 @@ class TileGridPainter extends CustomPainter {
         borderPaint,
       );
 
-      // 4. Boss ise Baş Üstü Küçük İsim Etiketi
-      if (enemy.isBoss) {
-        final nameSpan = TextSpan(
-          text: enemy.name.length > 12 ? '${enemy.name.substring(0, 10)}..' : enemy.name,
-          style: TextStyle(
-            color: const Color(0xFFFFD700),
-            fontSize: 7 * scale,
-            fontWeight: FontWeight.bold,
-            shadows: const [Shadow(color: Colors.black, blurRadius: 3)],
-          ),
-        );
-        final namePainter = TextPainter(
-          text: nameSpan,
-          textDirection: TextDirection.ltr,
-        )..layout();
-        namePainter.paint(
-          canvas,
-          Offset(cx - namePainter.width / 2, barTop - 9 * scale),
-        );
-      }
+      // 4. Canavar Tehdit Etiketi (DÜŞMAN GÖSTERGESİ)
+      final String enemyLabel = enemy.isBoss ? '👑 ${enemy.name}' : '👾 ${enemy.name}';
+      final nameSpan = TextSpan(
+        text: enemyLabel.length > 14 ? '${enemyLabel.substring(0, 12)}..' : enemyLabel,
+        style: TextStyle(
+          color: enemy.isBoss ? const Color(0xFFFFD700) : const Color(0xFFFF8A80),
+          fontSize: 6.5 * scale,
+          fontWeight: FontWeight.bold,
+          shadows: const [Shadow(color: Colors.black, blurRadius: 3)],
+        ),
+      );
+      final namePainter = TextPainter(
+        text: nameSpan,
+        textDirection: TextDirection.ltr,
+      )..layout();
+
+      final double badgeWidth = namePainter.width + 4;
+      final double badgeHeight = namePainter.height + 2;
+      final double badgeLeft = cx - badgeWidth / 2;
+      final double badgeTop = barTop - badgeHeight - 1;
+
+      final Paint enemyBadgeBg = Paint()..color = const Color(0xFF280808).withValues(alpha: 0.85);
+      final Paint enemyBadgeBorder = Paint()
+        ..color = const Color(0xFFFF1744).withValues(alpha: 0.7)
+        ..style = PaintingStyle.stroke
+        ..strokeWidth = 0.8;
+
+      canvas.drawRRect(
+        RRect.fromRectAndRadius(Rect.fromLTWH(badgeLeft, badgeTop, badgeWidth, badgeHeight), const Radius.circular(3)),
+        enemyBadgeBg,
+      );
+      canvas.drawRRect(
+        RRect.fromRectAndRadius(Rect.fromLTWH(badgeLeft, badgeTop, badgeWidth, badgeHeight), const Radius.circular(3)),
+        enemyBadgeBorder,
+      );
+
+      namePainter.paint(
+        canvas,
+        Offset(cx - namePainter.width / 2, badgeTop + 1),
+      );
     }
   }
 
   void _drawOtherPlayers(Canvas canvas, List<RemotePlayerModel> players, double cellWidth, double cellHeight) {
     const List<Color> playerShirtColors = [
-      Color(0xFFE91E63), // Pink
+      Color(0xFF00E676), // Neon Yeşil
       Color(0xFF00E5FF), // Cyan
-      Color(0xFF76FF03), // Lime
-      Color(0xFFFF9100), // Orange
-      Color(0xFFE040FB), // Purple
-      Color(0xFFFF5252), // Red
-      Color(0xFF1DE9B6), // Teal
-      Color(0xFF448AFF), // Blue
-      Color(0xFFFFD600), // Yellow
-      Color(0xFFB388FF), // Lavender
+      Color(0xFFFFD600), // Altın Sarısı
+      Color(0xFFFF9100), // Turuncu
+      Color(0xFFE040FB), // Mor
+      Color(0xFFFF5252), // Kırmızı
+      Color(0xFF1DE9B6), // Turkuaz
+      Color(0xFF448AFF), // Mavi
+      Color(0xFFB388FF), // Eflatun
+      Color(0xFFFF4081), // Pembe
     ];
 
     const List<Color> playerPantsColors = [
-      Color(0xFF880E4F), // Dark Pink
-      Color(0xFF006064), // Dark Cyan
-      Color(0xFF33691E), // Dark Lime
-      Color(0xFFE65100), // Dark Orange
-      Color(0xFF4A148C), // Dark Purple
-      Color(0xFFB71C1C), // Dark Red
-      Color(0xFF004D40), // Dark Teal
-      Color(0xFF0D47A1), // Dark Blue
-      Color(0xFFF57F17), // Dark Yellow
-      Color(0xFF311B92), // Dark Lavender
+      Color(0xFF004D40),
+      Color(0xFF006064),
+      Color(0xFFF57F17),
+      Color(0xFFE65100),
+      Color(0xFF4A148C),
+      Color(0xFFB71C1C),
+      Color(0xFF004D40),
+      Color(0xFF0D47A1),
+      Color(0xFF311B92),
+      Color(0xFF880E4F),
     ];
 
     for (final p in players) {
@@ -208,14 +228,29 @@ class TileGridPainter extends CustomPainter {
       final double cy = p.position.row * cellHeight + cellHeight / 2;
       final double scale = min(cellWidth, cellHeight) / 24.0;
 
+      // 1. Ayak Altı Dost Takım Madencisi Işıltılı Yeşil/Mavi Halkası (DOST GÖSTERGESİ)
+      final Paint allyRing = Paint()
+        ..color = AppColors.neonGreen.withValues(alpha: 0.5)
+        ..style = PaintingStyle.stroke
+        ..strokeWidth = 1.8;
+      canvas.drawCircle(Offset(cx, cy + 6 * scale), 9 * scale, allyRing);
+
+      final Paint allyGlow = Paint()
+        ..color = AppColors.neonGreen.withValues(alpha: 0.2)
+        ..style = PaintingStyle.fill;
+      canvas.drawCircle(Offset(cx, cy + 6 * scale), 8 * scale, allyGlow);
+
       _drawMinerCharacter(
         canvas,
         Offset(cx, cy),
         scale,
         shirtColor: shirtColor,
         pantsColor: pantsColor,
-        helmetColor: Colors.white,
+        helmetColor: const Color(0xFFFFD600), // Parlak Sarı Madenci Bareti
         nameLabel: p.displayName.isNotEmpty ? p.displayName : 'Madenci',
+        hp: p.hp,
+        maxHp: p.maxHp,
+        isAlly: true,
       );
     }
   }
@@ -448,6 +483,13 @@ class TileGridPainter extends CustomPainter {
       helmet = const Color(0xFFE0F7FA);
     }
 
+    // Kaptan Madenci Ayak Altı Parıltı Halkası
+    final Paint leaderRing = Paint()
+      ..color = AppColors.goldText.withValues(alpha: 0.6)
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = 2.0;
+    canvas.drawCircle(Offset(center.dx, center.dy + 6 * scale), 9.5 * scale, leaderRing);
+
     _drawMinerCharacter(
       canvas,
       center,
@@ -455,6 +497,8 @@ class TileGridPainter extends CustomPainter {
       shirtColor: shirt,
       pantsColor: pants,
       helmetColor: helmet,
+      nameLabel: 'Sen (Kaptan)',
+      isAlly: false,
     );
 
     // Kafa Üstü Emoji Baloncuğu
@@ -492,6 +536,9 @@ class TileGridPainter extends CustomPainter {
     required Color pantsColor,
     required Color helmetColor,
     String? nameLabel,
+    int hp = 100,
+    int maxHp = 100,
+    bool isAlly = false,
   }) {
     // 1. Bacaklar / Pantolon
     final Paint pantsPaint = Paint()..color = pantsColor;
@@ -541,25 +588,77 @@ class TileGridPainter extends CustomPainter {
     final Paint lightPaint = Paint()..color = AppColors.goldText;
     canvas.drawCircle(Offset(center.dx, center.dy - 7 * scale), 1.5 * scale, lightPaint);
 
-    // Baş Üstü İsim Rozeti (Diğer takım arkadaşları için)
-    if (nameLabel != null) {
-      final String initial = nameLabel.isNotEmpty ? nameLabel[0].toUpperCase() : 'M';
+    // 5. Elinde Küçük Kazma İkonu (Madenci kanıtı)
+    final Paint pickaxePaint = Paint()..color = const Color(0xFFFFD700);
+    canvas.drawLine(
+      Offset(center.dx + 5 * scale, center.dy),
+      Offset(center.dx + 8 * scale, center.dy + 4 * scale),
+      pickaxePaint..strokeWidth = 1.5,
+    );
+
+    // 6. Baş Üstü Dost Can Barı (HP Bar)
+    if (isAlly) {
+      final double barWidth = 24 * scale;
+      final double barHeight = 2.8 * scale;
+      final double barLeft = center.dx - barWidth / 2;
+      final double barTop = center.dy - 14 * scale;
+
+      // Arka plan
+      final Paint hpBg = Paint()..color = const Color(0xFF0F1B12);
+      canvas.drawRRect(
+        RRect.fromRectAndRadius(Rect.fromLTWH(barLeft, barTop, barWidth, barHeight), const Radius.circular(2)),
+        hpBg,
+      );
+
+      // Doluluk (Parlak Yeşil Dostluk Barı)
+      final double hpRatio = (hp / max(1, maxHp)).clamp(0.0, 1.0);
+      final Paint hpFill = Paint()..color = const Color(0xFF00E676);
+      canvas.drawRRect(
+        RRect.fromRectAndRadius(Rect.fromLTWH(barLeft, barTop, barWidth * hpRatio, barHeight), const Radius.circular(2)),
+        hpFill,
+      );
+    }
+
+    // 7. Baş Üstü İsim Rozeti (Dost Madenci Etiketi)
+    if (nameLabel != null && nameLabel.isNotEmpty) {
+      final String shortName = nameLabel.length > 8 ? nameLabel.substring(0, 7) : nameLabel;
       final textSpan = TextSpan(
-        text: initial,
-        style: const TextStyle(
-          color: Colors.white,
-          fontSize: 8,
+        text: '👷 $shortName',
+        style: TextStyle(
+          color: const Color(0xFFE0FFE5),
+          fontSize: 6.5 * scale,
           fontWeight: FontWeight.bold,
-          shadows: [Shadow(color: Colors.black, blurRadius: 2)],
+          shadows: const [Shadow(color: Colors.black, blurRadius: 3)],
         ),
       );
       final textPainter = TextPainter(
         text: textSpan,
         textDirection: TextDirection.ltr,
       )..layout();
+
+      final double badgeWidth = textPainter.width + 4;
+      final double badgeHeight = textPainter.height + 2;
+      final double badgeLeft = center.dx - badgeWidth / 2;
+      final double badgeTop = center.dy - (isAlly ? 21 : 16) * scale;
+
+      final Paint badgeBg = Paint()..color = const Color(0xFF0C1810).withValues(alpha: 0.85);
+      final Paint badgeBorder = Paint()
+        ..color = AppColors.neonGreen.withValues(alpha: 0.7)
+        ..style = PaintingStyle.stroke
+        ..strokeWidth = 0.8;
+
+      canvas.drawRRect(
+        RRect.fromRectAndRadius(Rect.fromLTWH(badgeLeft, badgeTop, badgeWidth, badgeHeight), const Radius.circular(3)),
+        badgeBg,
+      );
+      canvas.drawRRect(
+        RRect.fromRectAndRadius(Rect.fromLTWH(badgeLeft, badgeTop, badgeWidth, badgeHeight), const Radius.circular(3)),
+        badgeBorder,
+      );
+
       textPainter.paint(
         canvas,
-        Offset(center.dx - textPainter.width / 2, center.dy - 14 * scale),
+        Offset(center.dx - textPainter.width / 2, badgeTop + 1),
       );
     }
   }
