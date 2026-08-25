@@ -490,6 +490,40 @@ class _MainMenuScreenState extends ConsumerState<MainMenuScreen> {
                     textColor: AppColors.goldText,
                     onTap: () => QuestDialog.showQuestDialog(context),
                   ),
+                  const SizedBox(height: 6),
+
+                  // 4. SİLAH VE MERMİ MAĞAZASI
+                  _buildMenuButton(
+                    title: '🛒 SİLAH & MERMİ MAĞAZASI',
+                    subtitle: 'Tabanca, Tüfek, Pompalı & Cephane Al',
+                    icon: Icons.shopping_bag,
+                    buttonColor: const Color(0xFF2E1A0A),
+                    borderColor: AppColors.goldText,
+                    textColor: AppColors.goldText,
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (ctx) => const WeaponShopScreen()),
+                      );
+                    },
+                  ),
+                  const SizedBox(height: 6),
+
+                  // 5. ATÖLYE VE GÜÇLENDİRME
+                  _buildMenuButton(
+                    title: '⚡ ATÖLYE & GÜÇLENDİRME',
+                    subtitle: 'Kazma, Çekiç & Maden Güçlendirmeleri',
+                    icon: Icons.hardware,
+                    buttonColor: const Color(0xFF1E1038),
+                    borderColor: const Color(0xFFE040FB),
+                    textColor: const Color(0xFFE040FB),
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (ctx) => const ForgeScreen()),
+                      );
+                    },
+                  ),
                 ],
               ),
             ),
@@ -675,6 +709,30 @@ class _MainMenuScreenState extends ConsumerState<MainMenuScreen> {
             borderColor: AppColors.goldText,
             textColor: AppColors.goldText,
             onTap: () => QuestDialog.showQuestDialog(context),
+          ),
+          const SizedBox(height: 8),
+          _buildMenuButton(
+            title: '🛒 SİLAH & MERMİ MAĞAZASI',
+            subtitle: 'Tabanca, Tüfek, Pompalı & Cephane Al',
+            icon: Icons.shopping_bag,
+            buttonColor: const Color(0xFF2E1A0A),
+            borderColor: AppColors.goldText,
+            textColor: AppColors.goldText,
+            onTap: () {
+              Navigator.push(context, MaterialPageRoute(builder: (ctx) => const WeaponShopScreen()));
+            },
+          ),
+          const SizedBox(height: 8),
+          _buildMenuButton(
+            title: '⚡ ATÖLYE & GÜÇLENDİRME',
+            subtitle: 'Kazma, Çekiç & Maden Güçlendirmeleri',
+            icon: Icons.hardware,
+            buttonColor: const Color(0xFF1E1038),
+            borderColor: const Color(0xFFE040FB),
+            textColor: const Color(0xFFE040FB),
+            onTap: () {
+              Navigator.push(context, MaterialPageRoute(builder: (ctx) => const ForgeScreen()));
+            },
           ),
         ],
       ),
