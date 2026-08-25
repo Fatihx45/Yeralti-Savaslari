@@ -1,3 +1,4 @@
+import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:derin_kazi/main.dart';
@@ -14,7 +15,7 @@ void main() {
     );
 
     // Ana Menü Elemanları
-    expect(find.text('YERALTI SAVAŞLARI'), findsOneWidget);
+    expect(find.byType(Image), findsWidgets);
     expect(find.textContaining('OYUNA BAŞLA'), findsOneWidget);
     expect(find.textContaining('SİLAH & MERMİ MAĞAZASI'), findsOneWidget);
     expect(find.textContaining('ATÖLYE & GÜÇLENDİRME'), findsOneWidget);

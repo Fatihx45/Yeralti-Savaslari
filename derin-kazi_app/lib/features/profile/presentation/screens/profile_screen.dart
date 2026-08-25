@@ -346,10 +346,18 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                     onPressed: () => Navigator.pop(context),
                   ),
                   const SizedBox(width: 4),
-                  const Icon(Icons.military_tech, color: AppColors.goldText, size: 22),
-                  const SizedBox(width: 6),
+                  ClipRRect(
+                    borderRadius: BorderRadius.circular(6),
+                    child: Image.asset(
+                      'assets/image/logo.jpg',
+                      width: 24,
+                      height: 24,
+                      fit: BoxFit.cover,
+                    ),
+                  ),
+                  const SizedBox(width: 8),
                   const Text(
-                    'MADENCİ PROFİLİ & ROZETLER',
+                    'MADENCİ PROFİLİ',
                     style: TextStyle(
                       color: Colors.white,
                       fontSize: 14,

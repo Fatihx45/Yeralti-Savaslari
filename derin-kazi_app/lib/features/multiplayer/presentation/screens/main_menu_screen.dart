@@ -280,30 +280,43 @@ class _MainMenuScreenState extends ConsumerState<MainMenuScreen> {
     return Row(
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
-        // Sol Kolon: Logo, Madenci Adı, Görevler & Kostümler
+        // Sol Kolon: Resmi Logo Kartı, Madenci Bilgisi, Görevler & Kostümler
         Expanded(
-          flex: 4,
+          flex: 5,
           child: Padding(
-            padding: const EdgeInsets.only(right: 16),
+            padding: const EdgeInsets.only(right: 14),
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                const Icon(Icons.hardware, size: 44, color: AppColors.goldText),
-                const SizedBox(height: 4),
-                const Text(
-                  'YERALTI SAVAŞLARI',
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 21,
-                    fontWeight: FontWeight.bold,
-                    letterSpacing: 2,
+                // 🌋 RESMİ OYUN LOGOSU (LAV PARILTI EFEKTLİ)
+                Container(
+                  height: 125,
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(18),
+                    border: Border.all(color: const Color(0xFFFF6D00).withValues(alpha: 0.8), width: 1.8),
+                    boxShadow: [
+                      BoxShadow(
+                        color: const Color(0xFFFF3D00).withValues(alpha: 0.35),
+                        blurRadius: 20,
+                        spreadRadius: 2,
+                      ),
+                      BoxShadow(
+                        color: Colors.black.withValues(alpha: 0.6),
+                        blurRadius: 10,
+                        offset: const Offset(0, 4),
+                      ),
+                    ],
+                  ),
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(16),
+                    child: Image.asset(
+                      'assets/image/logo.jpg',
+                      fit: BoxFit.cover,
+                      width: double.infinity,
+                    ),
                   ),
                 ),
-                const Text(
-                  '500 Bölüm • Hayatta Kalma & Maden Savaşı',
-                  style: TextStyle(color: Color(0xFF8E8EAE), fontSize: 10),
-                ),
-                const SizedBox(height: 14),
+                const SizedBox(height: 10),
 
                 // Madenci Bilgi Kartı (Sadece Okunur - Tıklanınca Profile Yönlendirir)
                 InkWell(
@@ -312,7 +325,7 @@ class _MainMenuScreenState extends ConsumerState<MainMenuScreen> {
                   },
                   borderRadius: BorderRadius.circular(12),
                   child: Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                    padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 7),
                     decoration: BoxDecoration(
                       color: const Color(0xFF141438),
                       borderRadius: BorderRadius.circular(12),
@@ -321,18 +334,18 @@ class _MainMenuScreenState extends ConsumerState<MainMenuScreen> {
                     child: Row(
                       children: [
                         Container(
-                          width: 32,
-                          height: 32,
+                          width: 30,
+                          height: 30,
                           decoration: BoxDecoration(
                             color: const Color(0xFF0C0C22),
                             shape: BoxShape.circle,
                             border: Border.all(color: AppColors.neonGreen, width: 1.5),
                           ),
                           child: const Center(
-                            child: Icon(Icons.person, color: AppColors.goldText, size: 18),
+                            child: Icon(Icons.person, color: AppColors.goldText, size: 16),
                           ),
                         ),
-                        const SizedBox(width: 10),
+                        const SizedBox(width: 8),
                         Expanded(
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
@@ -342,14 +355,14 @@ class _MainMenuScreenState extends ConsumerState<MainMenuScreen> {
                                 gameState.player.playerName,
                                 style: const TextStyle(
                                   color: Colors.white,
-                                  fontSize: 13,
+                                  fontSize: 12,
                                   fontWeight: FontWeight.bold,
                                 ),
                                 overflow: TextOverflow.ellipsis,
                               ),
-                              const Text(
-                                'Profili Düzenle & Rozetler ➔',
-                                style: TextStyle(
+                              Text(
+                                '🔥 Bölüm $unlockedStage • $biomeName',
+                                style: const TextStyle(
                                   color: AppColors.goldText,
                                   fontSize: 9.5,
                                   fontWeight: FontWeight.w600,
@@ -358,12 +371,12 @@ class _MainMenuScreenState extends ConsumerState<MainMenuScreen> {
                             ],
                           ),
                         ),
-                        const Icon(Icons.arrow_forward_ios, size: 12, color: Colors.white38),
+                        const Icon(Icons.arrow_forward_ios, size: 11, color: Colors.white38),
                       ],
                     ),
                   ),
                 ),
-                const SizedBox(height: 12),
+                const SizedBox(height: 8),
 
                 // Görevler, Kostümler & Profil Butonları
                 Row(
@@ -373,25 +386,25 @@ class _MainMenuScreenState extends ConsumerState<MainMenuScreen> {
                         style: OutlinedButton.styleFrom(
                           foregroundColor: AppColors.goldText,
                           side: const BorderSide(color: AppColors.goldText),
-                          padding: const EdgeInsets.symmetric(vertical: 8),
+                          padding: const EdgeInsets.symmetric(vertical: 7),
                           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
                         ),
-                        icon: const Icon(Icons.assignment, size: 15),
-                        label: const Text('GÖREVLER', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 9.5)),
+                        icon: const Icon(Icons.assignment, size: 14),
+                        label: const Text('GÖREVLER', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 9)),
                         onPressed: () => QuestDialog.showQuestDialog(context),
                       ),
                     ),
-                    const SizedBox(width: 6),
+                    const SizedBox(width: 5),
                     Expanded(
                       child: OutlinedButton.icon(
                         style: OutlinedButton.styleFrom(
                           foregroundColor: const Color(0xFFE040FB),
                           side: const BorderSide(color: Color(0xFFE040FB)),
-                          padding: const EdgeInsets.symmetric(vertical: 8),
+                          padding: const EdgeInsets.symmetric(vertical: 7),
                           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
                         ),
-                        icon: const Icon(Icons.palette, size: 15),
-                        label: const Text('KOSTÜM', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 9.5)),
+                        icon: const Icon(Icons.palette, size: 14),
+                        label: const Text('KOSTÜM', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 9)),
                         onPressed: () {
                           Navigator.push(
                             context,
@@ -400,18 +413,18 @@ class _MainMenuScreenState extends ConsumerState<MainMenuScreen> {
                         },
                       ),
                     ),
-                    const SizedBox(width: 6),
+                    const SizedBox(width: 5),
                     Expanded(
                       child: ElevatedButton.icon(
                         style: ElevatedButton.styleFrom(
                           backgroundColor: const Color(0xFF1E2E52),
                           foregroundColor: AppColors.cyanText,
                           side: const BorderSide(color: AppColors.cyanText),
-                          padding: const EdgeInsets.symmetric(vertical: 8),
+                          padding: const EdgeInsets.symmetric(vertical: 7),
                           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
                         ),
-                        icon: const Icon(Icons.account_circle, size: 15, color: AppColors.cyanText),
-                        label: const Text('PROFİL', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 9.5)),
+                        icon: const Icon(Icons.account_circle, size: 14, color: AppColors.cyanText),
+                        label: const Text('PROFİL', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 9)),
                         onPressed: () {
                           Navigator.push(
                             context,
@@ -527,15 +540,33 @@ class _MainMenuScreenState extends ConsumerState<MainMenuScreen> {
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          const Icon(Icons.hardware, size: 48, color: AppColors.goldText),
-          const SizedBox(height: 6),
-          const Text(
-            'YERALTI SAVAŞLARI',
-            style: TextStyle(
-              color: Colors.white,
-              fontSize: 22,
-              fontWeight: FontWeight.bold,
-              letterSpacing: 2,
+          // 🌋 RESMİ OYUN LOGOSU (LAV PARILTI EFEKTLİ)
+          Container(
+            height: 140,
+            width: double.infinity,
+            margin: const EdgeInsets.only(bottom: 12),
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(18),
+              border: Border.all(color: const Color(0xFFFF6D00).withValues(alpha: 0.8), width: 1.8),
+              boxShadow: [
+                BoxShadow(
+                  color: const Color(0xFFFF3D00).withValues(alpha: 0.35),
+                  blurRadius: 20,
+                  spreadRadius: 2,
+                ),
+                BoxShadow(
+                  color: Colors.black.withValues(alpha: 0.6),
+                  blurRadius: 10,
+                  offset: const Offset(0, 4),
+                ),
+              ],
+            ),
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(16),
+              child: Image.asset(
+                'assets/image/logo.jpg',
+                fit: BoxFit.cover,
+              ),
             ),
           ),
           // Madenci Bilgi Kartı (Sadece Okunur - Tıklanınca Profile Yönlendirir)
