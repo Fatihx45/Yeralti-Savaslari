@@ -1,4 +1,4 @@
-﻿import 'package:flutter/material.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../mining/application/game_notifier.dart';
@@ -82,7 +82,7 @@ class CosmeticsScreen extends ConsumerWidget {
     return Scaffold(
       backgroundColor: AppColors.background,
       appBar: AppBar(
-        backgroundColor: const Color(0xFF0F0F28),
+        backgroundColor: AppColors.hudPanel,
         title: const Text('KOSTÜMLER & SKİNLER', style: TextStyle(color: AppColors.goldText, fontWeight: FontWeight.bold, fontSize: 16)),
         actions: [
           Padding(
@@ -91,7 +91,7 @@ class CosmeticsScreen extends ConsumerWidget {
               child: Row(
                 children: [
                   const Text('💎 ', style: TextStyle(fontSize: 14)),
-                  Text('${gameState.player.gems}', style: const TextStyle(color: Color(0xFF4FC3F7), fontWeight: FontWeight.bold, fontSize: 14)),
+                  Text('${gameState.player.gems}', style: const TextStyle(color: AppColors.cyanText, fontWeight: FontWeight.bold, fontSize: 14)),
                 ],
               ),
             ),
@@ -109,10 +109,10 @@ class CosmeticsScreen extends ConsumerWidget {
             margin: const EdgeInsets.only(bottom: 12),
             padding: const EdgeInsets.all(14),
             decoration: BoxDecoration(
-              color: const Color(0xFF141434),
+              color: AppColors.hudPanel,
               borderRadius: BorderRadius.circular(14),
               border: Border.all(
-                color: isEquipped ? AppColors.neonGreen : const Color(0xFF2A2A5E),
+                color: isEquipped ? AppColors.lavaOrange : const Color(0xFF4A2518),
                 width: isEquipped ? 2 : 1,
               ),
             ),
@@ -123,7 +123,7 @@ class CosmeticsScreen extends ConsumerWidget {
                   width: 48,
                   height: 48,
                   decoration: BoxDecoration(
-                    color: const Color(0xFF0A0A1C),
+                    color: AppColors.background,
                     borderRadius: BorderRadius.circular(8),
                     border: Border.all(color: skin.shirtColor, width: 2),
                   ),
@@ -152,8 +152,8 @@ class CosmeticsScreen extends ConsumerWidget {
                 ),
                 ElevatedButton(
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: isEquipped ? AppColors.neonGreen : const Color(0xFF1E3A5F),
-                    foregroundColor: isEquipped ? Colors.black : Colors.white,
+                    backgroundColor: isEquipped ? AppColors.lavaOrange : const Color(0xFF331C14),
+                    foregroundColor: Colors.white,
                     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
                   ),
                   onPressed: () {

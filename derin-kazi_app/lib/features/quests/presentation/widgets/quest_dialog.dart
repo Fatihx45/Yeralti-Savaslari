@@ -1,4 +1,4 @@
-﻿import 'package:flutter/material.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../mining/application/game_notifier.dart';
@@ -109,12 +109,12 @@ class _QuestDialogState extends ConsumerState<QuestDialog> {
         constraints: const BoxConstraints(maxWidth: 520, maxHeight: 680),
         padding: const EdgeInsets.all(18),
         decoration: BoxDecoration(
-          color: const Color(0xFF0D0D26),
+          color: const Color(0xFF140D1A),
           borderRadius: BorderRadius.circular(22),
-          border: Border.all(color: AppColors.goldText.withValues(alpha: 0.6), width: 2),
+          border: Border.all(color: AppColors.lavaOrange, width: 2),
           boxShadow: [
             BoxShadow(
-              color: AppColors.goldText.withValues(alpha: 0.2),
+              color: AppColors.lavaOrange.withValues(alpha: 0.3),
               blurRadius: 24,
               spreadRadius: 2,
             ),
@@ -145,11 +145,11 @@ class _QuestDialogState extends ConsumerState<QuestDialog> {
                         ),
                         Row(
                           children: [
-                            const Icon(Icons.timer_outlined, color: Color(0xFF4FC3F7), size: 12),
+                            const Icon(Icons.timer_outlined, color: AppColors.cyanText, size: 12),
                             const SizedBox(width: 4),
                             Text(
                               'Yenilenmeye Kalan: $remainingTimeStr',
-                              style: const TextStyle(color: Color(0xFF4FC3F7), fontSize: 10, fontWeight: FontWeight.w600),
+                              style: const TextStyle(color: AppColors.cyanText, fontSize: 10, fontWeight: FontWeight.w600),
                             ),
                           ],
                         ),
@@ -169,9 +169,9 @@ class _QuestDialogState extends ConsumerState<QuestDialog> {
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
               decoration: BoxDecoration(
-                color: const Color(0xFF141438),
+                color: AppColors.hudPanel,
                 borderRadius: BorderRadius.circular(10),
-                border: Border.all(color: const Color(0xFF26265A)),
+                border: Border.all(color: const Color(0xFF4A2518)),
               ),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,

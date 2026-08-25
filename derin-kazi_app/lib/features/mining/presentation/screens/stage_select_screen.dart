@@ -65,7 +65,7 @@ class _StageSelectScreenState extends ConsumerState<StageSelectScreen> {
     final Color biomeColor = currentBiome['color'] as Color;
 
     return Scaffold(
-      backgroundColor: const Color(0xFF0A0A1C),
+      backgroundColor: AppColors.background,
       body: SafeArea(
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
@@ -102,13 +102,13 @@ class _StageSelectScreenState extends ConsumerState<StageSelectScreen> {
                   // HIZLI DEVAM ET BUTONU
                   ElevatedButton.icon(
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: AppColors.neonGreen,
-                      foregroundColor: Colors.black,
+                      backgroundColor: AppColors.lavaOrange,
+                      foregroundColor: Colors.white,
                       padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 9),
                       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-                      elevation: 4,
+                      elevation: 6,
                     ),
-                    icon: const Icon(Icons.play_arrow, size: 18, color: Colors.black),
+                    icon: const Icon(Icons.play_arrow, size: 18, color: Colors.white),
                     label: Text(
                       'DEVAM ET (BÖLÜM $unlockedStage)',
                       style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 11),
@@ -121,13 +121,13 @@ class _StageSelectScreenState extends ConsumerState<StageSelectScreen> {
                   Container(
                     padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
                     decoration: BoxDecoration(
-                      color: const Color(0xFF141438),
+                      color: AppColors.hudPanel,
                       borderRadius: BorderRadius.circular(8),
-                      border: Border.all(color: const Color(0xFF26265A)),
+                      border: Border.all(color: const Color(0xFF4A2518)),
                     ),
                     child: Row(
                       children: [
-                        Text('💎 ${gameState.player.gems}', style: const TextStyle(color: Color(0xFF4FC3F7), fontSize: 11, fontWeight: FontWeight.bold)),
+                        Text('💎 ${gameState.player.gems}', style: const TextStyle(color: AppColors.cyanText, fontSize: 11, fontWeight: FontWeight.bold)),
                         const SizedBox(width: 8),
                         Text('🟡 ${gameState.player.gold}', style: const TextStyle(color: AppColors.goldText, fontSize: 11, fontWeight: FontWeight.bold)),
                       ],
@@ -161,10 +161,10 @@ class _StageSelectScreenState extends ConsumerState<StageSelectScreen> {
                         child: Container(
                           padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                           decoration: BoxDecoration(
-                            color: isSelected ? color.withValues(alpha: 0.25) : const Color(0xFF131332),
+                            color: isSelected ? color.withValues(alpha: 0.25) : AppColors.hudPanel,
                             borderRadius: BorderRadius.circular(8),
                             border: Border.all(
-                              color: isSelected ? color : (isBiomeUnlocked ? const Color(0xFF2E2E68) : Colors.white12),
+                              color: isSelected ? color : (isBiomeUnlocked ? const Color(0xFF4A2518) : Colors.white12),
                               width: isSelected ? 1.8 : 1.0,
                             ),
                           ),
@@ -199,7 +199,7 @@ class _StageSelectScreenState extends ConsumerState<StageSelectScreen> {
                 child: Container(
                   padding: const EdgeInsets.all(10),
                   decoration: BoxDecoration(
-                    color: const Color(0xFF10102E),
+                    color: AppColors.hudPanel,
                     borderRadius: BorderRadius.circular(16),
                     border: Border.all(color: biomeColor.withValues(alpha: 0.3)),
                   ),
@@ -222,19 +222,19 @@ class _StageSelectScreenState extends ConsumerState<StageSelectScreen> {
                       final bool isBiomeBoss = config.bossType == BossType.biomeBoss;
                       final bool isFinalBoss = config.bossType == BossType.finalBoss;
 
-                      Color cardBg = const Color(0xFF17173C);
-                      Color borderColor = const Color(0xFF2C2C64);
+                      Color cardBg = AppColors.panelBox;
+                      Color borderColor = const Color(0xFF4A2518);
                       Widget? badgeIcon;
 
                       if (!isUnlocked) {
-                        cardBg = const Color(0xFF0E0E22);
+                        cardBg = const Color(0xFF0C0812);
                         borderColor = Colors.white10;
                       } else if (isCurrent) {
-                        cardBg = const Color(0xFF1E3D24);
-                        borderColor = AppColors.neonGreen;
+                        cardBg = const Color(0xFF3E1A10);
+                        borderColor = AppColors.lavaOrange;
                       } else if (isCompleted) {
-                        cardBg = const Color(0xFF1A2A38);
-                        borderColor = const Color(0xFF4FC3F7);
+                        cardBg = const Color(0xFF14241B);
+                        borderColor = AppColors.neonGreen;
                       }
 
                       if (isFinalBoss) {

@@ -35,9 +35,9 @@ class _WeaponShopScreenState extends ConsumerState<WeaponShopScreen>
     final player = gameState.player;
 
     return Scaffold(
-      backgroundColor: const Color(0xFF0A0A1A),
+      backgroundColor: AppColors.background,
       appBar: AppBar(
-        backgroundColor: const Color(0xFF14142B),
+        backgroundColor: AppColors.hudPanel,
         elevation: 0,
         leading: IconButton(
           icon: const Icon(Icons.arrow_back_ios_new, color: Colors.white),
@@ -80,9 +80,9 @@ class _WeaponShopScreenState extends ConsumerState<WeaponShopScreen>
         ],
         bottom: TabBar(
           controller: _tabController,
-          indicatorColor: AppColors.neonGreen,
+          indicatorColor: AppColors.lavaOrange,
           indicatorWeight: 3,
-          labelColor: AppColors.neonGreen,
+          labelColor: AppColors.lavaOrange,
           unselectedLabelColor: Colors.white60,
           labelStyle: const TextStyle(fontWeight: FontWeight.bold, fontSize: 13),
           tabs: const [
@@ -97,13 +97,13 @@ class _WeaponShopScreenState extends ConsumerState<WeaponShopScreen>
           // Üst Bakiye Bilgi Çubuğu
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
-            color: const Color(0xFF0F0F24),
+            color: AppColors.hudPanel,
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceAround,
               children: [
-                _buildBalanceChip('🟡', '${player.gold}', 'Altın', Colors.amber),
-                _buildBalanceChip('💎', '${player.gems}', 'Elmas', Colors.cyanAccent),
-                _buildBalanceChip('🔫', '${player.currentAmmo}', 'Mermi', Colors.orangeAccent),
+                _buildBalanceChip('🟡', '${player.gold}', 'Altın', AppColors.goldText),
+                _buildBalanceChip('💎', '${player.gems}', 'Elmas', AppColors.cyanText),
+                _buildBalanceChip('🔫', '${player.currentAmmo}', 'Mermi', AppColors.lavaOrange),
                 _buildBalanceChip('❤️', '${player.hp}/${player.maxHp}', 'Can', Colors.redAccent),
               ],
             ),

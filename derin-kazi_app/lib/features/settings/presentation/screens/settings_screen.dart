@@ -127,7 +127,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
     final notifier = ref.read(gameNotifierProvider.notifier);
 
     return Scaffold(
-      backgroundColor: const Color(0xFF090918),
+      backgroundColor: AppColors.background,
       body: SafeArea(
         child: Column(
           children: [
@@ -135,8 +135,8 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
               decoration: const BoxDecoration(
-                color: Color(0xFF121232),
-                border: Border(bottom: BorderSide(color: Color(0xFF2E2E68), width: 1.5)),
+                color: AppColors.hudPanel,
+                border: Border(bottom: BorderSide(color: Color(0xFF4A2518), width: 1.5)),
               ),
               child: Row(
                 children: [
@@ -151,7 +151,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                       'assets/image/logo.jpg',
                       width: 24,
                       height: 24,
-                      fit: BoxFit.cover,
+                      fit: BoxFit.contain,
                     ),
                   ),
                   const SizedBox(width: 8),
@@ -178,12 +178,12 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                       margin: const EdgeInsets.only(bottom: 16),
                       decoration: BoxDecoration(
                         gradient: const LinearGradient(
-                          colors: [Color(0xFF00E676), Color(0xFF00B0FF)],
+                          colors: [Color(0xFFFF5722), Color(0xFFFF8A50)],
                         ),
                         borderRadius: BorderRadius.circular(12),
                         boxShadow: [
                           BoxShadow(
-                            color: const Color(0xFF00E676).withValues(alpha: 0.3),
+                            color: const Color(0xFFFF5722).withValues(alpha: 0.35),
                             blurRadius: 10,
                             offset: const Offset(0, 4),
                           ),
@@ -196,11 +196,11 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                           padding: const EdgeInsets.symmetric(vertical: 14),
                           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                         ),
-                        icon: const Icon(Icons.bolt, color: Colors.black, size: 22),
+                        icon: const Icon(Icons.bolt, color: Colors.white, size: 22),
                         label: const Text(
                           '⚡ TÜM AYARLARI AKTİFLEŞTİR (100% SES & EFEKT)',
                           style: TextStyle(
-                            color: Colors.black,
+                            color: Colors.white,
                             fontSize: 12,
                             fontWeight: FontWeight.w900,
                             letterSpacing: 0.8,
@@ -210,10 +210,10 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                           notifier.activateAllSettings();
                           ScaffoldMessenger.of(context).showSnackBar(
                             const SnackBar(
-                              backgroundColor: Color(0xFF00E676),
+                              backgroundColor: AppColors.lavaOrange,
                               content: Text(
                                 '⚡ Tüm sesler, titreşim, bildirimler ve grafikler %100 aktif edildi!',
-                                style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold),
+                                style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
                               ),
                             ),
                           );

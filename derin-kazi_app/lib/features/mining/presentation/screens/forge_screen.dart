@@ -34,9 +34,9 @@ class _ForgeScreenState extends ConsumerState<ForgeScreen>
     final player = gameState.player;
 
     return Scaffold(
-      backgroundColor: const Color(0xFF0C0A1A),
+      backgroundColor: AppColors.background,
       appBar: AppBar(
-        backgroundColor: const Color(0xFF18122B),
+        backgroundColor: AppColors.hudPanel,
         elevation: 0,
         leading: IconButton(
           icon: const Icon(Icons.arrow_back_ios_new, color: Colors.white),
@@ -59,9 +59,9 @@ class _ForgeScreenState extends ConsumerState<ForgeScreen>
         ),
         bottom: TabBar(
           controller: _tabController,
-          indicatorColor: AppColors.goldText,
+          indicatorColor: AppColors.lavaOrange,
           indicatorWeight: 3,
-          labelColor: AppColors.goldText,
+          labelColor: AppColors.lavaOrange,
           unselectedLabelColor: Colors.white60,
           labelStyle: const TextStyle(fontWeight: FontWeight.bold, fontSize: 13),
           tabs: const [
@@ -75,7 +75,7 @@ class _ForgeScreenState extends ConsumerState<ForgeScreen>
           // Üst Maden Stoğu Paneli
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-            color: const Color(0xFF140F28),
+            color: AppColors.hudPanel,
             child: SingleChildScrollView(
               scrollDirection: Axis.horizontal,
               child: Row(

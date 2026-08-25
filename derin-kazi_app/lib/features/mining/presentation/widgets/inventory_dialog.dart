@@ -26,14 +26,14 @@ class InventoryDialog extends ConsumerWidget {
       child: Container(
         constraints: const BoxConstraints(maxWidth: 480, maxHeight: 600),
         decoration: BoxDecoration(
-          color: const Color(0xFF0F0F28),
+          color: const Color(0xFF140D1A),
           borderRadius: BorderRadius.circular(16),
-          border: Border.all(color: const Color(0xFF383878), width: 2),
+          border: Border.all(color: AppColors.lavaOrange, width: 2),
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withValues(alpha: 0.8),
+              color: AppColors.lavaOrange.withValues(alpha: 0.3),
               blurRadius: 20,
-              spreadRadius: 4,
+              spreadRadius: 2,
             ),
           ],
         ),
@@ -44,12 +44,12 @@ class InventoryDialog extends ConsumerWidget {
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
               decoration: const BoxDecoration(
-                color: Color(0xFF181844),
+                color: AppColors.hudPanel,
                 borderRadius: BorderRadius.only(
                   topLeft: Radius.circular(14),
                   topRight: Radius.circular(14),
                 ),
-                border: Border(bottom: BorderSide(color: Color(0xFF383878), width: 1.5)),
+                border: Border(bottom: BorderSide(color: Color(0xFF4A2518), width: 1.5)),
               ),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,

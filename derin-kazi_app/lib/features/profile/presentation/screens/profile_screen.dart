@@ -326,7 +326,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
         : _allBadges.where((b) => b.category == _selectedCategory).toList();
 
     return Scaffold(
-      backgroundColor: const Color(0xFF0A0A1C),
+      backgroundColor: AppColors.background,
       body: SafeArea(
         child: Column(
           children: [
@@ -336,8 +336,8 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
               decoration: const BoxDecoration(
-                color: Color(0xFF101030),
-                border: Border(bottom: BorderSide(color: Color(0xFF262656), width: 1.5)),
+                color: AppColors.hudPanel,
+                border: Border(bottom: BorderSide(color: Color(0xFF4A2518), width: 1.5)),
               ),
               child: Row(
                 children: [
@@ -352,7 +352,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                       'assets/image/logo.jpg',
                       width: 24,
                       height: 24,
-                      fit: BoxFit.cover,
+                      fit: BoxFit.contain,
                     ),
                   ),
                   const SizedBox(width: 8),
@@ -371,13 +371,13 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                   Container(
                     padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
                     decoration: BoxDecoration(
-                      color: const Color(0xFF090916),
+                      color: AppColors.panelBox,
                       borderRadius: BorderRadius.circular(8),
-                      border: Border.all(color: const Color(0xFF2E2E68)),
+                      border: Border.all(color: const Color(0xFF4A2518)),
                     ),
                     child: Row(
                       children: [
-                        Text('💎 ${player.gems}', style: const TextStyle(color: Color(0xFF4FC3F7), fontSize: 11, fontWeight: FontWeight.bold)),
+                        Text('💎 ${player.gems}', style: const TextStyle(color: AppColors.cyanText, fontSize: 11, fontWeight: FontWeight.bold)),
                         const SizedBox(width: 8),
                         Text('🟡 ${player.gold}', style: const TextStyle(color: AppColors.goldText, fontSize: 11, fontWeight: FontWeight.bold)),
                       ],
