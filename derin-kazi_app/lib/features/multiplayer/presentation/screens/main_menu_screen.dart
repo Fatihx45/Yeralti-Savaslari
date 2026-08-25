@@ -21,7 +21,16 @@ class MainMenuScreen extends ConsumerStatefulWidget {
 }
 
 class _MainMenuScreenState extends ConsumerState<MainMenuScreen> {
-  final TextEditingController _nameController = TextEditingController(text: 'Madenci Usta');
+  final TextEditingController _nameController = TextEditingController();
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      final playerName = ref.read(gameNotifierProvider).player.playerName;
+      _nameController.text = playerName;
+    });
+  }
 
   @override
   void dispose() {
@@ -35,32 +44,52 @@ class _MainMenuScreenState extends ConsumerState<MainMenuScreen> {
     final int unlockedStage = gameState.player.unlockedStage;
     final stageConfig = StageConfigService.getConfig(unlockedStage);
 
+    final isLandscape = MediaQuery.of(context).orientation == Orientation.landscape;
+
     return Scaffold(
       backgroundColor: AppColors.background,
       body: SafeArea(
         child: LayoutBuilder(
           builder: (context, constraints) {
-            final bool isLandscape = constraints.maxWidth > constraints.maxHeight;
-
             return Stack(
               children: [
+                // 1. VOLKANİK OBSİDYEN ARKA PLAN GRADIENT & DERİNLİK
+                Container(
+                  width: double.infinity,
+                  height: double.infinity,
+                  decoration: const BoxDecoration(
+                    gradient: RadialGradient(
+                      center: Alignment(0, -0.2),
+                      radius: 1.3,
+                      colors: [
+                        Color(0xFF221520), // Merkezde hafif kor yansıması
+                        Color(0xFF140D1A), // Orta obsidyen tonu
+                        Color(0xFF0A070E), // Dış karanlık volkanik zemin
+                      ],
+                    ),
+                  ),
+                ),
+
+                // 2. ANA PANEL (Bazalt Taşı & Kor Ateşi Çerçeveli)
                 Center(
                   child: Container(
-                    constraints: BoxConstraints(
-                      maxWidth: isLandscape ? 840 : 460,
-                      maxHeight: isLandscape ? 400 : double.infinity,
-                    ),
-                    padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+                    constraints: const BoxConstraints(maxWidth: 820, maxHeight: 420),
                     margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                    padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
                     decoration: BoxDecoration(
-                      color: const Color(0xFF0F0F28),
-                      borderRadius: BorderRadius.circular(22),
-                      border: Border.all(color: const Color(0xFF2E2E68), width: 2),
+                      color: AppColors.hudPanel.withValues(alpha: 0.92),
+                      borderRadius: BorderRadius.circular(20),
+                      border: Border.all(color: const Color(0xFF4A2518), width: 1.5),
                       boxShadow: [
                         BoxShadow(
-                          color: AppColors.neonGreen.withValues(alpha: 0.15),
-                          blurRadius: 25,
+                          color: AppColors.lavaOrange.withValues(alpha: 0.2),
+                          blurRadius: 30,
                           spreadRadius: 2,
+                        ),
+                        BoxShadow(
+                          color: Colors.black.withValues(alpha: 0.8),
+                          blurRadius: 15,
+                          offset: const Offset(0, 8),
                         ),
                       ],
                     ),
@@ -82,9 +111,9 @@ class _MainMenuScreenState extends ConsumerState<MainMenuScreen> {
                     child: Container(
                       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
                       decoration: BoxDecoration(
-                        color: const Color(0xFF141438),
+                        color: AppColors.panelBox,
                         borderRadius: BorderRadius.circular(10),
-                        border: Border.all(color: AppColors.goldText.withValues(alpha: 0.6)),
+                        border: Border.all(color: AppColors.lavaOrange.withValues(alpha: 0.6)),
                       ),
                       child: Row(
                         children: [
@@ -111,12 +140,12 @@ class _MainMenuScreenState extends ConsumerState<MainMenuScreen> {
                       Container(
                         padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
                         decoration: BoxDecoration(
-                          color: const Color(0xFF141438),
+                          color: AppColors.panelBox,
                           borderRadius: BorderRadius.circular(10),
-                          border: Border.all(color: const Color(0xFF2E2E68), width: 1.2),
+                          border: Border.all(color: const Color(0xFF4A2518), width: 1.2),
                           boxShadow: [
                             BoxShadow(
-                              color: Colors.black.withValues(alpha: 0.3),
+                              color: Colors.black.withValues(alpha: 0.4),
                               blurRadius: 6,
                             ),
                           ],
@@ -167,7 +196,7 @@ class _MainMenuScreenState extends ConsumerState<MainMenuScreen> {
                           ],
                         ),
                       ),
-                      const SizedBox(width: 6),
+                      const SizedBox(width: 4),
 
                       // Ayarlar Butonu
                       IconButton(
@@ -188,50 +217,50 @@ class _MainMenuScreenState extends ConsumerState<MainMenuScreen> {
     );
   }
 
-  // Yatay (Landscape) 2 Kolonlu Konsol Düzeni
+  // Yatay Düzen (Landscape - Ana Düzen)
   Widget _buildLandscapeLayout(int unlockedStage, String biomeName, GameState gameState) {
     return Row(
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
-        // Sol Kolon: Resmi Logo Kartı, Madenci Bilgisi, Görevler & Kostümler
+        // Sol Kolon: Resmi Oyun Logosu & Profil Kartı
         Expanded(
           flex: 5,
           child: Padding(
-            padding: const EdgeInsets.only(right: 14),
+            padding: const EdgeInsets.only(right: 12),
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                // 🌋 RESMİ OYUN LOGOSU (LAV PARILTI EFEKTLİ)
+                // 🌋 RESMİ OYUN LOGOSU (Akkor Kor Ateşi Parıltısı)
                 Container(
-                  height: 125,
+                  height: 135,
+                  width: double.infinity,
                   decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(18),
-                    border: Border.all(color: const Color(0xFFFF6D00).withValues(alpha: 0.8), width: 1.8),
+                    borderRadius: BorderRadius.circular(16),
+                    border: Border.all(color: const Color(0xFFFF6D00), width: 1.8),
                     boxShadow: [
                       BoxShadow(
-                        color: const Color(0xFFFF3D00).withValues(alpha: 0.35),
-                        blurRadius: 20,
+                        color: const Color(0xFFFF3D00).withValues(alpha: 0.4),
+                        blurRadius: 22,
                         spreadRadius: 2,
                       ),
                       BoxShadow(
-                        color: Colors.black.withValues(alpha: 0.6),
+                        color: Colors.black.withValues(alpha: 0.7),
                         blurRadius: 10,
                         offset: const Offset(0, 4),
                       ),
                     ],
                   ),
                   child: ClipRRect(
-                    borderRadius: BorderRadius.circular(16),
+                    borderRadius: BorderRadius.circular(14),
                     child: Image.asset(
                       'assets/image/logo.jpg',
                       fit: BoxFit.cover,
-                      width: double.infinity,
                     ),
                   ),
                 ),
-                const SizedBox(height: 10),
+                const SizedBox(height: 8),
 
-                // Madenci Bilgi Kartı (Sadece Okunur - Tıklanınca Profile Yönlendirir)
+                // Madenci Kimlik Kartı
                 InkWell(
                   onTap: () {
                     Navigator.push(context, MaterialPageRoute(builder: (ctx) => const ProfileScreen()));
@@ -240,9 +269,9 @@ class _MainMenuScreenState extends ConsumerState<MainMenuScreen> {
                   child: Container(
                     padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 7),
                     decoration: BoxDecoration(
-                      color: const Color(0xFF141438),
+                      color: AppColors.panelBox,
                       borderRadius: BorderRadius.circular(12),
-                      border: Border.all(color: const Color(0xFF2E2E68), width: 1.2),
+                      border: Border.all(color: const Color(0xFF4A2518), width: 1.2),
                     ),
                     child: Row(
                       children: [
@@ -250,9 +279,9 @@ class _MainMenuScreenState extends ConsumerState<MainMenuScreen> {
                           width: 30,
                           height: 30,
                           decoration: BoxDecoration(
-                            color: const Color(0xFF0C0C22),
+                            color: const Color(0xFF140D1A),
                             shape: BoxShape.circle,
-                            border: Border.all(color: AppColors.neonGreen, width: 1.5),
+                            border: Border.all(color: AppColors.lavaOrange, width: 1.5),
                           ),
                           child: const Center(
                             child: Icon(Icons.person, color: AppColors.goldText, size: 16),
@@ -316,7 +345,7 @@ class _MainMenuScreenState extends ConsumerState<MainMenuScreen> {
                     Expanded(
                       child: ElevatedButton.icon(
                         style: ElevatedButton.styleFrom(
-                          backgroundColor: const Color(0xFF1E2E52),
+                          backgroundColor: const Color(0xFF1D2838),
                           foregroundColor: AppColors.cyanText,
                           side: const BorderSide(color: AppColors.cyanText, width: 1.2),
                           padding: const EdgeInsets.symmetric(vertical: 8),
@@ -339,11 +368,11 @@ class _MainMenuScreenState extends ConsumerState<MainMenuScreen> {
           ),
         ),
 
-        // İki Kolon Arası Dikey Çizgi
+        // İki Kolon Arası Dikey Kor Çizgi
         Container(
           width: 1.2,
           height: double.infinity,
-          color: const Color(0xFF242452),
+          color: const Color(0xFF4A2518),
           margin: const EdgeInsets.symmetric(horizontal: 4),
         ),
 
@@ -361,9 +390,9 @@ class _MainMenuScreenState extends ConsumerState<MainMenuScreen> {
                     title: '🎮 OYUNA BAŞLA',
                     subtitle: 'Kaldığın Yer: Bölüm $unlockedStage • $biomeName',
                     icon: Icons.play_arrow_rounded,
-                    buttonColor: const Color(0xFF13381B),
-                    borderColor: AppColors.neonGreen,
-                    textColor: AppColors.neonGreen,
+                    buttonColor: const Color(0xFF4E1609),
+                    borderColor: AppColors.lavaOrange,
+                    textColor: AppColors.lavaOrange,
                     isPrimary: true,
                     onTap: () {
                       ref.read(lobbyNotifierProvider.notifier).setPlayerName(_nameController.text);
@@ -397,7 +426,7 @@ class _MainMenuScreenState extends ConsumerState<MainMenuScreen> {
                     title: '📋 GÖREVLER & ÖDÜLLER',
                     subtitle: 'Haftalık Görevler • Elmas & Altın Kazan',
                     icon: Icons.assignment_turned_in,
-                    buttonColor: const Color(0xFF2E2208),
+                    buttonColor: const Color(0xFF3D2608),
                     borderColor: AppColors.goldText,
                     textColor: AppColors.goldText,
                     onTap: () => QuestDialog.showQuestDialog(context),
@@ -409,9 +438,9 @@ class _MainMenuScreenState extends ConsumerState<MainMenuScreen> {
                     title: '🛒 SİLAH & MERMİ MAĞAZASI',
                     subtitle: 'Tabanca, Tüfek, Pompalı & Cephane Al',
                     icon: Icons.shopping_bag,
-                    buttonColor: const Color(0xFF2E1A0A),
-                    borderColor: AppColors.goldText,
-                    textColor: AppColors.goldText,
+                    buttonColor: const Color(0xFF361210),
+                    borderColor: const Color(0xFFFF7043),
+                    textColor: const Color(0xFFFF7043),
                     onTap: () {
                       Navigator.push(
                         context,
@@ -426,7 +455,7 @@ class _MainMenuScreenState extends ConsumerState<MainMenuScreen> {
                     title: '⚡ ATÖLYE & GÜÇLENDİRME',
                     subtitle: 'Kazma, Çekiç & Maden Güçlendirmeleri',
                     icon: Icons.hardware,
-                    buttonColor: const Color(0xFF1E1038),
+                    buttonColor: const Color(0xFF2B1038),
                     borderColor: const Color(0xFFE040FB),
                     textColor: const Color(0xFFE040FB),
                     onTap: () {
@@ -458,10 +487,10 @@ class _MainMenuScreenState extends ConsumerState<MainMenuScreen> {
             margin: const EdgeInsets.only(bottom: 12),
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(18),
-              border: Border.all(color: const Color(0xFFFF6D00).withValues(alpha: 0.8), width: 1.8),
+              border: Border.all(color: const Color(0xFFFF6D00), width: 1.8),
               boxShadow: [
                 BoxShadow(
-                  color: const Color(0xFFFF3D00).withValues(alpha: 0.35),
+                  color: const Color(0xFFFF3D00).withValues(alpha: 0.4),
                   blurRadius: 20,
                   spreadRadius: 2,
                 ),
@@ -480,124 +509,27 @@ class _MainMenuScreenState extends ConsumerState<MainMenuScreen> {
               ),
             ),
           ),
-          // Madenci Bilgi Kartı (Sadece Okunur - Tıklanınca Profile Yönlendirir)
-          InkWell(
-            onTap: () {
-              Navigator.push(context, MaterialPageRoute(builder: (ctx) => const ProfileScreen()));
-            },
-            borderRadius: BorderRadius.circular(12),
-            child: Container(
-              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-              decoration: BoxDecoration(
-                color: const Color(0xFF141438),
-                borderRadius: BorderRadius.circular(12),
-                border: Border.all(color: const Color(0xFF2E2E68), width: 1.2),
-              ),
-              child: Row(
-                children: [
-                  Container(
-                    width: 32,
-                    height: 32,
-                    decoration: BoxDecoration(
-                      color: const Color(0xFF0C0C22),
-                      shape: BoxShape.circle,
-                      border: Border.all(color: AppColors.neonGreen, width: 1.5),
-                    ),
-                    child: const Center(
-                      child: Icon(Icons.person, color: AppColors.goldText, size: 18),
-                    ),
-                  ),
-                  const SizedBox(width: 10),
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Text(
-                          gameState.player.playerName,
-                          style: const TextStyle(
-                            color: Colors.white,
-                            fontSize: 13,
-                            fontWeight: FontWeight.bold,
-                          ),
-                          overflow: TextOverflow.ellipsis,
-                        ),
-                        const Text(
-                          'Profili Düzenle & Rozetler ➔',
-                          style: TextStyle(
-                            color: AppColors.goldText,
-                            fontSize: 9.5,
-                            fontWeight: FontWeight.w600,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                  const Icon(Icons.arrow_forward_ios, size: 12, color: Colors.white38),
-                ],
-              ),
-            ),
-          ),
-          const SizedBox(height: 10),
 
-          // Görevler, Kostümler & Profil Butonları
-          Row(
-            children: [
-              Expanded(
-                child: OutlinedButton.icon(
-                  style: OutlinedButton.styleFrom(
-                    foregroundColor: const Color(0xFFE040FB),
-                    side: const BorderSide(color: Color(0xFFE040FB), width: 1.2),
-                    padding: const EdgeInsets.symmetric(vertical: 8),
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-                  ),
-                  icon: const Icon(Icons.palette, size: 16),
-                  label: const Text('KOSTÜMLER', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 10)),
-                  onPressed: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(builder: (ctx) => const CosmeticsScreen()),
-                    );
-                  },
-                ),
-              ),
-              const SizedBox(width: 8),
-              Expanded(
-                child: ElevatedButton.icon(
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: const Color(0xFF1E2E52),
-                    foregroundColor: AppColors.cyanText,
-                    side: const BorderSide(color: AppColors.cyanText, width: 1.2),
-                    padding: const EdgeInsets.symmetric(vertical: 8),
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-                  ),
-                  icon: const Icon(Icons.account_circle, size: 16, color: AppColors.cyanText),
-                  label: const Text('PROFİL & ROZET', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 10)),
-                  onPressed: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(builder: (ctx) => const ProfileScreen()),
-                    );
-                  },
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 12),
+          // 1. OYUNA BAŞLA (BÖLÜM SEÇİMİ)
           _buildMenuButton(
             title: '🎮 OYUNA BAŞLA',
             subtitle: 'Kaldığın Yer: Bölüm $unlockedStage • $biomeName',
             icon: Icons.play_arrow_rounded,
-            buttonColor: const Color(0xFF13381B),
-            borderColor: AppColors.neonGreen,
-            textColor: AppColors.neonGreen,
+            buttonColor: const Color(0xFF4E1609),
+            borderColor: AppColors.lavaOrange,
+            textColor: AppColors.lavaOrange,
             isPrimary: true,
             onTap: () {
               ref.read(lobbyNotifierProvider.notifier).setPlayerName(_nameController.text);
-              Navigator.push(context, MaterialPageRoute(builder: (ctx) => const StageSelectScreen()));
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (ctx) => const StageSelectScreen()),
+              );
             },
           ),
           const SizedBox(height: 8),
+
+          // 2. EKİP KAZISI (1-10 KİŞİ AI TAKIMI)
           _buildMenuButton(
             title: '👥 EKİP KAZISI (1-10 KİŞİ)',
             subtitle: 'Sistem Madenci Botlarıyla Ortak Kazı & Bonus',
@@ -613,33 +545,39 @@ class _MainMenuScreenState extends ConsumerState<MainMenuScreen> {
             },
           ),
           const SizedBox(height: 8),
+
+          // 3. GÖREVLER & ÖDÜLLER
           _buildMenuButton(
             title: '📋 GÖREVLER & ÖDÜLLER',
             subtitle: 'Haftalık Görevler • Elmas & Altın Kazan',
             icon: Icons.assignment_turned_in,
-            buttonColor: const Color(0xFF2E2208),
+            buttonColor: const Color(0xFF3D2608),
             borderColor: AppColors.goldText,
             textColor: AppColors.goldText,
             onTap: () => QuestDialog.showQuestDialog(context),
           ),
           const SizedBox(height: 8),
+
+          // 4. SİLAH VE MERMİ MAĞAZASI
           _buildMenuButton(
             title: '🛒 SİLAH & MERMİ MAĞAZASI',
             subtitle: 'Tabanca, Tüfek, Pompalı & Cephane Al',
             icon: Icons.shopping_bag,
-            buttonColor: const Color(0xFF2E1A0A),
-            borderColor: AppColors.goldText,
-            textColor: AppColors.goldText,
+            buttonColor: const Color(0xFF361210),
+            borderColor: const Color(0xFFFF7043),
+            textColor: const Color(0xFFFF7043),
             onTap: () {
               Navigator.push(context, MaterialPageRoute(builder: (ctx) => const WeaponShopScreen()));
             },
           ),
           const SizedBox(height: 8),
+
+          // 5. ATÖLYE VE GÜÇLENDİRME
           _buildMenuButton(
             title: '⚡ ATÖLYE & GÜÇLENDİRME',
             subtitle: 'Kazma, Çekiç & Maden Güçlendirmeleri',
             icon: Icons.hardware,
-            buttonColor: const Color(0xFF1E1038),
+            buttonColor: const Color(0xFF2B1038),
             borderColor: const Color(0xFFE040FB),
             textColor: const Color(0xFFE040FB),
             onTap: () {
@@ -702,22 +640,23 @@ class _MainMenuScreenState extends ConsumerState<MainMenuScreen> {
                         color: Colors.white,
                         fontSize: isPrimary ? 13 : 12,
                         fontWeight: FontWeight.bold,
-                        letterSpacing: 0.5,
+                        letterSpacing: 0.8,
                       ),
                     ),
-                    const SizedBox(height: 1),
+                    const SizedBox(height: 2),
                     Text(
                       subtitle,
                       style: TextStyle(
-                        color: isPrimary ? AppColors.neonGreen.withValues(alpha: 0.85) : Colors.white70,
+                        color: textColor.withValues(alpha: 0.9),
                         fontSize: 9.5,
-                        fontWeight: isPrimary ? FontWeight.w600 : FontWeight.normal,
+                        fontWeight: FontWeight.w500,
                       ),
+                      overflow: TextOverflow.ellipsis,
                     ),
                   ],
                 ),
               ),
-              Icon(Icons.arrow_forward_ios, color: textColor, size: 12),
+              Icon(Icons.arrow_forward_ios, color: textColor.withValues(alpha: 0.7), size: 14),
             ],
           ),
         ),

@@ -25,16 +25,16 @@ class _TeamLobbyScreenState extends ConsumerState<TeamLobbyScreen> {
     final stageConfig = StageConfigService.getConfig(unlockedStage);
 
     return Scaffold(
-      backgroundColor: const Color(0xFF0B0B20),
+      backgroundColor: AppColors.background,
       body: SafeArea(
         child: Column(
           children: [
-            // 1. ÜST BAR
+            // 1. ÜST BAR (Bazalt Taşı & Kor Ateşi Çerçeveli)
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
               decoration: const BoxDecoration(
-                color: Color(0xFF141438),
-                border: Border(bottom: BorderSide(color: Color(0xFF2E2E68), width: 1.5)),
+                color: AppColors.hudPanel,
+                border: Border(bottom: BorderSide(color: Color(0xFF4A2518), width: 1.5)),
               ),
               child: Row(
                 children: [
@@ -43,7 +43,7 @@ class _TeamLobbyScreenState extends ConsumerState<TeamLobbyScreen> {
                     onPressed: () => Navigator.pop(context),
                   ),
                   const SizedBox(width: 8),
-                  const Icon(Icons.groups, color: AppColors.goldText, size: 24),
+                  const Icon(Icons.groups, color: AppColors.lavaOrange, size: 24),
                   const SizedBox(width: 8),
                   const Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -59,7 +59,7 @@ class _TeamLobbyScreenState extends ConsumerState<TeamLobbyScreen> {
                       ),
                       Text(
                         'Sistem Destekli 1-10 Madenci Kooperatif Modu',
-                        style: TextStyle(color: Color(0xFF8E8EAE), fontSize: 10),
+                        style: TextStyle(color: AppColors.secondaryText, fontSize: 10),
                       ),
                     ],
                   ),
@@ -76,9 +76,9 @@ class _TeamLobbyScreenState extends ConsumerState<TeamLobbyScreen> {
                   Container(
                     padding: const EdgeInsets.all(16),
                     decoration: BoxDecoration(
-                      color: const Color(0xFF141438),
+                      color: AppColors.hudPanel,
                       borderRadius: BorderRadius.circular(16),
-                      border: Border.all(color: const Color(0xFF2E2E68), width: 1.2),
+                      border: Border.all(color: const Color(0xFF4A2518), width: 1.2),
                     ),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
@@ -93,13 +93,13 @@ class _TeamLobbyScreenState extends ConsumerState<TeamLobbyScreen> {
                             Container(
                               padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
                               decoration: BoxDecoration(
-                                color: AppColors.neonGreen.withValues(alpha: 0.2),
+                                color: AppColors.lavaOrange.withValues(alpha: 0.2),
                                 borderRadius: BorderRadius.circular(8),
-                                border: Border.all(color: AppColors.neonGreen),
+                                border: Border.all(color: AppColors.lavaOrange),
                               ),
                               child: Text(
                                 '$_selectedTeamSize Kişi',
-                                style: const TextStyle(color: AppColors.neonGreen, fontWeight: FontWeight.bold, fontSize: 13),
+                                style: const TextStyle(color: AppColors.lavaOrange, fontWeight: FontWeight.bold, fontSize: 13),
                               ),
                             ),
                           ],
@@ -109,8 +109,8 @@ class _TeamLobbyScreenState extends ConsumerState<TeamLobbyScreen> {
                           min: 1,
                           max: 10,
                           divisions: 9,
-                          activeColor: AppColors.neonGreen,
-                          inactiveColor: const Color(0xFF242452),
+                          activeColor: AppColors.lavaOrange,
+                          inactiveColor: const Color(0xFF331C14),
                           onChanged: (val) {
                             setState(() {
                               _selectedTeamSize = val.round();
@@ -120,7 +120,7 @@ class _TeamLobbyScreenState extends ConsumerState<TeamLobbyScreen> {
                         ),
                         Text(
                           '1 Oyuncu (Sen) + ${_selectedTeamSize - 1} Sistem Madenci Botu',
-                          style: const TextStyle(color: Color(0xFF8E8EAE), fontSize: 11),
+                          style: const TextStyle(color: AppColors.secondaryText, fontSize: 11),
                         ),
                       ],
                     ),
@@ -131,7 +131,7 @@ class _TeamLobbyScreenState extends ConsumerState<TeamLobbyScreen> {
                   Container(
                     padding: const EdgeInsets.all(14),
                     decoration: BoxDecoration(
-                      color: const Color(0xFF1F1A08),
+                      color: const Color(0xFF261808),
                       borderRadius: BorderRadius.circular(14),
                       border: Border.all(color: AppColors.goldText.withValues(alpha: 0.6)),
                     ),
@@ -193,20 +193,20 @@ class _TeamLobbyScreenState extends ConsumerState<TeamLobbyScreen> {
             Container(
               padding: const EdgeInsets.all(16),
               decoration: const BoxDecoration(
-                color: Color(0xFF101030),
-                border: Border(top: BorderSide(color: Color(0xFF262656), width: 1.5)),
+                color: AppColors.hudPanel,
+                border: Border(top: BorderSide(color: Color(0xFF4A2518), width: 1.5)),
               ),
               child: SizedBox(
                 width: double.infinity,
                 child: ElevatedButton.icon(
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: AppColors.neonGreen,
-                    foregroundColor: Colors.black,
+                    backgroundColor: AppColors.lavaOrange,
+                    foregroundColor: Colors.white,
                     padding: const EdgeInsets.symmetric(vertical: 14),
                     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
                     elevation: 8,
                   ),
-                  icon: const Icon(Icons.play_arrow_rounded, size: 24, color: Colors.black),
+                  icon: const Icon(Icons.play_arrow_rounded, size: 24, color: Colors.white),
                   label: Text(
                     '$_selectedTeamSize KİŞİLİK EKİP KAZISINI BAŞLAT',
                     style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14, letterSpacing: 1),
@@ -239,7 +239,7 @@ class _TeamLobbyScreenState extends ConsumerState<TeamLobbyScreen> {
       margin: const EdgeInsets.only(bottom: 8),
       padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
       decoration: BoxDecoration(
-        color: const Color(0xFF141438),
+        color: AppColors.hudPanel,
         borderRadius: BorderRadius.circular(12),
         border: Border.all(color: color.withValues(alpha: 0.6), width: 1.2),
       ),
@@ -272,7 +272,7 @@ class _TeamLobbyScreenState extends ConsumerState<TeamLobbyScreen> {
                 ),
                 Text(
                   specialty,
-                  style: const TextStyle(color: Color(0xFF8E8EAE), fontSize: 10),
+                  style: const TextStyle(color: AppColors.secondaryText, fontSize: 10),
                 ),
               ],
             ),

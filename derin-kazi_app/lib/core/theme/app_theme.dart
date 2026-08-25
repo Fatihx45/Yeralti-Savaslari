@@ -9,7 +9,7 @@ class AppTheme {
     return ThemeData(
       brightness: Brightness.dark,
       scaffoldBackgroundColor: AppColors.background,
-      primaryColor: AppColors.neonGreen,
+      primaryColor: AppColors.lavaOrange,
       textTheme: GoogleFonts.rubikTextTheme(
         ThemeData(brightness: Brightness.dark).textTheme,
       ).apply(
@@ -17,7 +17,7 @@ class AppTheme {
         displayColor: AppColors.primaryText,
       ),
       colorScheme: const ColorScheme.dark(
-        primary: AppColors.neonGreen,
+        primary: AppColors.lavaOrange,
         secondary: AppColors.goldText,
         surface: AppColors.hudPanel,
       ),
@@ -36,4 +36,3 @@ class AppTheme {
     color: AppColors.primaryText,
   );
 }
-

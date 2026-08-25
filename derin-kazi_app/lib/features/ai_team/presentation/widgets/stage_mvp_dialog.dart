@@ -68,12 +68,12 @@ class StageMvpDialog extends StatelessWidget {
         constraints: const BoxConstraints(maxWidth: 480),
         padding: const EdgeInsets.all(20),
         decoration: BoxDecoration(
-          color: const Color(0xFF0F0F28),
+          color: const Color(0xFF140D1A),
           borderRadius: BorderRadius.circular(24),
-          border: Border.all(color: const Color(0xFFFFD600), width: 2),
+          border: Border.all(color: AppColors.lavaOrange, width: 2),
           boxShadow: [
             BoxShadow(
-              color: const Color(0xFFFFD600).withValues(alpha: 0.3),
+              color: AppColors.lavaOrange.withValues(alpha: 0.35),
               blurRadius: 30,
               spreadRadius: 2,
             ),
@@ -83,7 +83,7 @@ class StageMvpDialog extends StatelessWidget {
           mainAxisSize: MainAxisSize.min,
           children: [
             // Taç ve Başlık
-            const Icon(Icons.military_tech, size: 52, color: Color(0xFFFFD600)),
+            const Icon(Icons.military_tech, size: 52, color: AppColors.goldText),
             const SizedBox(height: 6),
             const Text(
               'AŞAMA TAMAMLANDI!',
@@ -96,7 +96,7 @@ class StageMvpDialog extends StatelessWidget {
             ),
             Text(
               'Bölüm $stageNumber • $biomeName',
-              style: const TextStyle(color: Color(0xFF8E8EAE), fontSize: 12),
+              style: const TextStyle(color: AppColors.secondaryText, fontSize: 12),
             ),
             const SizedBox(height: 16),
 
@@ -104,7 +104,7 @@ class StageMvpDialog extends StatelessWidget {
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
               decoration: BoxDecoration(
-                color: const Color(0xFF1F1A08),
+                color: const Color(0xFF261808),
                 borderRadius: BorderRadius.circular(14),
                 border: Border.all(color: AppColors.goldText, width: 1.2),
               ),
@@ -149,7 +149,7 @@ class StageMvpDialog extends StatelessWidget {
               Container(
                 padding: const EdgeInsets.all(10),
                 decoration: BoxDecoration(
-                  color: const Color(0xFF141438),
+                  color: AppColors.hudPanel,
                   borderRadius: BorderRadius.circular(12),
                   border: Border.all(color: const Color(0xFFE040FB), width: 1),
                 ),
@@ -198,8 +198,8 @@ class StageMvpDialog extends StatelessWidget {
               width: double.infinity,
               child: ElevatedButton.icon(
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: AppColors.neonGreen,
-                  foregroundColor: Colors.black,
+                  backgroundColor: AppColors.lavaOrange,
+                  foregroundColor: Colors.white,
                   padding: const EdgeInsets.symmetric(vertical: 14),
                   shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
                 ),
