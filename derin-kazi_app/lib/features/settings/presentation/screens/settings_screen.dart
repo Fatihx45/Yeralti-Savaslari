@@ -163,130 +163,204 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
             // 2. Ayar Bölümleri Listesi
             Expanded(
               child: ListView(
-                padding: const EdgeInsets.all(16),
-                children: [
-                  // 1. Ses & Titreşim
-                  _buildSectionHeader('🔊 SES & TİTREŞİM'),
-                  _buildSliderTile(
-                    title: 'Efekt Sesi (SFX)',
-                    value: player.sfxVolume,
-                    onChanged: (val) => notifier.updateSettings(sfxVolume: val),
-                  ),
-                  _buildSliderTile(
-                    title: 'Müzik Sesi',
-                    value: player.musicVolume,
-                    onChanged: (val) => notifier.updateSettings(musicVolume: val),
-                  ),
-                  _buildSwitchTile(
-                    title: 'Titreşim (Haptic Feedback)',
-                    subtitle: 'Kutu kazma ve patlamalarda titreşir',
-                    value: player.vibrationEnabled,
-                    onChanged: (val) => notifier.updateSettings(vibrationEnabled: val),
-                  ),
-                  const SizedBox(height: 16),
+                  padding: const EdgeInsets.all(16),
+                  children: [
+                    // ⚡ TÜMÜNÜ AKTİFLEŞTİR HIZLI BUTONU
+                    Container(
+                      margin: const EdgeInsets.only(bottom: 16),
+                      decoration: BoxDecoration(
+                        gradient: const LinearGradient(
+                          colors: [Color(0xFF00E676), Color(0xFF00B0FF)],
+                        ),
+                        borderRadius: BorderRadius.circular(12),
+                        boxShadow: [
+                          BoxShadow(
+                            color: const Color(0xFF00E676).withValues(alpha: 0.3),
+                            blurRadius: 10,
+                            offset: const Offset(0, 4),
+                          ),
+                        ],
+                      ),
+                      child: ElevatedButton.icon(
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.transparent,
+                          shadowColor: Colors.transparent,
+                          padding: const EdgeInsets.symmetric(vertical: 14),
+                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                        ),
+                        icon: const Icon(Icons.bolt, color: Colors.black, size: 22),
+                        label: const Text(
+                          '⚡ TÜM AYARLARI AKTİFLEŞTİR (100% SES & EFEKT)',
+                          style: TextStyle(
+                            color: Colors.black,
+                            fontSize: 12,
+                            fontWeight: FontWeight.w900,
+                            letterSpacing: 0.8,
+                          ),
+                        ),
+                        onPressed: () {
+                          notifier.activateAllSettings();
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(
+                              backgroundColor: Color(0xFF00E676),
+                              content: Text(
+                                '⚡ Tüm sesler, titreşim, bildirimler ve grafikler %100 aktif edildi!',
+                                style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold),
+                              ),
+                            ),
+                          );
+                        },
+                      ),
+                    ),
 
-                  // 2. Bildirimler
-                  _buildSectionHeader('🔔 BİLDİRİMLER'),
-                  _buildSwitchTile(
-                    title: 'Enerji Dolumu',
-                    subtitle: 'Enerji tamamen dolunca haber ver',
-                    value: player.notificationsEnergyFull,
-                    onChanged: (val) => notifier.updateSettings(notificationsEnergyFull: val),
-                  ),
-                  _buildSwitchTile(
-                    title: 'Haftalık Görev Hatırlatıcı',
-                    subtitle: 'Görevler yenilendiğinde bildir',
-                    value: player.notificationsDailyQuest,
-                    onChanged: (val) => notifier.updateSettings(notificationsDailyQuest: val),
-                  ),
-                  _buildSwitchTile(
-                    title: 'Oda Daveti Bildirimi',
-                    subtitle: 'Arkadaşların seni odaya çağırdığında bildir',
-                    value: player.notificationsInvites,
-                    onChanged: (val) => notifier.updateSettings(notificationsInvites: val),
-                  ),
-                  const SizedBox(height: 16),
+                    // 1. Ses & Titreşim
+                    _buildSectionHeader('🔊 SES & TİTREŞİM'),
+                    _buildSliderTile(
+                      title: 'Efekt Sesi (SFX)',
+                      value: player.sfxVolume,
+                      onChanged: (val) {
+                        notifier.updateSettings(sfxVolume: val);
+                      },
+                    ),
+                    _buildSliderTile(
+                      title: 'Müzik Sesi',
+                      value: player.musicVolume,
+                      onChanged: (val) {
+                        notifier.updateSettings(musicVolume: val);
+                      },
+                    ),
+                    _buildSwitchTile(
+                      title: 'Titreşim (Haptic Feedback)',
+                      subtitle: 'Kutu kazma ve patlamalarda titreşir',
+                      value: player.vibrationEnabled,
+                      onChanged: (val) => notifier.updateSettings(vibrationEnabled: val),
+                    ),
+                    const SizedBox(height: 16),
 
-                  // 3. Grafik & Performans
-                  _buildSectionHeader('⚡ GRAFİK & PERFORMANS'),
-                  _buildSegmentedTile(
-                    title: 'Grafik Kalitesi',
-                    currentValue: player.graphicsQuality,
-                    options: const ['low', 'medium', 'high'],
-                    labels: const ['Düşük', 'Orta', 'Yüksek'],
-                    onSelected: (val) => notifier.updateSettings(graphicsQuality: val),
-                  ),
-                  _buildSwitchTile(
-                    title: 'Pil Tasarrufu Modu',
-                    subtitle: 'Animasyonları hafifletip pil tüketimini azaltır',
-                    value: player.batterySaverMode,
-                    onChanged: (val) => notifier.updateSettings(batterySaverMode: val),
-                  ),
-                  const SizedBox(height: 16),
+                    // 2. Bildirimler
+                    _buildSectionHeader('🔔 BİLDİRİMLER'),
+                    _buildSwitchTile(
+                      title: 'Enerji Dolumu',
+                      subtitle: 'Enerji tamamen dolunca haber ver',
+                      value: player.notificationsEnergyFull,
+                      onChanged: (val) => notifier.updateSettings(notificationsEnergyFull: val),
+                    ),
+                    _buildSwitchTile(
+                      title: 'Haftalık Görev Hatırlatıcı',
+                      subtitle: 'Görevler yenilendiğinde bildir',
+                      value: player.notificationsDailyQuest,
+                      onChanged: (val) => notifier.updateSettings(notificationsDailyQuest: val),
+                    ),
+                    _buildSwitchTile(
+                      title: 'Oda Daveti Bildirimi',
+                      subtitle: 'Arkadaşların seni odaya çağırdığında bildir',
+                      value: player.notificationsInvites,
+                      onChanged: (val) => notifier.updateSettings(notificationsInvites: val),
+                    ),
+                    const SizedBox(height: 16),
 
-                  // 4. Dil & Bölge
-                  _buildSectionHeader('🌐 DİL & BÖLGE'),
-                  _buildInfoTile('Seçili Dil', 'Türkçe 🇹🇷 (İngilizce Yakında)'),
-                  const SizedBox(height: 16),
+                    // 3. Grafik & Performans
+                    _buildSectionHeader('⚡ GRAFİK & PERFORMANS'),
+                    _buildSegmentedTile(
+                      title: 'Grafik Kalitesi',
+                      currentValue: player.graphicsQuality,
+                      options: const ['low', 'medium', 'high'],
+                      labels: const ['Düşük', 'Orta', 'Yüksek ⚡'],
+                      onSelected: (val) => notifier.updateSettings(graphicsQuality: val),
+                    ),
+                    _buildSwitchTile(
+                      title: 'Pil Tasarrufu Modu',
+                      subtitle: 'Animasyonları hafifletip pil tüketimini azaltır',
+                      value: player.batterySaverMode,
+                      onChanged: (val) => notifier.updateSettings(batterySaverMode: val),
+                    ),
+                    const SizedBox(height: 16),
 
-                  // 5. Hesap & Veri
-                  _buildSectionHeader('💾 HESAP & VERİ'),
-                  _buildActionTile(
-                    title: 'Oyun Verisini Yedekle',
-                    subtitle: 'Kayıtlı verileri yerel hafızada senkronize eder',
-                    icon: Icons.cloud_upload_outlined,
-                    color: AppColors.neonGreen,
-                    onTap: () {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(content: Text('Oyun verisi başarıyla yedeklendi!')),
-                      );
-                    },
-                  ),
-                  _buildActionTile(
-                    title: 'İlerlemeyi Sıfırla',
-                    subtitle: 'Tüm aşamaları ve altını kalıcı sıfırlar',
-                    icon: Icons.delete_forever,
-                    color: const Color(0xFFFF5252),
-                    onTap: () => _showResetConfirmDialog(context),
-                  ),
-                  const SizedBox(height: 16),
+                    // 4. Dil & Bölge
+                    _buildSectionHeader('🌐 DİL & BÖLGE'),
+                    _buildSegmentedTile(
+                      title: 'Seçili Dil',
+                      currentValue: player.languageCode,
+                      options: const ['tr', 'en'],
+                      labels: const ['Türkçe 🇹🇷', 'English 🇬🇧'],
+                      onSelected: (val) => notifier.updateSettings(languageCode: val),
+                    ),
+                    const SizedBox(height: 16),
 
-                  // 6. Destek & Geri Bildirim
-                  _buildSectionHeader('💬 DESTEK & GERİ BİLDİRİM'),
-                  _buildActionTile(
-                    title: 'Nasıl Oynanır? (SSS)',
-                    subtitle: 'Oyun kuralları ve taktikler',
-                    icon: Icons.help_outline,
-                    color: AppColors.goldText,
-                    onTap: () => _showHowToPlayDialog(context),
-                  ),
-                  _buildActionTile(
-                    title: 'Hata Bildir',
-                    subtitle: 'Karşılaştığınız bir sorunu iletin',
-                    icon: Icons.bug_report_outlined,
-                    color: const Color(0xFF4FC3F7),
-                    onTap: () => _showFeedbackDialog(context, 'Hata Bildir'),
-                  ),
-                  _buildActionTile(
-                    title: 'Öneri Gönder',
-                    subtitle: 'Görmek istediğiniz yeni fikirleri paylaşın',
-                    icon: Icons.lightbulb_outline,
-                    color: const Color(0xFFE040FB),
-                    onTap: () => _showFeedbackDialog(context, 'Öneri Gönder'),
-                  ),
-                  const SizedBox(height: 16),
+                    // 5. Gizlilik & İzinler
+                    _buildSectionHeader('🔒 GİZLİLİK & İZİNLER'),
+                    _buildSwitchTile(
+                      title: 'Kişiselleştirilmiş Deneyim',
+                      subtitle: 'Oyun içi etkinlik ve teklif önerileri',
+                      value: player.adsPersonalized,
+                      onChanged: (val) => notifier.updateSettings(adsPersonalized: val),
+                    ),
+                    _buildSwitchTile(
+                      title: 'Performans Analitiği',
+                      subtitle: 'Oyun akıcılığını artırmak için anonim teşhis',
+                      value: player.analyticsEnabled,
+                      onChanged: (val) => notifier.updateSettings(analyticsEnabled: val),
+                    ),
+                    const SizedBox(height: 16),
 
-                  // 7. Hakkında
-                  _buildSectionHeader('ℹ️ HAKKINDA'),
-                  _buildInfoTile('Oyun Sürümü', 'v1.0.0 (Build 500)'),
-                  _buildInfoTile('Geliştirici', 'Ölmez Tech — Oyun Tasarım Ekibi'),
-                ],
+                    // 6. Hesap & Veri
+                    _buildSectionHeader('💾 HESAP & VERİ'),
+                    _buildActionTile(
+                      title: 'Oyun Verisini Yedekle & Senkronize Et',
+                      subtitle: 'Kayıtlı verileri yerel hafızaya güvenle yazar',
+                      icon: Icons.cloud_upload_outlined,
+                      color: AppColors.neonGreen,
+                      onTap: () {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(content: Text('✅ Oyun verisi güvenle yerel hafızaya kaydedildi!')),
+                        );
+                      },
+                    ),
+                    _buildActionTile(
+                      title: 'İlerlemeyi Sıfırla',
+                      subtitle: 'Tüm aşamaları ve altını kalıcı sıfırlar',
+                      icon: Icons.delete_forever,
+                      color: const Color(0xFFFF5252),
+                      onTap: () => _showResetConfirmDialog(context),
+                    ),
+                    const SizedBox(height: 16),
+
+                    // 7. Destek & Geri Bildirim
+                    _buildSectionHeader('💬 DESTEK & GERİ BİLDİRİM'),
+                    _buildActionTile(
+                      title: 'Nasıl Oynanır? (SSS)',
+                      subtitle: 'Oyun kuralları ve taktikler',
+                      icon: Icons.help_outline,
+                      color: AppColors.goldText,
+                      onTap: () => _showHowToPlayDialog(context),
+                    ),
+                    _buildActionTile(
+                      title: 'Hata Bildir',
+                      subtitle: 'Karşılaştığınız bir sorunu iletin',
+                      icon: Icons.bug_report_outlined,
+                      color: const Color(0xFF4FC3F7),
+                      onTap: () => _showFeedbackDialog(context, 'Hata Bildir'),
+                    ),
+                    _buildActionTile(
+                      title: 'Öneri Gönder',
+                      subtitle: 'Görmek istediğiniz yeni fikirleri paylaşın',
+                      icon: Icons.lightbulb_outline,
+                      color: const Color(0xFFE040FB),
+                      onTap: () => _showFeedbackDialog(context, 'Öneri Gönder'),
+                    ),
+                    const SizedBox(height: 16),
+
+                    // 8. Hakkında
+                    _buildSectionHeader('ℹ️ HAKKINDA'),
+                    _buildInfoTile('Oyun Sürümü', 'v1.0.0 (Build 500)'),
+                    _buildInfoTile('Geliştirici', 'Ölmez Tech — Oyun Tasarım Ekibi'),
+                  ],
+                ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
-      ),
-    );
+      );
   }
 
   Widget _buildSectionHeader(String title) {

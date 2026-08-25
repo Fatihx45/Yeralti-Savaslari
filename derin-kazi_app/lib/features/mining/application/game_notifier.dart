@@ -1596,11 +1596,25 @@ class GameNotifier extends StateNotifier<GameState> {
     bool? adsPersonalized,
     bool? analyticsEnabled,
   }) {
+    final newSfx = sfxVolume ?? state.player.sfxVolume;
+    final newMusic = musicVolume ?? state.player.musicVolume;
+    final newVib = vibrationEnabled ?? state.player.vibrationEnabled;
+
+    AudioService().updateSettings(
+      enabled: state.player.soundEnabled,
+      sfxVol: newSfx,
+      musicVol: newMusic,
+    );
+
+    if (newVib && vibrationEnabled != null) {
+      _triggerHaptic('selection');
+    }
+
     state = state.copyWith(
       player: state.player.copyWith(
-        musicVolume: musicVolume,
-        sfxVolume: sfxVolume,
-        vibrationEnabled: vibrationEnabled,
+        musicVolume: newMusic,
+        sfxVolume: newSfx,
+        vibrationEnabled: newVib,
         notificationsEnergyFull: notificationsEnergyFull,
         notificationsDailyQuest: notificationsDailyQuest,
         notificationsInvites: notificationsInvites,
@@ -1610,6 +1624,34 @@ class GameNotifier extends StateNotifier<GameState> {
         adsPersonalized: adsPersonalized,
         analyticsEnabled: analyticsEnabled,
       ),
+    );
+    _saveState();
+  }
+
+  void activateAllSettings() {
+    AudioService().updateSettings(
+      enabled: true,
+      sfxVol: 1.0,
+      musicVol: 1.0,
+    );
+    _triggerHaptic('heavy');
+    AudioService().playUpgrade();
+
+    state = state.copyWith(
+      player: state.player.copyWith(
+        soundEnabled: true,
+        sfxVolume: 1.0,
+        musicVolume: 1.0,
+        vibrationEnabled: true,
+        notificationsEnergyFull: true,
+        notificationsDailyQuest: true,
+        notificationsInvites: true,
+        graphicsQuality: 'high',
+        batterySaverMode: false,
+        adsPersonalized: true,
+        analyticsEnabled: true,
+      ),
+      lastMessage: '⚡ Tüm ayarlar, sesler ve bildirimler %100 aktif edildi!',
     );
     _saveState();
   }

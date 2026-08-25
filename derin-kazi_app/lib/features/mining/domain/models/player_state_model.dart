@@ -96,7 +96,7 @@ class PlayerStateModel {
       ToolType.baseballBat: 1,
       ToolType.diamondPick: 1,
     },
-    this.musicVolume = 0.8,
+    this.musicVolume = 1.0,
     this.sfxVolume = 1.0,
     this.vibrationEnabled = true,
     this.notificationsEnergyFull = true,
