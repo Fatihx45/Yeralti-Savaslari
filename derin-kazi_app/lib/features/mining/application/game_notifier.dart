@@ -1415,6 +1415,62 @@ class GameNotifier extends StateNotifier<GameState> {
     );
   }
 
+  void startTeamMiningStage(int teamSize) {
+    _battleTimer?.cancel();
+    final int safeStage = state.player.unlockedStage.clamp(1, 500);
+
+    state = state.copyWith(
+      gameMode: GameMode.solo,
+      battlePhase: const BattlePhaseState(phase: BattlePhase.finished),
+      grid: GridGenerator.generateStage(
+        stage: safeStage,
+        depth: safeStage,
+        playerCount: teamSize,
+      ),
+      lastMessage: '$teamSize Kişilik Ekip Kazısı Başladı! Birlikte kazın!',
+    );
+  }
+
+  void botDigTile(Position targetPos, int damage, String botId) {
+    if (targetPos.row < 0 || targetPos.row >= state.grid.rows ||
+        targetPos.col < 0 || targetPos.col >= state.grid.columns) {
+      return;
+    }
+
+    final tile = state.grid.tiles[targetPos.row][targetPos.col];
+    if (tile.isCleared || tile.type == TileType.solidGold || tile.type == TileType.empty) {
+      return;
+    }
+
+    final newHp = max(0, tile.currentHp - damage);
+    final isCleared = newHp == 0;
+
+    final updatedTiles = state.grid.tiles.map((row) => List<TileModel>.from(row)).toList();
+    updatedTiles[targetPos.row][targetPos.col] = tile.copyWith(
+      currentHp: newHp,
+      isCleared: isCleared,
+    );
+
+    final updatedPlayers = state.grid.otherPlayers.map((p) {
+      if (p.uid == botId) {
+        return p.copyWith(
+          position: targetPos,
+          tilesCleared: p.tilesCleared + (isCleared ? 1 : 0),
+          damageDealt: p.damageDealt + damage,
+        );
+      }
+      return p;
+    }).toList();
+
+    state = state.copyWith(
+      grid: state.grid.copyWith(
+        tiles: updatedTiles,
+        otherPlayers: updatedPlayers,
+        tilesClearedInStage: state.grid.tilesClearedInStage + (isCleared ? 1 : 0),
+      ),
+    );
+  }
+
   void startSoloGame() {
     startStage(state.player.unlockedStage);
   }

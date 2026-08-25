@@ -4,6 +4,8 @@ import '../models/tile_model.dart';
 import '../models/tool_model.dart';
 import '../models/stage_config_model.dart';
 import 'enemy_spawner.dart';
+import 'package:derin_kazi/features/ai_team/domain/models/ai_miner_model.dart';
+import 'package:derin_kazi/features/multiplayer/domain/models/remote_player_model.dart';
 
 class GridGenerator {
   static const int defaultRows = 13;
@@ -238,6 +240,24 @@ class GridGenerator {
       seed: seed ?? stage,
     );
 
+    // Sistem Tarafından Üretilen Bot Madenciler (otherPlayers)
+    final otherPlayers = <RemotePlayerModel>[];
+    if (playerCount > 1) {
+      final botPresets = AiMinerModel.getPresetMiners();
+      for (int i = 0; i < playerCount - 1 && i < botPresets.length; i++) {
+        final bot = botPresets[i];
+        final spawnPos = spawnPoints[(i + 1) % spawnPoints.length];
+        otherPlayers.add(RemotePlayerModel(
+          uid: bot.id,
+          displayName: bot.name,
+          colorIndex: i + 1,
+          position: spawnPos,
+          hp: 100,
+          maxHp: 100,
+        ));
+      }
+    }
+
     return GridModel(
       stage: stage,
       depth: depth,
@@ -249,6 +269,7 @@ class GridGenerator {
       tilesClearedInStage: 9,
       totalTilesInStage: totalMineableTiles + 9,
       gridSeed: seed ?? stage,
+      otherPlayers: otherPlayers,
       enemies: enemies,
     );
   }

@@ -18,12 +18,41 @@ import 'package:derin_kazi/features/battle_royale/presentation/widgets/inventory
 import 'package:derin_kazi/features/battle_royale/presentation/widgets/countdown_overlay.dart';
 import 'package:derin_kazi/features/battle_royale/presentation/widgets/battle_result_dialog.dart';
 import 'package:derin_kazi/features/multiplayer/presentation/widgets/reaction_bar.dart';
+import 'package:derin_kazi/features/ai_team/application/ai_team_engine.dart';
 
-class MiningScreen extends ConsumerWidget {
+class MiningScreen extends ConsumerStatefulWidget {
   const MiningScreen({super.key});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<MiningScreen> createState() => _MiningScreenState();
+}
+
+class _MiningScreenState extends ConsumerState<MiningScreen> {
+  Timer? _botLoopTimer;
+
+  @override
+  void initState() {
+    super.initState();
+    // Sistem Madenci Botları Kazı Döngüsü (Canlı Yapay Zeka Adımları)
+    _botLoopTimer = Timer.periodic(const Duration(milliseconds: 750), (timer) {
+      if (!mounted) return;
+      final grid = ref.read(gameNotifierProvider).grid;
+      if (grid.otherPlayers.isNotEmpty) {
+        ref.read(aiTeamNotifierProvider.notifier).performAiTurn(grid, (pos, damage, minerId) {
+          ref.read(gameNotifierProvider.notifier).botDigTile(pos, damage, minerId);
+        });
+      }
+    });
+  }
+
+  @override
+  void dispose() {
+    _botLoopTimer?.cancel();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
     ref.listen<GameState>(gameNotifierProvider, (previous, next) {
       // 1. Battle Royale Oyun Sonu Dialog'u (Sadece BR Modunda)
       if (next.gameMode == GameMode.battleRoyale &&
@@ -100,10 +129,10 @@ class MiningScreen extends ConsumerWidget {
               ),
 
             // Sağ Üst Hızlı Tepki Emojileri
-            const Positioned(
+            Positioned(
               top: 48,
               right: 10,
-              child: ReactionBar(),
+              child: const ReactionBar(),
             ),
 
             // Sağ Üst İkonların Hemen Altında Kare Bildirim Kartı

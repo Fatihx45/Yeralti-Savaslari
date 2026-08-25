@@ -213,6 +213,7 @@ class _TeamLobbyScreenState extends ConsumerState<TeamLobbyScreen> {
                   ),
                   onPressed: () {
                     ref.read(aiTeamNotifierProvider.notifier).startSimulation();
+                    ref.read(gameNotifierProvider.notifier).startTeamMiningStage(_selectedTeamSize);
                     Navigator.pushReplacement(
                       context,
                       MaterialPageRoute(builder: (ctx) => const MiningScreen()),
