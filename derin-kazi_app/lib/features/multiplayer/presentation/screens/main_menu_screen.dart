@@ -11,6 +11,7 @@ import '../../../settings/presentation/screens/settings_screen.dart';
 import '../../application/lobby_notifier.dart';
 import '../../../cosmetics/presentation/screens/cosmetics_screen.dart';
 import '../../../quests/presentation/widgets/quest_dialog.dart';
+import '../../../ai_team/presentation/screens/team_lobby_screen.dart';
 
 class MainMenuScreen extends ConsumerStatefulWidget {
   const MainMenuScreen({super.key});
@@ -434,78 +435,97 @@ class _MainMenuScreenState extends ConsumerState<MainMenuScreen> {
           margin: const EdgeInsets.symmetric(horizontal: 4),
         ),
 
-        // Sağ Kolon: 4 Oyun Modu Butonları
+        // Sağ Kolon: 5 Oyun Modu Butonları (Kaydırılabilir & Taşmasız)
         Expanded(
           flex: 5,
           child: Padding(
             padding: const EdgeInsets.only(left: 12),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                // 1. OYUNA BAŞLA (BÖLÜM SEÇİMİ)
-                _buildMenuButton(
-                  title: '🎮 OYUNA BAŞLA',
-                  subtitle: 'Kaldığın Yer: Bölüm $unlockedStage • $biomeName',
-                  icon: Icons.play_arrow_rounded,
-                  buttonColor: const Color(0xFF13381B),
-                  borderColor: AppColors.neonGreen,
-                  textColor: AppColors.neonGreen,
-                  isPrimary: true,
-                  onTap: () {
-                    ref.read(lobbyNotifierProvider.notifier).setPlayerName(_nameController.text);
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(builder: (ctx) => const StageSelectScreen()),
-                    );
-                  },
-                ),
-                const SizedBox(height: 8),
+            child: SingleChildScrollView(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  // 1. OYUNA BAŞLA (BÖLÜM SEÇİMİ)
+                  _buildMenuButton(
+                    title: '🎮 OYUNA BAŞLA',
+                    subtitle: 'Kaldığın Yer: Bölüm $unlockedStage • $biomeName',
+                    icon: Icons.play_arrow_rounded,
+                    buttonColor: const Color(0xFF13381B),
+                    borderColor: AppColors.neonGreen,
+                    textColor: AppColors.neonGreen,
+                    isPrimary: true,
+                    onTap: () {
+                      ref.read(lobbyNotifierProvider.notifier).setPlayerName(_nameController.text);
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (ctx) => const StageSelectScreen()),
+                      );
+                    },
+                  ),
+                  const SizedBox(height: 6),
 
-                // 2. GÖREVLER & ÖDÜLLER
-                _buildMenuButton(
-                  title: '📋 GÖREVLER & ÖDÜLLER',
-                  subtitle: 'Haftalık Görevler • Elmas & Altın Kazan',
-                  icon: Icons.assignment_turned_in,
-                  buttonColor: const Color(0xFF2E2208),
-                  borderColor: AppColors.goldText,
-                  textColor: AppColors.goldText,
-                  onTap: () => QuestDialog.showQuestDialog(context),
-                ),
-                const SizedBox(height: 8),
+                  // 2. EKİP KAZISI (1-10 KİŞİ AI TAKIMI)
+                  _buildMenuButton(
+                    title: '👥 EKİP KAZISI (1-10 KİŞİ)',
+                    subtitle: 'Sistem Madenci Botlarıyla Ortak Kazı & Bonus',
+                    icon: Icons.groups,
+                    buttonColor: const Color(0xFF0F2C3A),
+                    borderColor: AppColors.cyanText,
+                    textColor: AppColors.cyanText,
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (ctx) => const TeamLobbyScreen()),
+                      );
+                    },
+                  ),
+                  const SizedBox(height: 6),
 
-                // 3. SİLAH VE MERMİ MAĞAZASI
-                _buildMenuButton(
-                  title: '🛒 SİLAH & MERMİ MAĞAZASI',
-                  subtitle: 'Tabanca, Tüfek, Pompalı & Cephane Al',
-                  icon: Icons.shopping_bag,
-                  buttonColor: const Color(0xFF2E1A0A),
-                  borderColor: AppColors.goldText,
-                  textColor: AppColors.goldText,
-                  onTap: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(builder: (ctx) => const WeaponShopScreen()),
-                    );
-                  },
-                ),
-                const SizedBox(height: 8),
+                  // 3. GÖREVLER & ÖDÜLLER
+                  _buildMenuButton(
+                    title: '📋 GÖREVLER & ÖDÜLLER',
+                    subtitle: 'Haftalık Görevler • Elmas & Altın Kazan',
+                    icon: Icons.assignment_turned_in,
+                    buttonColor: const Color(0xFF2E2208),
+                    borderColor: AppColors.goldText,
+                    textColor: AppColors.goldText,
+                    onTap: () => QuestDialog.showQuestDialog(context),
+                  ),
+                  const SizedBox(height: 6),
 
-                // 3. ATÖLYE VE GÜÇLENDİRME
-                _buildMenuButton(
-                  title: '⚡ ATÖLYE & GÜÇLENDİRME',
-                  subtitle: 'Kazma, Çekiç & Maden Güçlendirmeleri',
-                  icon: Icons.hardware,
-                  buttonColor: const Color(0xFF1E1038),
-                  borderColor: const Color(0xFFE040FB),
-                  textColor: const Color(0xFFE040FB),
-                  onTap: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(builder: (ctx) => const ForgeScreen()),
-                    );
-                  },
-                ),
-              ],
+                  // 4. SİLAH VE MERMİ MAĞAZASI
+                  _buildMenuButton(
+                    title: '🛒 SİLAH & MERMİ MAĞAZASI',
+                    subtitle: 'Tabanca, Tüfek, Pompalı & Cephane Al',
+                    icon: Icons.shopping_bag,
+                    buttonColor: const Color(0xFF2E1A0A),
+                    borderColor: AppColors.goldText,
+                    textColor: AppColors.goldText,
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (ctx) => const WeaponShopScreen()),
+                      );
+                    },
+                  ),
+                  const SizedBox(height: 6),
+
+                  // 5. ATÖLYE VE GÜÇLENDİRME
+                  _buildMenuButton(
+                    title: '⚡ ATÖLYE & GÜÇLENDİRME',
+                    subtitle: 'Kazma, Çekiç & Maden Güçlendirmeleri',
+                    icon: Icons.hardware,
+                    buttonColor: const Color(0xFF1E1038),
+                    borderColor: const Color(0xFFE040FB),
+                    textColor: const Color(0xFFE040FB),
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (ctx) => const ForgeScreen()),
+                      );
+                    },
+                  ),
+                ],
+              ),
             ),
           ),
         ),
@@ -667,6 +687,21 @@ class _MainMenuScreenState extends ConsumerState<MainMenuScreen> {
           ),
           const SizedBox(height: 8),
           _buildMenuButton(
+            title: '👥 EKİP KAZISI (1-10 KİŞİ)',
+            subtitle: 'Sistem Madenci Botlarıyla Ortak Kazı & Bonus',
+            icon: Icons.groups,
+            buttonColor: const Color(0xFF0F2C3A),
+            borderColor: AppColors.cyanText,
+            textColor: AppColors.cyanText,
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (ctx) => const TeamLobbyScreen()),
+              );
+            },
+          ),
+          const SizedBox(height: 8),
+          _buildMenuButton(
             title: '📋 GÖREVLER & ÖDÜLLER',
             subtitle: 'Haftalık Görevler • Elmas & Altın Kazan',
             icon: Icons.assignment_turned_in,
@@ -721,7 +756,7 @@ class _MainMenuScreenState extends ConsumerState<MainMenuScreen> {
         borderRadius: BorderRadius.circular(12),
         child: Container(
           width: double.infinity,
-          padding: EdgeInsets.symmetric(horizontal: 14, vertical: isPrimary ? 10 : 8.5),
+          padding: EdgeInsets.symmetric(horizontal: 12, vertical: isPrimary ? 8 : 6.5),
           decoration: BoxDecoration(
             color: buttonColor,
             borderRadius: BorderRadius.circular(12),
