@@ -507,25 +507,6 @@ class _MainMenuScreenState extends ConsumerState<MainMenuScreen> {
                     );
                   },
                 ),
-                const SizedBox(height: 8),
-
-                // 4. ÇOK OYUNCULU (v1.1 ÇOK YAKINDA)
-                _buildMenuButton(
-                  title: '🌐 ÇOK OYUNCULU & ARKADAŞLAR',
-                  subtitle: '🔒 v1.1 Büyük Güncellemesinde Açılacak!',
-                  icon: Icons.lock_clock,
-                  buttonColor: const Color(0xFF1A1A3A),
-                  borderColor: const Color(0xFF4A4A7A),
-                  textColor: Colors.white60,
-                  onTap: () {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(
-                        content: Text('🌐 Çok Oyunculu Mod ve Arkadaş Sistemi v1.1 Büyük Güncellemesinde Geliyor!'),
-                        duration: Duration(seconds: 3),
-                      ),
-                    );
-                  },
-                ),
               ],
             ),
           ),
@@ -722,23 +703,6 @@ class _MainMenuScreenState extends ConsumerState<MainMenuScreen> {
             textColor: const Color(0xFFE040FB),
             onTap: () {
               Navigator.push(context, MaterialPageRoute(builder: (ctx) => const ForgeScreen()));
-            },
-          ),
-          const SizedBox(height: 8),
-          _buildMenuButton(
-            title: '🌐 ÇOK OYUNCULU & ARKADAŞLAR',
-            subtitle: '🔒 v1.1 Büyük Güncellemesinde Açılacak!',
-            icon: Icons.lock_clock,
-            buttonColor: const Color(0xFF1A1A3A),
-            borderColor: const Color(0xFF4A4A7A),
-            textColor: Colors.white60,
-            onTap: () {
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(
-                  content: Text('🌐 Çok Oyunculu Mod ve Arkadaş Sistemi v1.1 Büyük Güncellemesinde Geliyor!'),
-                  duration: Duration(seconds: 3),
-                ),
-              );
             },
           ),
         ],
