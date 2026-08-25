@@ -6,9 +6,11 @@ import 'package:derin_kazi/features/mining/domain/models/tile_model.dart';
 import 'package:derin_kazi/features/mining/domain/models/tool_model.dart';
 import 'package:derin_kazi/features/multiplayer/domain/models/remote_player_model.dart';
 import 'package:derin_kazi/features/battle_royale/domain/models/battle_phase_model.dart';
+import 'package:derin_kazi/core/audio/audio_service.dart';
 
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
+  AudioService.isTestMode = true;
 
   group('Battle Royale Mantık Testleri', () {
     test('Oyun 3 saniyelik geri sayım fazı ile başlamalı', () {

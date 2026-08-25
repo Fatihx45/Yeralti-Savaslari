@@ -16,6 +16,7 @@ import '../domain/models/tool_model.dart';
 
 import 'package:derin_kazi/features/quests/domain/models/daily_quest_model.dart';
 import 'package:derin_kazi/core/persistence/save_service.dart';
+import 'package:derin_kazi/core/audio/audio_service.dart';
 
 enum GameMode {
   solo,
@@ -756,16 +757,23 @@ class GameNotifier extends StateNotifier<GameState> {
 
       if (targetTile.type == TileType.hiddenMine || targetTile.type == TileType.tnt) {
         _triggerHaptic('heavy');
+        AudioService().playExplosion();
+      } else if (goldReward > 0 || gemReward > 0 || emeraldReward > 0) {
+        _triggerHaptic('light');
+        AudioService().playGold();
       } else {
         _triggerHaptic('light');
+        AudioService().playDig();
       }
 
       if (newClearedCount >= state.grid.totalTilesInStage) {
+        AudioService().playStageClear();
         _advanceStage();
       }
     } else {
       // Hasar aldı ama kırılmadı
       _triggerHaptic('selection');
+      AudioService().playDig();
       final updatedTile = targetTile.copyWith(currentHp: newHp);
       final newTiles = [
         for (int r = 0; r < state.grid.rows; r++)
@@ -1682,6 +1690,7 @@ class GameNotifier extends StateNotifier<GameState> {
     }
 
     _triggerHaptic('heavy');
+    AudioService().playShoot(weapon);
 
     // Menzil boyunca ilk hedefe (düşman veya blok) çarpana kadar tara (Maksimum 5 kare)
     int hitRow = -1;
@@ -1724,6 +1733,12 @@ class GameNotifier extends StateNotifier<GameState> {
       final int newEnemyHp = max(0, hitEnemy.currentHp - dmg);
       final bool isDead = newEnemyHp <= 0;
 
+      if (isDead) {
+        AudioService().playEnemyRoar();
+      } else {
+        AudioService().playHit();
+      }
+
       final updatedEnemies = state.grid.enemies.map((e) {
         if (e.id == hitEnemy!.id) {
           return e.copyWith(currentHp: newEnemyHp, isAlive: !isDead);
@@ -1746,6 +1761,9 @@ class GameNotifier extends StateNotifier<GameState> {
       }
 
       final bool allDead = updatedEnemies.every((e) => !e.isAlive);
+      if (allDead) {
+        AudioService().playStageClear();
+      }
 
       state = state.copyWith(
         player: state.player.copyWith(
@@ -1769,6 +1787,12 @@ class GameNotifier extends StateNotifier<GameState> {
       final int tileDmg = state.player.getWeaponTileDamage(weapon);
       final int newTileHp = max(0, hitTile.currentHp - tileDmg);
       final bool isTileBroken = newTileHp <= 0;
+
+      if (isTileBroken) {
+        AudioService().playExplosion();
+      } else {
+        AudioService().playDig();
+      }
 
       final currentTiles = [
         for (int r = 0; r < state.grid.rows; r++)
@@ -2127,6 +2151,7 @@ class GameNotifier extends StateNotifier<GameState> {
     updatedWeaponLevels[weapon] = nextLvl;
 
     _triggerHaptic('heavy');
+    AudioService().playUpgrade();
     state = state.copyWith(
       player: p.copyWith(
         gold: p.gold - goldCost,
@@ -2194,6 +2219,7 @@ class GameNotifier extends StateNotifier<GameState> {
     updatedToolLevels[tool] = nextLvl;
 
     _triggerHaptic('heavy');
+    AudioService().playUpgrade();
     state = state.copyWith(
       player: p.copyWith(
         gold: p.gold - goldCost,

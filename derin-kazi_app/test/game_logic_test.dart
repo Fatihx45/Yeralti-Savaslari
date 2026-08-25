@@ -5,9 +5,11 @@ import 'package:derin_kazi/features/mining/domain/models/upgrade_model.dart';
 import 'package:derin_kazi/features/mining/domain/models/tile_model.dart';
 import 'package:derin_kazi/features/mining/domain/models/grid_model.dart';
 import 'package:derin_kazi/features/quests/domain/models/daily_quest_model.dart';
+import 'package:derin_kazi/core/audio/audio_service.dart';
 
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
+  AudioService.isTestMode = true;
 
   group('Derin Kazı Oyun Mantığı Testleri', () {
     test('Başlangıç durumu ve değerleri doğrulanmalı', () {

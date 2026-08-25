@@ -2,9 +2,11 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:derin_kazi/features/mining/application/game_notifier.dart';
 import 'package:derin_kazi/features/mining/domain/models/weapon_model.dart';
 import 'package:derin_kazi/features/mining/domain/models/tool_model.dart';
+import 'package:derin_kazi/core/audio/audio_service.dart';
 
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
+  AudioService.isTestMode = true;
 
   group('Silah, Mermi ve Mağaza Mantık Testleri', () {
     test('Başlangıçta oyuncunun tabancası ve 12 mermisi olmalı', () {
