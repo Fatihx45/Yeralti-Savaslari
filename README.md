@@ -1,21 +1,21 @@
-﻿<div align="center">
-
 # ⛏️ Yeraltı Savaşları (Underground Wars)
 ### *500 Katmanlı Derin Madencilik, Battle Royale & Eşli Mücadele*
+
+<div align="center">
 
 [![Flutter](https://img.shields.io/badge/Flutter-3.10+-02569B?style=for-the-badge&logo=flutter&logoColor=white)](https://flutter.dev)
 [![Dart](https://img.shields.io/badge/Dart-3.0+-0175C2?style=for-the-badge&logo=dart&logoColor=white)](https://dart.dev)
 [![Riverpod](https://img.shields.io/badge/State_Management-Riverpod_2.5-40c4ff?style=for-the-badge)](https://riverpod.dev)
 [![PHP](https://img.shields.io/badge/Backend-PHP_8.x-777BB4?style=for-the-badge&logo=php&logoColor=white)](https://php.net)
 [![MySQL](https://img.shields.io/badge/Database-MySQL_8.x-4479A1?style=for-the-badge&logo=mysql&logoColor=white)](https://mysql.com)
-[![Platform](https://img.shields.io/badge/Platform-Android%20%7C%20iOS%20%7C%20Web%20%7C%20Desktop-green?style=for-the-badge)]()
+[![Platform](https://img.shields.io/badge/Platform-Android%20%7C%20iOS%20%7C%20Web%20%7C%20Windows-green?style=for-the-badge)]()
 [![License](https://img.shields.io/badge/License-MIT-orange?style=for-the-badge)](LICENSE)
 
 <p align="center">
-  <b>Yeraltı Savaşları</b>, derin katmanlara doğru kazı yaparak cevher topladığınız, ölümcül yer altı yaratıkları ve boss'larla savaştığınız, AI madenci takımı yönettiğiniz ve gerçek zamanlı <b>Battle Royale / Eşli (Co-op)</b> modlarda rekabet ettiğiniz kapsamlı bir mobil & çapraz platform oyunudur.
+  <b>Yeraltı Savaşları</b>; derin maden katmanlarına doğru kazı yaparak değerli cevherler topladığınız, ölümcül yer altı yaratıkları ve Titan bosslar ile savaştığınız, 9 kişilik AI madenci takımı kurduğunuz ve gerçek zamanlı <b>Battle Royale / Eşli (Co-op)</b> modlarda rekabet ettiğiniz kapsamlı bir mobil & çapraz platform oyunudur.
 </p>
 
-[🎮 Özellikler](#-öne-çıkan-özellikler) • [🏗️ Proje Mimarisi](#️-proje-mimarisi) • [🚀 Hızlı Başlangıç](#-hızlı-başlangıç) • [🌐 Web Sitesi](#-web-tanıtım-sitesi) • [⚙️ Backend Kurulumu](#-backend--api-kurulumu)
+[🎮 Özellikler](#-öne-çıkan-özellikler) • [🏗️ Proje Mimarisi](#️-proje-mimarisi) • [🛠️ Teknolojiler](#️-kullanılan-teknolojiler) • [🚀 Hızlı Başlangıç](#-hızlı-başlangıç) • [🌐 Web Vitrini](#-web-tanıtım-sitesi) • [⚙️ Backend Kurulumu](#️-backend--api-kurulumu)
 
 ---
 
@@ -29,7 +29,7 @@
 - **Cevher ve Kaynak Çeşitliliği:** Kömür, Bakır, Demir, Altın, Elmas, Zümrüt, Obsidyen ve Efsanevi Kristaller.
 
 ### ⚔️ 2. Battle Royale & Eşli (Co-op) Çok Oyunculu Mod
-- **1v1 ve Çok Oyunculu Arena:** Yeraltında hayatta kalan son madenci olmak için mücadele edin.
+- **1v1 ve Çok Oyunculu Arena:** Yeraltında hayatta kalan son madenci olmak için kıyasıya mücadele edin.
 - **Eş Zamanlı Senkronizasyon:** cPanel / REST API mimarisi üzerinden oda kurma, odaya katılma, arkadaş davet etme ve liderlik tablosu.
 - **Dinamik Tehditler:** Yükselen lav seviyesi ve daralan güvenli bölge mekanikleri.
 
@@ -52,7 +52,7 @@
 
 Repository, mobil oyun istemcisi, web tanıtım sitesi ve bağımsız backend API'sini içeren monorepo düzenine sahiptir:
 
-`plaintext
+```plaintext
 Yeralti-Savaslari/
 │
 ├── 📱 yeralti-savaslari-app/      # Flutter Mobil & Masaüstü Uygulaması
@@ -64,7 +64,7 @@ Yeralti-Savaslari/
 │   │   │   ├── profile/           # Oyuncu profili, istatistikler
 │   │   │   ├── quests/            # Günlük görev mekanikleri
 │   │   │   ├── settings/          # Ayarlar ve ses kontrolleri
-│   │   │   └── splash/            # Açılış ve parçacık animasyonları
+│   │   │   └── splash/            # Açılış ve lav parçacık animasyonları
 │   │   └── main.dart              # Uygulama giriş noktası
 │   ├── assets/                    # Görseller, ikonlar, SFX ve BGM sesleri
 │   ├── backend/                   # cPanel PHP REST API kaynak dosyaları
@@ -79,7 +79,7 @@ Yeralti-Savaslari/
 │
 ├── 📄 .gitignore                  # Kapsamlı Git yoksayma kuralları
 └── 📄 README.md                   # Proje dokümantasyonu
-`
+```
 
 ---
 
@@ -106,13 +106,13 @@ Yeralti-Savaslari/
 - Fiziksel cihaz veya Emülatör
 
 ### 2. Projeyi Klonlama
-`ash
+```bash
 git clone https://github.com/Fatihx45/Yeralti-Savaslari.git
 cd Yeralti-Savaslari/yeralti-savaslari-app
-`
+```
 
 ### 3. Bağımlılıkları Yükleme ve Çalıştırma
-`ash
+```bash
 # Paketleri indir
 flutter pub get
 
@@ -121,7 +121,7 @@ flutter test
 
 # Cihazda başlat (Debug)
 flutter run
-`
+```
 
 ---
 
@@ -130,21 +130,21 @@ flutter run
 Oyunun çok oyunculu ve arkadaşlık özelliklerini kendi sunucunuzda çalıştırmak için:
 
 1. **MySQL Veritabanı:** Sunucunuzda (cPanel/DirectAdmin/VPS) yeni bir MySQL veritabanı oluşturun.
-2. **Şema Yükleme:** yeralti-savaslari-app/backend/database.sql dosyasını phpMyAdmin üzerinden içe aktarın.
-3. **API Dosyaları:** ackend/api/ ve ackend/config/ klasörlerini sunucunuzun public_html/derin_kazi_api/ dizinine yükleyin.
-4. **Veritabanı Ayarı:** config/database.php içindeki veritabanı kullanıcı adı ve şifresini güncelleyin.
-5. **Uygulama Bağlantısı:** lib/core/config/app_config.dart dosyasındaki cpanelBaseUrl değerini kendi API adresinizle güncelleyin:
-   `dart
+2. **Şema Yükleme:** `yeralti-savaslari-app/backend/database.sql` dosyasını phpMyAdmin üzerinden içe aktarın.
+3. **API Dosyaları:** `backend/api/` ve `backend/config/` klasörlerini sunucunuzun `public_html/derin_kazi_api/` dizinine yükleyin.
+4. **Veritabanı Ayarı:** `config/database.php` içindeki veritabanı kullanıcı adı ve şifresini güncelleyin.
+5. **Uygulama Bağlantısı:** `lib/core/config/app_config.dart` dosyasındaki `cpanelBaseUrl` değerini kendi API adresinizle güncelleyin:
+   ```dart
    static const String cpanelBaseUrl = 'https://siteadresiniz.com/derin_kazi_api/api';
-   `
+   ```
 
 ---
 
 ## 🌐 Web Tanıtım Sitesi
 
-Projenin web vitrini yeralti-savaslari-web/ klasöründe yer alır. Doğrudan herhangi bir statik web sunucusunda (GitHub Pages, Netlify, Vercel, cPanel) çalıştırılabilir:
+Projenin web vitrini `yeralti-savaslari-web/` klasöründe yer alır. Doğrudan herhangi bir statik web sunucusunda (GitHub Pages, Netlify, Vercel, cPanel) çalıştırılabilir:
 
-- **Canlı Önizleme:** yeralti-savaslari-web/index.html dosyasını tarayıcınızda açmanız yeterlidir.
+- **Canlı Önizleme:** `yeralti-savaslari-web/index.html` dosyasını tarayıcınızda açmanız yeterlidir.
 - **Özellikler:** Dinamik canvas ateş böceği/kıvılcım parçacıkları, biyom kartları, galeri lightbox'ı, sesli efekt entegrasyonu ve mobil uyumlu responsive tasarım.
 
 ---
@@ -153,27 +153,27 @@ Projenin web vitrini yeralti-savaslari-web/ klasöründe yer alır. Doğrudan he
 
 Oyun mantığı, envanter, demirhane yükseltmeleri ve çok oyunculu modeller için yazılmış testleri çalıştırmak için:
 
-`ash
+```bash
 cd yeralti-savaslari-app
 flutter test
-`
+```
 
 Tüm test paketleri:
-- game_logic_test.dart
-- orge_upgrade_test.dart
-- i_team_mining_test.dart
-- multiplayer_logic_test.dart
-- riends_system_test.dart
-- cpanel_backend_integration_test.dart
+- `game_logic_test.dart`
+- `forge_upgrade_test.dart`
+- `ai_team_mining_test.dart`
+- `multiplayer_logic_test.dart`
+- `friends_system_test.dart`
+- `cpanel_backend_integration_test.dart`
 
 ---
 
 ## 🤝 Katkıda Bulunma
 
-1. Bu depoyu Fork'layın (Fork butonuna basın)
-2. Yeni bir Özellik Dalı oluşturun (git checkout -b feature/HarikaOzellik)
-3. Değişikliklerinizi commit'leyin (git commit -m 'feat: Yeni bir maden tipi eklendi')
-4. Dalınıza push yapın (git push origin feature/HarikaOzellik)
+1. Bu depoyu Fork'layın (`Fork` butonuna basın)
+2. Yeni bir Özellik Dalı oluşturun (`git checkout -b feature/HarikaOzellik`)
+3. Değişikliklerinizi commit'leyin (`git commit -m 'feat: Yeni bir maden tipi eklendi'`)
+4. Dalınıza push yapın (`git push origin feature/HarikaOzellik`)
 5. Bir **Pull Request (PR)** açın
 
 ---
