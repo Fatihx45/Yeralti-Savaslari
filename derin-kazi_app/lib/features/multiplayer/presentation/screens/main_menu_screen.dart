@@ -90,31 +90,21 @@ class _MainMenuScreenState extends ConsumerState<MainMenuScreen> {
             ),
             const SizedBox(height: 12),
             const Text(
-              'Gerçek zamanlı PvP Battle Royale, canlı 2-10 madenci düelloları ve oda kurup arkadaş çağırma sistemi v1.1 büyük güncellemesinde aktif edilecektir.\n\nŞimdilik Arkadaş Merkezinizi ve Oyuncu ID Etiketinizi önizleyebilirsiniz.',
+              'Gerçek zamanlı PvP Battle Royale, canlı 2-10 madenci düelloları ve oda kurup arkadaş çağırma sistemi v1.1 büyük güncellemesinde aktif edilecektir.',
               style: TextStyle(color: Colors.white70, fontSize: 12.5, height: 1.4),
             ),
           ],
         ),
         actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(ctx),
-            child: const Text('KAPAT', style: TextStyle(color: Colors.white60)),
-          ),
-          ElevatedButton.icon(
+          ElevatedButton(
             style: ElevatedButton.styleFrom(
               backgroundColor: AppColors.lavaOrange,
               foregroundColor: Colors.white,
               shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
             ),
-            icon: const Icon(Icons.people, size: 18),
-            label: const Text('ARKADAŞ LİSTESİ (ÖNİZLE)', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 11)),
-            onPressed: () {
-              Navigator.pop(ctx);
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (c) => const FriendsScreen()),
-              );
-            },
+            onPressed: () => Navigator.pop(ctx),
+            child: const Text('ANLADIM ✅', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 12)),
           ),
         ],
       ),
