@@ -1,0 +1,630 @@
+﻿<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Yeraltı Savaşları - Derin Kazı ve Battle Royale Mobil Oyunu</title>
+  <meta name="description" content="Yeraltı Savaşları: 500 katmanlı derin madencilik, 10 biyom, ölümcül silahlar, 9 kişilik AI takımı ve Battle Royale arena dövüşü. Hemen keşfet!">
+  <meta name="keywords" content="yeraltı savaşları, derin kazı, madencilik oyunu, battle royale mobil, flutter oyun, madenci, titan boss">
+  <meta property="og:title" content="Yeraltı Savaşları - Derin Kazı & Battle Royale">
+  <meta property="og:description" content="500 katmanlık derin kazı, devasa boss savaşları ve 1v1 Battle Royale heyecanı tek bir oyunda!">
+  <meta property="og:image" content="img/logo.jpg">
+  <meta property="og:type" content="website">
+
+  <!-- Favicon -->
+  <link rel="icon" type="image/jpeg" href="img/logo.jpg">
+
+  <!-- CSS Styles -->
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+  <!-- Kıvılcım & Parçacık Animasyon Canvas -->
+  <canvas id="ember-canvas"></canvas>
+  <div class="ambient-glow ambient-top"></div>
+  <div class="ambient-glow ambient-bottom"></div>
+
+  <!-- =========================================================================
+       1. NAVBAR
+       ========================================================================= -->
+  <header class="navbar">
+    <div class="container nav-container">
+      <a href="index.html" class="brand">
+        <img src="img/logo.jpg" alt="Yeraltı Savaşları Logo" class="brand-logo">
+        <span class="brand-name font-game">YERALTI SAVAŞLARI</span>
+      </a>
+
+      <ul class="nav-menu">
+        <li><a href="#about" class="nav-link">Oyun Hakkında</a></li>
+        <li><a href="#modes" class="nav-link">Modlar</a></li>
+        <li><a href="#biomes" class="nav-link">500 Katman & Biyomlar</a></li>
+        <li><a href="#armory" class="nav-link">Silah & Aletler</a></li>
+        <li><a href="#aiteam" class="nav-link">AI Ekibi</a></li>
+        <li><a href="#skins" class="nav-link">Kostümler</a></li>
+
+
+      </ul>
+
+      <div class="nav-cta">
+        <a href="#download" class="btn btn-lava" style="padding: 10px 20px; font-size: 0.95rem;">Hemen İndir</a>
+        <button class="mobile-toggle" aria-label="Menüyü Aç">☰</button>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    <!-- =========================================================================
+         2. HERO SECTION
+         ========================================================================= -->
+    <section class="hero" id="hero">
+      <div class="container">
+        <div class="hero-grid">
+          
+          <div class="hero-content">
+            <div class="hero-badge">
+              <span>⛏️ SEZON 1: TİTANIN UYANIŞI</span>
+            </div>
+            
+            <h1 class="hero-title">
+              DERİNLİKLERİ KAZ, <br>
+              <span>ARENAYI FETHET!</span>
+            </h1>
+            
+            <p class="hero-desc">
+              Karanlık dehlizlerde 500 katmanlık derin kazı macerası! Kazmanı bile, cephaneni doldur, devasa biyom bosslarını devir ve 4 dakikalık amansız Battle Royale ölüm maçında zafere ulaş.
+            </p>
+
+            <div class="hero-actions">
+              <a href="#download" class="btn btn-lava">
+                <span>🔥 OYUNA BAŞLA</span>
+              </a>
+              <a href="#modes" class="btn btn-outline">
+                <span>⚔️ MODLARI KEŞFET</span>
+              </a>
+            </div>
+
+            <div class="hero-stats">
+              <div class="stat-item">
+                <div class="stat-num">500</div>
+                <div class="stat-label">Derinlik Katmanı</div>
+              </div>
+              <div class="stat-item">
+                <div class="stat-num">10</div>
+                <div class="stat-label">Benzersiz Biyom</div>
+              </div>
+              <div class="stat-item">
+                <div class="stat-num">6 + 5</div>
+                <div class="stat-label">Alet & Silah</div>
+              </div>
+              <div class="stat-item">
+                <div class="stat-num">9</div>
+                <div class="stat-label">AI Bot Madenci</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="hero-visual">
+            <div class="visual-frame">
+              <img src="img/logo.jpg" alt="Yeraltı Savaşları Resmi Afiş" class="hero-img">
+              
+              <!-- Yüzen İpuçları / Badge'ler -->
+              <div class="floating-badge badge-top-right">
+                <div class="floating-icon">👑</div>
+                <div class="floating-text">
+                  <h4>Büyük Titan Boss</h4>
+                  <p>1120 HP • Kat 500</p>
+                </div>
+              </div>
+
+              <div class="floating-badge badge-bottom-left">
+                <div class="floating-icon">⚡</div>
+                <div class="floating-text">
+                  <h4>Battle Royale</h4>
+                  <p>Scavenge & Deathmatch</p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </section>
+
+    <!-- =========================================================================
+         3. ABOUT / OVERVIEW
+         ========================================================================= -->
+    <section class="section" id="about" style="background: rgba(22, 17, 32, 0.4);">
+      <div class="container">
+        <div class="section-header">
+          <span class="section-tag">YERALTININ SIRLARI</span>
+          <h2 class="section-title">EŞSİZ BİR MADENCİLİK VE DÖVÜŞ DENEYİMİ</h2>
+          <p class="section-desc">
+            Klasik madencilik mekaniklerini dinamik ızgara fiziği, gizli mayınlar, zincirleme TNT patlamaları ve taktiksel silahlı çatışmalarla birleştirdik.
+          </p>
+        </div>
+
+        <div class="modes-grid">
+          
+          <div class="mode-card campaign">
+            <div class="mode-icon-box">⛏️</div>
+            <h3 class="mode-title">500 Katmanlı Sefer</h3>
+            <p class="mode-desc">
+              Toprak, kaya, zümrüt damarları ve obsidyen yarıklarını kazarak yerin en derinine in. Her 10 katta mini-boss, her 50 katta dev biyom bossu seni bekliyor.
+            </p>
+            <ul class="mode-features">
+              <li><span>✓</span> Kat kat artan zorluk ve cevher oranları</li>
+              <li><span>✓</span> Dinamit, sandık ve şifalı iksir ödülleri</li>
+              <li><span>✓</span> Maden Atölyesinde kalıcı alet güçlendirmeleri</li>
+            </ul>
+          </div>
+
+          <div class="mode-card br">
+            <div class="mode-icon-box">⚔️</div>
+            <h3 class="mode-title">Battle Royale Arenası</h3>
+            <p class="mode-desc">
+              İki aşamalı nefes kesen düello: İlk 3 dakika ızgarada en iyi silah ve aletleri avla, son 1 dakikalık Deathmatch'te engelsiz serbest çatışmada hayatta kal!
+            </p>
+            <ul class="mode-features">
+              <li><span>✓</span> 3 Dakika Avlanma (Scavenge Fazı)</li>
+              <li><span>✓</span> 1 Dakika Ölüm Kalım (Deathmatch Fazı)</li>
+              <li><span>✓</span> Canlı Liderlik Skorbordu ve Kupa Ödülleri</li>
+            </ul>
+          </div>
+
+          <div class="mode-card coop">
+            <div class="mode-icon-box">🌐</div>
+            <h3 class="mode-title">Çok Oyunculu & AI Takımı</h3>
+            <p class="mode-desc">
+              cPanel destekli online lobi odalarında arkadaşlarınla ortak kazı yap veya Altına Hücum yarışında yarış. Çevrimdışıysan 9 akıllı bot madenci yardımına hazır!
+            </p>
+            <ul class="mode-features">
+              <li><span>✓</span> Coop Campaign & Gold Rush modları</li>
+              <li><span>✓</span> Canlı tepki ve emoji fırlatma sistemi</li>
+              <li><span>✓</span> Arkadaş listesi ve günlük hediyeleşme</li>
+            </ul>
+          </div>
+
+        </div>
+      </div>
+    </section>
+
+    <!-- =========================================================================
+         4. 500 STAGES & BIOMES SHOWCASE
+         ========================================================================= -->
+    <section class="section" id="biomes">
+      <div class="container">
+        <div class="section-header">
+          <span class="section-tag">DERİNLİK HARİTASI</span>
+          <h2 class="section-title">10 BİYOM • 500 KATMANLIK YERALTI DÜNYASI</h2>
+          <p class="section-desc">
+            Her biyom kendine has zemin dayanıklılığı, mayın sıklığı, ızgara genişliği ve ödül çarpanlarına sahiptir. İncelemek için aşağıdaki biyomlara tıklayın.
+          </p>
+        </div>
+
+        <div class="biomes-showcase">
+          <!-- Biyom Sekme Butonları (JS ile Doldurulur) -->
+          <div class="biomes-nav" id="biomes-nav"></div>
+
+          <!-- Seçili Biyom Detayı (JS ile Doldurulur) -->
+          <div class="biome-detail-card" id="biome-detail"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- =========================================================================
+         5. ARMORY & TOOLS (Silahlar ve Kazı Aletleri)
+         ========================================================================= -->
+    <section class="section" id="armory" style="background: rgba(22, 17, 32, 0.4);">
+      <div class="container">
+        <div class="section-header">
+          <span class="section-tag">CEPHANELİK VE ATÖLYE</span>
+          <h2 class="section-title">SAVAŞ VE KAZI DONANIMLARI</h2>
+          <p class="section-desc">
+            Doğru alet blokları daha hızlı parçalar, doğru silah ise arenadaki rakipleri ve biyom bosslarını saniyeler içinde etkisiz hale getirir.
+          </p>
+        </div>
+
+        <div class="tabs-switch">
+          <button class="switch-btn active" data-target="weapons">🔫 Savaş Silahları (5)</button>
+          <button class="switch-btn" data-target="tools">⛏️ Kazı Aletleri (6)</button>
+        </div>
+
+        <!-- Silahlar Vitrini -->
+        <div class="items-grid" id="weapons-grid">
+          
+          <div class="item-card">
+            <div class="item-emoji">🔫</div>
+            <h3 class="item-name">Tabanca</h3>
+            <p class="item-desc">Standart hafif silah. Seri ve temel hasar verir.</p>
+            <div class="item-specs">
+              <div class="spec-col"><strong>18</strong> Hasar</div>
+              <div class="spec-col"><strong>6</strong> Blok H.</div>
+              <div class="spec-col"><strong>15</strong> Mermi</div>
+            </div>
+          </div>
+
+          <div class="item-card">
+            <div class="item-emoji">⚡🔫</div>
+            <h3 class="item-name">Tüfek</h3>
+            <p class="item-desc">Hızlı ve etkili menzilli tüfek. Düşmanlara dengeli hasar verir.</p>
+            <div class="item-specs">
+              <div class="spec-col"><strong>32</strong> Hasar</div>
+              <div class="spec-col"><strong>12</strong> Blok H.</div>
+              <div class="spec-col"><strong>25</strong> Mermi</div>
+            </div>
+          </div>
+
+          <div class="item-card">
+            <div class="item-emoji">💥</div>
+            <h3 class="item-name">Pompalı</h3>
+            <p class="item-desc">Ağır saçma hasarı! Kutuları ve düşmanları yerle bir eder.</p>
+            <div class="item-specs">
+              <div class="spec-col"><strong>48</strong> Hasar</div>
+              <div class="spec-col"><strong>24</strong> Blok H.</div>
+              <div class="spec-col"><strong>10</strong> Mermi</div>
+            </div>
+          </div>
+
+          <div class="item-card">
+            <div class="item-emoji">🪄</div>
+            <h3 class="item-name">Lazer Silahı</h3>
+            <p class="item-desc">Yüksek teknolojili enerji silahı. En sert zırhları deler geçer.</p>
+            <div class="item-specs">
+              <div class="spec-col"><strong>65</strong> Hasar</div>
+              <div class="spec-col"><strong>35</strong> Blok H.</div>
+              <div class="spec-col"><strong>12</strong> Mermi</div>
+            </div>
+          </div>
+
+          <div class="item-card" style="border-color: var(--lava-flame); box-shadow: 0 0 20px rgba(255, 61, 0, 0.25);">
+            <div class="item-emoji">🚀</div>
+            <h3 class="item-name text-lava">Roketatar</h3>
+            <p class="item-desc">Devasa patlama gücü! Çok yüksek hasar ve alan parçalama.</p>
+            <div class="item-specs">
+              <div class="spec-col"><strong class="text-lava">110</strong> Hasar</div>
+              <div class="spec-col"><strong>60</strong> Blok H.</div>
+              <div class="spec-col"><strong>6</strong> Mermi</div>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- Aletler Vitrini (Varsayılan Olarak Gizli, JS ile Değişir) -->
+        <div class="items-grid" id="tools-grid" style="display: none;">
+          
+          <div class="item-card">
+            <div class="item-emoji">🪛</div>
+            <h3 class="item-name">Tornavida</h3>
+            <p class="item-desc">Hafif mekanik alet. İnce çatlakları açmak için uygundur.</p>
+            <div class="item-specs">
+              <div class="spec-col"><strong>4</strong> Blok H.</div>
+              <div class="spec-col"><strong>8</strong> PvP H.</div>
+            </div>
+          </div>
+
+          <div class="item-card">
+            <div class="item-emoji">⛏</div>
+            <h3 class="item-name">Kürek</h3>
+            <p class="item-desc">Toprak katmanlarında hızlı ve seri kazı olanağı sunar.</p>
+            <div class="item-specs">
+              <div class="spec-col"><strong>7</strong> Blok H.</div>
+              <div class="spec-col"><strong>12</strong> PvP H.</div>
+            </div>
+          </div>
+
+          <div class="item-card">
+            <div class="item-emoji">⛏️</div>
+            <h3 class="item-name">Kazma</h3>
+            <p class="item-desc">Madencinin en sadık dostu. Taş ve maden damarlarında etkilidir.</p>
+            <div class="item-specs">
+              <div class="spec-col"><strong>10</strong> Blok H.</div>
+              <div class="spec-col"><strong>18</strong> PvP H.</div>
+            </div>
+          </div>
+
+          <div class="item-card">
+            <div class="item-emoji">🪓</div>
+            <h3 class="item-name">Balta</h3>
+            <p class="item-desc">Ağır vuruş momentumu ile sert blokları sarsar.</p>
+            <div class="item-specs">
+              <div class="spec-col"><strong>8</strong> Blok H.</div>
+              <div class="spec-col"><strong>20</strong> PvP H.</div>
+            </div>
+          </div>
+
+          <div class="item-card">
+            <div class="item-emoji">🏏</div>
+            <h3 class="item-name">Beyzbol Sopası</h3>
+            <p class="item-desc">Düşman madencilere karşı etkili yakın dövüş savunma aleti.</p>
+            <div class="item-specs">
+              <div class="spec-col"><strong>5</strong> Blok H.</div>
+              <div class="spec-col"><strong>22</strong> PvP H.</div>
+            </div>
+          </div>
+
+          <div class="item-card" style="border-color: var(--cyan-text); box-shadow: 0 0 20px rgba(0, 229, 255, 0.25);">
+            <div class="item-emoji">💎</div>
+            <h3 class="item-name text-cyan">Elmas Kazma</h3>
+            <p class="item-desc">Efsanevi dayanıklılık! Obsidyen ve titan çekirdeklerini parçalar.</p>
+            <div class="item-specs">
+              <div class="spec-col"><strong class="text-cyan">20</strong> Blok H.</div>
+              <div class="spec-col"><strong>30</strong> PvP H.</div>
+            </div>
+          </div>
+
+        </div>
+
+      </div>
+    </section>
+
+    <!-- =========================================================================
+         6. AI MINERS TEAM (9 Bot Madenci)
+         ========================================================================= -->
+    <section class="section" id="aiteam">
+      <div class="container">
+        <div class="section-header">
+          <span class="section-tag">OTONOM DESTEK SİSTEMİ</span>
+          <h2 class="section-title">9 YERALTI BOT MADENCİSİ VE UZMANLIKLARI</h2>
+          <p class="section-desc">
+            Çevrimdışı tek kişilik oyunda veya eksik lobilerde otonom yapay zeka botları sizinle birlikte ızgarada aktif kazı yapar.
+          </p>
+        </div>
+
+        <div class="ai-team-grid">
+          
+          <div class="ai-miner-card">
+            <div class="miner-avatar" style="background: rgba(0, 230, 118, 0.15); border: 2px solid #00E676;">👷</div>
+            <div class="miner-info">
+              <h4>Demir Kazma Ahmet</h4>
+              <div class="miner-specialty">⚡ Hızlı Kazıcı (Speed Digger)</div>
+              <div style="font-size: 0.8rem; color: var(--text-muted);">Güç: Seviye 2</div>
+            </div>
+          </div>
+
+          <div class="ai-miner-card">
+            <div class="miner-avatar" style="background: rgba(0, 229, 255, 0.15); border: 2px solid #00E5FF;">💎</div>
+            <div class="miner-info">
+              <h4>Elmas Avcısı Can</h4>
+              <div class="miner-specialty">💰 Altın & Maden Arayıcı</div>
+              <div style="font-size: 0.8rem; color: var(--text-muted);">Güç: Seviye 3</div>
+            </div>
+          </div>
+
+          <div class="ai-miner-card">
+            <div class="miner-avatar" style="background: rgba(255, 61, 0, 0.15); border: 2px solid #FF3D00;">🧨</div>
+            <div class="miner-info">
+              <h4>Dinamitçi Zeynep</h4>
+              <div class="miner-specialty">💥 Dinamit & Alan Açıcı</div>
+              <div style="font-size: 0.8rem; color: var(--text-muted);">Güç: Seviye 4</div>
+            </div>
+          </div>
+
+          <div class="ai-miner-card">
+            <div class="miner-avatar" style="background: rgba(255, 214, 0, 0.15); border: 2px solid #FFD600;">⛏️</div>
+            <div class="miner-info">
+              <h4>Usta Madenci Kaya</h4>
+              <div class="miner-specialty">🛡️ Boss & Sert Blok Kırıcı</div>
+              <div style="font-size: 0.8rem; color: var(--text-muted);">Güç: Seviye 3</div>
+            </div>
+          </div>
+
+          <div class="ai-miner-card">
+            <div class="miner-avatar" style="background: rgba(224, 64, 251, 0.15); border: 2px solid #E040FB;">🧭</div>
+            <div class="miner-info">
+              <h4>Gezgin Kazıcı Burak</h4>
+              <div class="miner-specialty">💰 Değerli Taş Arayıcı</div>
+              <div style="font-size: 0.8rem; color: var(--text-muted);">Güç: Seviye 2</div>
+            </div>
+          </div>
+
+          <div class="ai-miner-card">
+            <div class="miner-avatar" style="background: rgba(255, 64, 129, 0.15); border: 2px solid #FF4081;">⚡</div>
+            <div class="miner-info">
+              <h4>Kaya Delici Selin</h4>
+              <div class="miner-specialty">🛡️ Yüksek HP Blok Kırıcı</div>
+              <div style="font-size: 0.8rem; color: var(--text-muted);">Güç: Seviye 3</div>
+            </div>
+          </div>
+
+          <div class="ai-miner-card">
+            <div class="miner-avatar" style="background: rgba(124, 77, 255, 0.15); border: 2px solid #7C4DFF;">🛡️</div>
+            <div class="miner-info">
+              <h4>Kristal Muhafızı Efe</h4>
+              <div class="miner-specialty">⚡ Hızlı Hat Açıcı</div>
+              <div style="font-size: 0.8rem; color: var(--text-muted);">Güç: Seviye 2</div>
+            </div>
+          </div>
+
+          <div class="ai-miner-card">
+            <div class="miner-avatar" style="background: rgba(255, 109, 0, 0.15); border: 2px solid #FF6D00;">🔥</div>
+            <div class="miner-info">
+              <h4>Lav Ustası Kerem</h4>
+              <div class="miner-specialty">💥 Magma & Patlayıcı Uzmanı</div>
+              <div style="font-size: 0.8rem; color: var(--text-muted);">Güç: Seviye 3</div>
+            </div>
+          </div>
+
+          <div class="ai-miner-card">
+            <div class="miner-avatar" style="background: rgba(29, 233, 182, 0.15); border: 2px solid #1DE9B6;">🟢</div>
+            <div class="miner-info">
+              <h4>Zümrüt Gözlü Derya</h4>
+              <div class="miner-specialty">💰 Zümrüt & Damar Avcısı</div>
+              <div style="font-size: 0.8rem; color: var(--text-muted);">Güç: Seviye 3</div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </section>
+
+    <!-- =========================================================================
+         7. SKINS / COSMETICS
+         ========================================================================= -->
+    <section class="section" id="skins" style="background: rgba(22, 17, 32, 0.4);">
+      <div class="container">
+        <div class="section-header">
+          <span class="section-tag">KOZMETİK MAĞAZASI</span>
+          <h2 class="section-title">KARAKTERİNİ VE ZIRHINI ÖZELLEŞTİR</h2>
+          <p class="section-desc">
+            Madenlerden topladığın elmaslarla özel kostümler kuşan ve yeraltı arenalarında tarzını göster.
+          </p>
+        </div>
+
+        <div class="skins-grid">
+          
+          <div class="skin-card">
+            <div class="skin-preview-box" style="border: 2px solid #1E88E5;">👷</div>
+            <h4 style="font-size: 1.15rem; color: #FFFFFF; margin-bottom: 6px;">Klasik Madenci</h4>
+            <div class="skin-colors">
+              <div class="color-dot" style="background: #FFD54F;" title="Kask"></div>
+              <div class="color-dot" style="background: #1E88E5;" title="Gömlek"></div>
+              <div class="color-dot" style="background: #E53935;" title="Pantolon"></div>
+            </div>
+            <span class="text-gold" style="font-weight: bold; font-size: 0.9rem;">ÜCRETSİZ</span>
+          </div>
+
+          <div class="skin-card" style="border-color: #FFD700;">
+            <div class="skin-preview-box" style="border: 2px solid #FFD700;">🛡️</div>
+            <h4 style="font-size: 1.15rem; color: #FFFFFF; margin-bottom: 6px;">Altın Muhafız</h4>
+            <div class="skin-colors">
+              <div class="color-dot" style="background: #FFF8DC;" title="Kask"></div>
+              <div class="color-dot" style="background: #FFD700;" title="Gömlek"></div>
+              <div class="color-dot" style="background: #B8860B;" title="Pantolon"></div>
+            </div>
+            <span class="text-cyan" style="font-weight: bold; font-size: 0.9rem;">5 💎 ELMAS</span>
+          </div>
+
+          <div class="skin-card" style="border-color: #FF3D00;">
+            <div class="skin-preview-box" style="border: 2px solid #FF3D00;">🔥</div>
+            <h4 style="font-size: 1.15rem; color: #FFFFFF; margin-bottom: 6px;">Lav Savaşçısı</h4>
+            <div class="skin-colors">
+              <div class="color-dot" style="background: #FF6E40;" title="Kask"></div>
+              <div class="color-dot" style="background: #FF3D00;" title="Gömlek"></div>
+              <div class="color-dot" style="background: #212121;" title="Pantolon"></div>
+            </div>
+            <span class="text-cyan" style="font-weight: bold; font-size: 0.9rem;">10 💎 ELMAS</span>
+          </div>
+
+          <div class="skin-card" style="border-color: #00E676;">
+            <div class="skin-preview-box" style="border: 2px solid #00E676;">🟢</div>
+            <h4 style="font-size: 1.15rem; color: #FFFFFF; margin-bottom: 6px;">Zümrüt Ustası</h4>
+            <div class="skin-colors">
+              <div class="color-dot" style="background: #69F0AE;" title="Kask"></div>
+              <div class="color-dot" style="background: #00E676;" title="Gömlek"></div>
+              <div class="color-dot" style="background: #1B5E20;" title="Pantolon"></div>
+            </div>
+            <span class="text-cyan" style="font-weight: bold; font-size: 0.9rem;">15 💎 ELMAS</span>
+          </div>
+
+          <div class="skin-card" style="border-color: #00E5FF;">
+            <div class="skin-preview-box" style="border: 2px solid #00E5FF;">💎</div>
+            <h4 style="font-size: 1.15rem; color: #FFFFFF; margin-bottom: 6px;">Kristal Lordu</h4>
+            <div class="skin-colors">
+              <div class="color-dot" style="background: #E0F7FA;" title="Kask"></div>
+              <div class="color-dot" style="background: #00E5FF;" title="Gömlek"></div>
+              <div class="color-dot" style="background: #006064;" title="Pantolon"></div>
+            </div>
+            <span class="text-cyan" style="font-weight: bold; font-size: 0.9rem;">25 💎 ELMAS</span>
+          </div>
+
+        </div>
+      </div>
+    </section>
+
+    
+
+    <!-- =========================================================================
+         9. DOWNLOAD CALL TO ACTION
+         ========================================================================= -->
+    <section class="section download-section" id="download">
+      <div class="container">
+        <div class="download-box">
+          <h2 class="download-title font-game">YERALTI SENİ ÇAĞIRIYOR!</h2>
+          <p class="download-desc">
+            Kazmanı kap, takımını kur ve 500 katmanlık derinliğin efendisi ol. Hemen ücretsiz indir ve maceraya katıl!
+          </p>
+          
+          <div class="app-buttons">
+            <a href="#" class="app-btn">
+              <div class="app-btn-icon">🤖</div>
+              <div class="app-btn-text">
+                <span>Google Play'den</span>
+                <strong>İNDİR (Android)</strong>
+              </div>
+            </a>
+
+            
+
+            
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- =========================================================================
+       10. FOOTER
+       ========================================================================= -->
+  <footer class="footer">
+    <div class="container">
+      <div class="footer-grid">
+        
+        <div class="footer-brand">
+          <div style="display: flex; align-items: center; gap: 12px;">
+            <img src="img/logo.jpg" alt="Logo" style="width: 36px; height: 36px; border-radius: 8px;">
+            <span class="font-game" style="font-size: 1.15rem; color: #FFFFFF; font-weight: bold;">YERALTI SAVAŞLARI</span>
+          </div>
+          <p>
+            Flutter ile geliştirilen madencilik ve battle royale mobil oyunu. 500 derinlik katmanı, taktiksel çatışmalar ve çok oyunculu heyecan.
+          </p>
+        </div>
+
+        <div class="footer-col">
+          <h4>Hızlı Menü</h4>
+          <ul class="footer-links">
+            <li><a href="#hero">Ana Sayfa</a></li>
+            <li><a href="#about">Hakkında</a></li>
+            <li><a href="#modes">Oyun Modları</a></li>
+            <li><a href="#biomes">Biyomlar & Katlar</a></li>
+          </ul>
+        </div>
+
+        <div class="footer-col">
+          <h4>Donanım</h4>
+          <ul class="footer-links">
+            <li><a href="#armory">Savaş Silahları</a></li>
+            <li><a href="#armory">Kazı Aletleri</a></li>
+            <li><a href="#aiteam">AI Madenci Ekibi</a></li>
+            <li><a href="#skins">Kostümler</a></li>
+          </ul>
+        </div>
+
+        <div class="footer-col">
+          <h4>Yasal & Destek</h4>
+          <ul class="footer-links">
+            <li><a href="gizlilik-politikasi.html" class="text-gold" style="font-weight: bold;">📜 Gizlilik Politikası</a></li>
+            <li><a href="gizlilik-politikasi.html#terms">Kullanım Şartları</a></li>
+            <li><a href="mailto:olmez.tech@gmail.com.tr">📧 olmez.tech@gmail.com.tr</a></li>
+            <li><a href="gizlilik-politikasi.html#contact">İletişim & Destek</a></li>
+          </ul>
+        </div>
+
+      </div>
+
+      <div class="footer-bottom">
+        <div>© 2026 Yeraltı Savaşları (Derin Kazı). Tüm hakları saklıdır.</div>
+        <div>Gizlilik ve Oyuncu Güvenliği İlkelerine %100 Uyumludur.</div>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Scripts -->
+  <script src="js/main.js"></script>
+</body>
+</html>
+
+
+
+
+
+
