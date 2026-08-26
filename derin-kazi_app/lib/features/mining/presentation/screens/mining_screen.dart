@@ -2,6 +2,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../../core/theme/app_colors.dart';
+import '../../../../core/localization/app_strings.dart';
 import '../../domain/models/weapon_model.dart';
 import '../../application/game_notifier.dart';
 import '../widgets/hud_bar.dart';
@@ -202,13 +203,13 @@ class _MiningScreenState extends ConsumerState<MiningScreen> {
                               ),
                             ],
                           ),
-                          child: const Column(
+                          child: Column(
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
-                              Icon(Icons.backpack, size: 15, color: Color(0xFFE040FB)),
+                              const Icon(Icons.backpack, size: 15, color: Color(0xFFE040FB)),
                               Text(
-                                'ÇANTA',
-                                style: TextStyle(
+                                AppStrings.tr('bag', lang: gameState.player.languageCode),
+                                style: const TextStyle(
                                   fontSize: 7,
                                   fontWeight: FontWeight.bold,
                                   color: Color(0xFFE040FB),
@@ -238,13 +239,13 @@ class _MiningScreenState extends ConsumerState<MiningScreen> {
                               ),
                             ],
                           ),
-                          child: const Column(
+                          child: Column(
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
-                              Icon(Icons.storefront, size: 15, color: AppColors.neonGreen),
+                              const Icon(Icons.storefront, size: 15, color: AppColors.neonGreen),
                               Text(
-                                'MAĞAZA',
-                                style: TextStyle(
+                                AppStrings.tr('shop', lang: gameState.player.languageCode),
+                                style: const TextStyle(
                                   fontSize: 7,
                                   fontWeight: FontWeight.bold,
                                   color: AppColors.neonGreen,
@@ -293,6 +294,9 @@ class _MiningScreenState extends ConsumerState<MiningScreen> {
 }
 
   Widget _buildStageCompleteOverlay(BuildContext context, WidgetRef ref, GameState state) {
+    final lang = state.player.languageCode;
+    final isEn = lang == 'en';
+
     return Container(
       color: Colors.black87,
       child: Center(
@@ -316,9 +320,9 @@ class _MiningScreenState extends ConsumerState<MiningScreen> {
             children: [
               const Text('🏆', style: TextStyle(fontSize: 48)),
               const SizedBox(height: 8),
-              const Text(
-                'BÖLÜM TEMİZLENDİ!',
-                style: TextStyle(
+              Text(
+                AppStrings.tr('stage_completed', lang: lang),
+                style: const TextStyle(
                   color: AppColors.neonGreen,
                   fontSize: 18,
                   fontWeight: FontWeight.w900,
@@ -327,7 +331,9 @@ class _MiningScreenState extends ConsumerState<MiningScreen> {
               ),
               const SizedBox(height: 6),
               Text(
-                'Tüm düşmanlar ve canavarlar alt edildi!\nBölüm ${state.grid.stage + 1}\'e geçmek istiyor musunuz?',
+                isEn
+                    ? 'All monsters defeated!\nProceed to Stage ${state.grid.stage + 1}?'
+                    : 'Tüm düşmanlar ve canavarlar alt edildi!\nBölüm ${state.grid.stage + 1}\'e geçmek istiyor musunuz?',
                 textAlign: TextAlign.center,
                 style: const TextStyle(color: Colors.white, fontSize: 13, height: 1.3),
               ),
@@ -344,7 +350,7 @@ class _MiningScreenState extends ConsumerState<MiningScreen> {
                       onPressed: () {
                         ref.read(gameNotifierProvider.notifier).declineStageAdvance();
                       },
-                      child: const Text('BURADA KAL', style: TextStyle(color: Colors.white70, fontSize: 11, fontWeight: FontWeight.bold)),
+                      child: Text(isEn ? 'STAY HERE' : 'BURADA KAL', style: const TextStyle(color: Colors.white70, fontSize: 11, fontWeight: FontWeight.bold)),
                     ),
                   ),
                   const SizedBox(width: 10),
@@ -359,7 +365,7 @@ class _MiningScreenState extends ConsumerState<MiningScreen> {
                       onPressed: () {
                         ref.read(gameNotifierProvider.notifier).advanceStageConfirmed();
                       },
-                      child: const Text('DEVAM ET 🚀', style: TextStyle(fontSize: 12, fontWeight: FontWeight.w900)),
+                      child: Text(isEn ? 'PROCEED 🚀' : 'DEVAM ET 🚀', style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w900)),
                     ),
                   ),
                 ],
@@ -372,6 +378,8 @@ class _MiningScreenState extends ConsumerState<MiningScreen> {
   }
 
   Widget _buildLootFoundOverlay(BuildContext context, WidgetRef ref, GameState state) {
+    final lang = state.player.languageCode;
+
     return Container(
       color: Colors.black87,
       child: Center(
@@ -396,7 +404,7 @@ class _MiningScreenState extends ConsumerState<MiningScreen> {
               const Text('🎁', style: TextStyle(fontSize: 44)),
               const SizedBox(height: 6),
               Text(
-                state.pendingLootName ?? 'YENİ EŞYA BULUNDU!',
+                state.pendingLootName ?? AppStrings.tr('item_found', lang: lang),
                 style: const TextStyle(
                   color: Color(0xFFE040FB),
                   fontSize: 16,
@@ -406,7 +414,7 @@ class _MiningScreenState extends ConsumerState<MiningScreen> {
               ),
               const SizedBox(height: 8),
               Text(
-                state.pendingLootMessage ?? 'Bu eşyayı envanterinize almak istiyor musunuz?',
+                state.pendingLootMessage ?? AppStrings.tr('item_found_sub', lang: lang),
                 textAlign: TextAlign.center,
                 style: const TextStyle(color: Colors.white, fontSize: 13, height: 1.3),
               ),
@@ -423,7 +431,7 @@ class _MiningScreenState extends ConsumerState<MiningScreen> {
                       onPressed: () {
                         ref.read(gameNotifierProvider.notifier).declineLoot();
                       },
-                      child: const Text('BIRAK', style: TextStyle(color: Colors.white70, fontSize: 11, fontWeight: FontWeight.bold)),
+                      child: Text(AppStrings.tr('leave', lang: lang), style: const TextStyle(color: Colors.white70, fontSize: 11, fontWeight: FontWeight.bold)),
                     ),
                   ),
                   const SizedBox(width: 10),
@@ -438,7 +446,7 @@ class _MiningScreenState extends ConsumerState<MiningScreen> {
                       onPressed: () {
                         ref.read(gameNotifierProvider.notifier).acceptLoot();
                       },
-                      child: const Text('ALALIM ✅', style: TextStyle(fontSize: 12, fontWeight: FontWeight.w900)),
+                      child: Text(AppStrings.tr('take_it', lang: lang), style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w900)),
                     ),
                   ),
                 ],
@@ -513,14 +521,14 @@ class _TurboDigButtonState extends ConsumerState<_TurboDigButton> {
             ),
           ],
         ),
-        child: const Column(
+        child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(Icons.hardware, size: 30, color: AppColors.goldText),
-            SizedBox(height: 2),
+            const Icon(Icons.hardware, size: 30, color: AppColors.goldText),
+            const SizedBox(height: 2),
             Text(
-              'KAZ / VUR',
-              style: TextStyle(
+              AppStrings.tr('dig_hit', lang: ref.watch(gameNotifierProvider.select((s) => s.player.languageCode))),
+              style: const TextStyle(
                 fontSize: 9,
                 fontWeight: FontWeight.bold,
                 letterSpacing: 0.5,
@@ -575,6 +583,7 @@ class _TurboShootButtonState extends ConsumerState<_TurboShootButton> {
   Widget build(BuildContext context) {
     final player = ref.watch(gameNotifierProvider.select((s) => s.player));
     final hasAmmo = player.currentAmmo > 0;
+    final lang = player.languageCode;
 
     return Listener(
       onPointerDown: (_) => _startAction(),
@@ -614,9 +623,9 @@ class _TurboShootButtonState extends ConsumerState<_TurboShootButton> {
               style: const TextStyle(fontSize: 22),
             ),
             const SizedBox(height: 1),
-            const Text(
-              'ATEŞ ET',
-              style: TextStyle(
+            Text(
+              AppStrings.tr('fire', lang: lang),
+              style: const TextStyle(
                 fontSize: 9,
                 fontWeight: FontWeight.w900,
                 letterSpacing: 0.5,

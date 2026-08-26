@@ -1713,6 +1713,19 @@ class GameNotifier extends StateNotifier<GameState> {
     _saveState();
   }
 
+  void setLanguage(String langCode) {
+    state = state.copyWith(
+      player: state.player.copyWith(languageCode: langCode),
+      lastMessage: langCode == 'en' ? 'Language switched: English 🇬🇧' : 'Dil değiştirildi: Türkçe 🇹🇷',
+    );
+    _saveState();
+  }
+
+  void toggleLanguage() {
+    final nextLang = state.player.languageCode == 'en' ? 'tr' : 'en';
+    setLanguage(nextLang);
+  }
+
   void claimAchievement(String id, int rewardGems) {
     if (state.player.achievementIds.contains(id)) return;
 

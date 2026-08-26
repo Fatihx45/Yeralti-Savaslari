@@ -7,6 +7,7 @@ import '../../../mining/presentation/screens/mining_screen.dart';
 import 'package:derin_kazi/features/ai_team/application/ai_team_engine.dart';
 import 'package:derin_kazi/features/ai_team/domain/models/ai_miner_model.dart';
 import '../../../multiplayer/presentation/widgets/friend_invite_dialog.dart';
+import '../../../../core/localization/app_strings.dart';
 
 class TeamLobbyScreen extends ConsumerStatefulWidget {
   const TeamLobbyScreen({super.key});
@@ -87,9 +88,9 @@ class _TeamLobbyScreenState extends ConsumerState<TeamLobbyScreen> {
                         Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
-                            const Text(
-                              '👥 TAKIM KAPASİTESİ:',
-                              style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 13),
+                            Text(
+                              AppStrings.tr('team_capacity', lang: gameState.player.languageCode),
+                              style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 13),
                             ),
                             Container(
                               padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
@@ -99,7 +100,7 @@ class _TeamLobbyScreenState extends ConsumerState<TeamLobbyScreen> {
                                 border: Border.all(color: AppColors.lavaOrange),
                               ),
                               child: Text(
-                                '$_selectedTeamSize Kişi',
+                                '$_selectedTeamSize',
                                 style: const TextStyle(color: AppColors.lavaOrange, fontWeight: FontWeight.bold, fontSize: 13),
                               ),
                             ),
@@ -120,7 +121,9 @@ class _TeamLobbyScreenState extends ConsumerState<TeamLobbyScreen> {
                           },
                         ),
                         Text(
-                          '1 Oyuncu (Sen) + ${_selectedTeamSize - 1} Sistem Madenci Botu',
+                          gameState.player.languageCode == 'en'
+                              ? '1 Player (You) + ${_selectedTeamSize - 1} AI Miner Bots'
+                              : '1 Oyuncu (Sen) + ${_selectedTeamSize - 1} Sistem Madenci Botu',
                           style: const TextStyle(color: AppColors.secondaryText, fontSize: 11),
                         ),
                       ],
@@ -145,11 +148,11 @@ class _TeamLobbyScreenState extends ConsumerState<TeamLobbyScreen> {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Text(
-                                'TAKIM TAMAMLAMA BONUSU: +${(aiTeamState.teamBonusPercentage * 100).toInt()}%',
+                                '${AppStrings.tr('team_bonus', lang: gameState.player.languageCode)} +${(aiTeamState.teamBonusPercentage * 100).toInt()}%',
                                 style: const TextStyle(color: AppColors.goldText, fontWeight: FontWeight.bold, fontSize: 12),
                               ),
                               Text(
-                                'Bölüm $unlockedStage • ${stageConfig.biomeName} (${stageConfig.rows}x${stageConfig.columns} Harita)',
+                                '${AppStrings.tr('stage', lang: gameState.player.languageCode)} $unlockedStage • ${stageConfig.biomeName} (${stageConfig.rows}x${stageConfig.columns})',
                                 style: const TextStyle(color: Colors.white70, fontSize: 11),
                               ),
                             ],
@@ -164,9 +167,9 @@ class _TeamLobbyScreenState extends ConsumerState<TeamLobbyScreen> {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      const Text(
-                        'LOBİDEKİ MADENCİLER (HAZIR):',
-                        style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 12, letterSpacing: 0.8),
+                      Text(
+                        AppStrings.tr('lobby_miners_ready', lang: gameState.player.languageCode),
+                        style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 12, letterSpacing: 0.8),
                       ),
                       ElevatedButton.icon(
                         style: ElevatedButton.styleFrom(
@@ -177,7 +180,7 @@ class _TeamLobbyScreenState extends ConsumerState<TeamLobbyScreen> {
                           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
                         ),
                         icon: const Icon(Icons.person_add, size: 15, color: AppColors.cyanText),
-                        label: const Text('ARKADAŞ ÇAĞIR (ID)', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 10)),
+                        label: Text(AppStrings.tr('invite_friend_id', lang: gameState.player.languageCode), style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 10)),
                         onPressed: () => FriendInviteDialog.show(context),
                       ),
                     ],
@@ -186,10 +189,10 @@ class _TeamLobbyScreenState extends ConsumerState<TeamLobbyScreen> {
 
                   // 1. Oyuncu Kartı (Sen)
                   _buildMinerCard(
-                    name: '${gameState.player.playerName} (Kaptan) [${gameState.player.playerTag}]',
+                    name: '${gameState.player.playerName} (${AppStrings.tr('captain', lang: gameState.player.languageCode)}) [${gameState.player.playerTag}]',
                     emoji: '👑',
                     color: AppColors.goldText,
-                    specialty: 'Takım Lideri',
+                    specialty: gameState.player.languageCode == 'en' ? 'Team Leader' : 'Takım Lideri',
                     isUser: true,
                   ),
 
@@ -200,7 +203,7 @@ class _TeamLobbyScreenState extends ConsumerState<TeamLobbyScreen> {
                       name: bot.name,
                       emoji: bot.avatarEmoji,
                       color: isFriend ? const Color(0xFF00E5FF) : bot.color,
-                      specialty: isFriend ? '🤝 Davet Edilen Arkadaş' : _getSpecialtyTitle(bot.specialty),
+                      specialty: isFriend ? (gameState.player.languageCode == 'en' ? '🤝 Invited Friend' : '🤝 Davet Edilen Arkadaş') : _getSpecialtyTitle(bot.specialty),
                       isUser: false,
                     );
                   }),
@@ -218,14 +221,14 @@ class _TeamLobbyScreenState extends ConsumerState<TeamLobbyScreen> {
                           borderRadius: BorderRadius.circular(12),
                           border: Border.all(color: AppColors.cyanText.withValues(alpha: 0.4), style: BorderStyle.solid),
                         ),
-                        child: const Row(
+                        child: Row(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-                            Icon(Icons.add_circle_outline, color: AppColors.cyanText, size: 16),
-                            SizedBox(width: 6),
+                            const Icon(Icons.add_circle_outline, color: AppColors.cyanText, size: 16),
+                            const SizedBox(width: 6),
                             Text(
-                              '+ ID ile Arkadaşını Bu Slota Çağır',
-                              style: TextStyle(color: AppColors.cyanText, fontSize: 11, fontWeight: FontWeight.bold),
+                              AppStrings.tr('invite_to_slot', lang: gameState.player.languageCode),
+                              style: const TextStyle(color: AppColors.cyanText, fontSize: 11, fontWeight: FontWeight.bold),
                             ),
                           ],
                         ),

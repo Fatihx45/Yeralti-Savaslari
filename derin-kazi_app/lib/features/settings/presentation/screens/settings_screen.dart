@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../../core/theme/app_colors.dart';
+import '../../../../core/localization/app_strings.dart';
 import '../../../mining/application/game_notifier.dart';
 
 class SettingsScreen extends ConsumerStatefulWidget {
@@ -16,6 +17,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
     final gameState = ref.watch(gameNotifierProvider);
     final player = gameState.player;
     final notifier = ref.read(gameNotifierProvider.notifier);
+    final lang = player.languageCode;
 
     return Scaffold(
       backgroundColor: AppColors.background,
@@ -46,9 +48,9 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                     ),
                   ),
                   const SizedBox(width: 8),
-                  const Text(
-                    'OYUN AYARLARI',
-                    style: TextStyle(
+                  Text(
+                    AppStrings.tr('game_settings', lang: lang),
+                    style: const TextStyle(
                       color: Colors.white,
                       fontSize: 15,
                       fontWeight: FontWeight.bold,
@@ -88,9 +90,9 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                       ),
                       icon: const Icon(Icons.bolt, color: Colors.white, size: 22),
-                      label: const Text(
-                        '⚡ TÜM AYARLARI AKTİFLEŞTİR (100% SES & EFEKT)',
-                        style: TextStyle(
+                      label: Text(
+                        AppStrings.tr('activate_all_settings', lang: lang),
+                        style: const TextStyle(
                           color: Colors.white,
                           fontSize: 12,
                           fontWeight: FontWeight.w900,
@@ -100,11 +102,11 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                       onPressed: () {
                         notifier.activateAllSettings();
                         ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(
+                          SnackBar(
                             backgroundColor: AppColors.lavaOrange,
                             content: Text(
-                              '⚡ Tüm sesler, titreşim ve bildirimler %100 aktif edildi!',
-                              style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+                              AppStrings.tr('all_settings_activated', lang: lang),
+                              style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
                             ),
                           ),
                         );
@@ -113,66 +115,66 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                   ),
 
                   // 1. Ses & Titreşim
-                  _buildSectionHeader('🔊 SES & TİTREŞİM'),
+                  _buildSectionHeader(AppStrings.tr('audio_vibration', lang: lang)),
                   _buildSliderTile(
-                    title: 'Efekt Sesi (SFX)',
+                    title: AppStrings.tr('sfx_volume', lang: lang),
                     value: player.sfxVolume,
                     onChanged: (val) {
                       notifier.updateSettings(sfxVolume: val);
                     },
                   ),
                   _buildSliderTile(
-                    title: 'Müzik Sesi',
+                    title: AppStrings.tr('music_volume', lang: lang),
                     value: player.musicVolume,
                     onChanged: (val) {
                       notifier.updateSettings(musicVolume: val);
                     },
                   ),
                   _buildSwitchTile(
-                    title: 'Titreşim (Haptic Feedback)',
-                    subtitle: 'Kutu kazma ve patlamalarda titreşir',
+                    title: AppStrings.tr('vibration', lang: lang),
+                    subtitle: AppStrings.tr('vibration_sub', lang: lang),
                     value: player.vibrationEnabled,
                     onChanged: (val) => notifier.updateSettings(vibrationEnabled: val),
                   ),
                   const SizedBox(height: 16),
 
                   // 2. Bildirimler
-                  _buildSectionHeader('🔔 BİLDİRİMLER'),
+                  _buildSectionHeader(AppStrings.tr('notifications', lang: lang)),
                   _buildSwitchTile(
-                    title: 'Enerji Dolumu',
-                    subtitle: 'Enerji tamamen dolunca haber ver',
+                    title: AppStrings.tr('energy_full_notif', lang: lang),
+                    subtitle: AppStrings.tr('energy_full_sub', lang: lang),
                     value: player.notificationsEnergyFull,
                     onChanged: (val) => notifier.updateSettings(notificationsEnergyFull: val),
                   ),
                   _buildSwitchTile(
-                    title: 'Haftalık Görev Hatırlatıcı',
-                    subtitle: 'Görevler yenilendiğinde bildir',
+                    title: AppStrings.tr('weekly_quest_notif', lang: lang),
+                    subtitle: AppStrings.tr('weekly_quest_sub', lang: lang),
                     value: player.notificationsDailyQuest,
                     onChanged: (val) => notifier.updateSettings(notificationsDailyQuest: val),
                   ),
                   _buildSwitchTile(
-                    title: 'Oda Daveti Bildirimi',
-                    subtitle: 'Arkadaşların seni odaya çağırdığında bildir',
+                    title: AppStrings.tr('room_invite_notif', lang: lang),
+                    subtitle: AppStrings.tr('room_invite_sub', lang: lang),
                     value: player.notificationsInvites,
                     onChanged: (val) => notifier.updateSettings(notificationsInvites: val),
                   ),
                   const SizedBox(height: 16),
 
                   // 3. Dil & Bölge
-                  _buildSectionHeader('🌐 DİL & BÖLGE'),
+                  _buildSectionHeader(AppStrings.tr('language_region', lang: lang)),
                   _buildSegmentedTile(
-                    title: 'Seçili Dil',
+                    title: AppStrings.tr('selected_language', lang: lang),
                     currentValue: player.languageCode,
                     options: const ['tr', 'en'],
                     labels: const ['Türkçe 🇹🇷', 'English 🇬🇧'],
-                    onSelected: (val) => notifier.updateSettings(languageCode: val),
+                    onSelected: (val) => notifier.setLanguage(val),
                   ),
                   const SizedBox(height: 16),
 
                   // 4. Hakkında
-                  _buildSectionHeader('ℹ️ HAKKINDA'),
-                  _buildInfoTile('Oyun Sürümü', 'v1.0.0 (Build 500)'),
-                  _buildInfoTile('Geliştirici', 'Ölmez Tech — Oyun Tasarım Ekibi'),
+                  _buildSectionHeader(AppStrings.tr('about', lang: lang)),
+                  _buildInfoTile(AppStrings.tr('game_version', lang: lang), 'v1.0.0 (Build 500)'),
+                  _buildInfoTile(AppStrings.tr('developer', lang: lang), 'Ölmez Tech — Oyun Tasarım Ekibi'),
                 ],
               ),
             ),

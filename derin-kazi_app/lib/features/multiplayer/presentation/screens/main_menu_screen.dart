@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../../core/theme/app_colors.dart';
+import '../../../../core/localization/app_strings.dart';
 import '../../../mining/application/game_notifier.dart';
 import '../../../mining/domain/models/stage_config_model.dart';
 import '../../../mining/presentation/screens/stage_select_screen.dart';
@@ -39,7 +40,7 @@ class _MainMenuScreenState extends ConsumerState<MainMenuScreen> {
     super.dispose();
   }
 
-  void _showComingSoonDialog(BuildContext context) {
+  void _showComingSoonDialog(BuildContext context, String lang) {
     showDialog(
       context: context,
       builder: (ctx) => AlertDialog(
@@ -48,14 +49,14 @@ class _MainMenuScreenState extends ConsumerState<MainMenuScreen> {
           borderRadius: BorderRadius.circular(20),
           side: const BorderSide(color: AppColors.lavaOrange, width: 2),
         ),
-        title: const Row(
+        title: Row(
           children: [
-            Text('🔒', style: TextStyle(fontSize: 26)),
-            SizedBox(width: 10),
+            const Text('🔒', style: TextStyle(fontSize: 26)),
+            const SizedBox(width: 10),
             Expanded(
               child: Text(
-                'ÇOK OYUNCULU & ARKADAŞLAR',
-                style: TextStyle(
+                AppStrings.tr('coming_soon_title', lang: lang),
+                style: const TextStyle(
                   color: Colors.white,
                   fontSize: 15,
                   fontWeight: FontWeight.bold,
@@ -76,22 +77,22 @@ class _MainMenuScreenState extends ConsumerState<MainMenuScreen> {
                 borderRadius: BorderRadius.circular(8),
                 border: Border.all(color: AppColors.lavaOrange),
               ),
-              child: const Row(
+              child: Row(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  Icon(Icons.hourglass_top_rounded, color: AppColors.lavaOrange, size: 16),
-                  SizedBox(width: 6),
+                  const Icon(Icons.hourglass_top_rounded, color: AppColors.lavaOrange, size: 16),
+                  const SizedBox(width: 6),
                   Text(
-                    'YAKIN GELECEKTE (v1.1 GÜNCELLEMESİ)',
-                    style: TextStyle(color: AppColors.lavaOrange, fontWeight: FontWeight.bold, fontSize: 11),
+                    AppStrings.tr('coming_soon_badge', lang: lang),
+                    style: const TextStyle(color: AppColors.lavaOrange, fontWeight: FontWeight.bold, fontSize: 11),
                   ),
                 ],
               ),
             ),
             const SizedBox(height: 12),
-            const Text(
-              'Gerçek zamanlı PvP Battle Royale, canlı 2-10 madenci düelloları ve oda kurup arkadaş çağırma sistemi v1.1 büyük güncellemesinde aktif edilecektir.',
-              style: TextStyle(color: Colors.white70, fontSize: 12.5, height: 1.4),
+            Text(
+              AppStrings.tr('coming_soon_desc', lang: lang),
+              style: const TextStyle(color: Colors.white70, fontSize: 12.5, height: 1.4),
             ),
           ],
         ),
@@ -104,7 +105,7 @@ class _MainMenuScreenState extends ConsumerState<MainMenuScreen> {
               padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
             ),
             onPressed: () => Navigator.pop(ctx),
-            child: const Text('ANLADIM ✅', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 12)),
+            child: Text(AppStrings.tr('got_it', lang: lang), style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 12)),
           ),
         ],
       ),
@@ -115,6 +116,8 @@ class _MainMenuScreenState extends ConsumerState<MainMenuScreen> {
   Widget build(BuildContext context) {
     final gameState = ref.watch(gameNotifierProvider);
     final int unlockedStage = gameState.player.unlockedStage;
+    final String lang = gameState.player.languageCode;
+    final isEn = lang == 'en';
     final stageConfig = StageConfigService.getConfig(unlockedStage);
 
     final isLandscape = MediaQuery.of(context).orientation == Orientation.landscape;
@@ -167,8 +170,8 @@ class _MainMenuScreenState extends ConsumerState<MainMenuScreen> {
                       ],
                     ),
                     child: isLandscape
-                        ? _buildLandscapeLayout(unlockedStage, stageConfig.biomeName, gameState)
-                        : _buildPortraitLayout(unlockedStage, stageConfig.biomeName, gameState),
+                        ? _buildLandscapeLayout(unlockedStage, stageConfig.biomeName, gameState, lang)
+                        : _buildPortraitLayout(unlockedStage, stageConfig.biomeName, gameState, lang),
                   ),
                 ),
 
@@ -202,13 +205,69 @@ class _MainMenuScreenState extends ConsumerState<MainMenuScreen> {
                   ),
                 ),
 
-                // Sağ Üst: ALTIN / ELMAS BAKİYE ROZETİ & AYARLAR Butonu
+                // Sağ Üst: DİL SEÇİCİ & BAKİYE ROZETİ & AYARLAR
                 Positioned(
                   top: 10,
                   right: 12,
                   child: Row(
                     mainAxisSize: MainAxisSize.min,
                     children: [
+                      // 🌐 HIZLI DİL SEÇİCİ (🇹🇷 TR / 🇬🇧 EN)
+                      InkWell(
+                        onTap: () {
+                          ref.read(gameNotifierProvider.notifier).toggleLanguage();
+                          ScaffoldMessenger.of(context).hideCurrentSnackBar();
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(
+                              backgroundColor: AppColors.hudPanel,
+                              duration: const Duration(milliseconds: 1200),
+                              content: Row(
+                                children: [
+                                  const Icon(Icons.language, color: AppColors.cyanText, size: 18),
+                                  const SizedBox(width: 8),
+                                  Text(
+                                    AppStrings.tr('lang_switched', lang: isEn ? 'tr' : 'en'),
+                                    style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          );
+                        },
+                        borderRadius: BorderRadius.circular(10),
+                        child: Container(
+                          padding: const EdgeInsets.symmetric(horizontal: 9, vertical: 5),
+                          decoration: BoxDecoration(
+                            color: const Color(0xFF1B1428),
+                            borderRadius: BorderRadius.circular(10),
+                            border: Border.all(color: AppColors.cyanText, width: 1.2),
+                            boxShadow: [
+                              BoxShadow(
+                                color: AppColors.cyanText.withValues(alpha: 0.25),
+                                blurRadius: 6,
+                              ),
+                            ],
+                          ),
+                          child: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Text(isEn ? '🇬🇧' : '🇹🇷', style: const TextStyle(fontSize: 13)),
+                              const SizedBox(width: 4),
+                              Text(
+                                isEn ? 'EN' : 'TR',
+                                style: const TextStyle(
+                                  color: AppColors.cyanText,
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 11,
+                                  letterSpacing: 0.5,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                      const SizedBox(width: 6),
+
                       // Altın ve Elmas Bakiyesi
                       Container(
                         padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
@@ -274,7 +333,7 @@ class _MainMenuScreenState extends ConsumerState<MainMenuScreen> {
                       // Ayarlar Butonu
                       IconButton(
                         icon: const Icon(Icons.settings, color: AppColors.goldText, size: 24),
-                        tooltip: 'Ayarlar',
+                        tooltip: AppStrings.tr('settings', lang: lang),
                         onPressed: () {
                           Navigator.push(context, MaterialPageRoute(builder: (ctx) => const SettingsScreen()));
                         },
@@ -291,7 +350,7 @@ class _MainMenuScreenState extends ConsumerState<MainMenuScreen> {
   }
 
   // Yatay Düzen (Landscape - Ana Düzen)
-  Widget _buildLandscapeLayout(int unlockedStage, String biomeName, GameState gameState) {
+  Widget _buildLandscapeLayout(int unlockedStage, String biomeName, GameState gameState, String lang) {
     return Row(
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
@@ -384,7 +443,7 @@ class _MainMenuScreenState extends ConsumerState<MainMenuScreen> {
                                 overflow: TextOverflow.ellipsis,
                               ),
                               Text(
-                                '🔥 Bölüm $unlockedStage • $biomeName',
+                                '🔥 ${AppStrings.tr('stage', lang: lang)} $unlockedStage • $biomeName',
                                 style: const TextStyle(
                                   color: AppColors.goldText,
                                   fontSize: 9.5,
@@ -413,7 +472,7 @@ class _MainMenuScreenState extends ConsumerState<MainMenuScreen> {
                           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
                         ),
                         icon: const Icon(Icons.palette, size: 16),
-                        label: const Text('KOSTÜMLER', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 10)),
+                        label: Text(AppStrings.tr('costumes', lang: lang), style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 10)),
                         onPressed: () {
                           Navigator.push(
                             context,
@@ -433,7 +492,7 @@ class _MainMenuScreenState extends ConsumerState<MainMenuScreen> {
                           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
                         ),
                         icon: const Icon(Icons.people, size: 16, color: AppColors.cyanText),
-                        label: const Text('ARKADAŞLAR', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 10)),
+                        label: Text(AppStrings.tr('friends', lang: lang), style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 10)),
                         onPressed: () {
                           Navigator.push(
                             context,
@@ -468,8 +527,8 @@ class _MainMenuScreenState extends ConsumerState<MainMenuScreen> {
                 children: [
                   // 1. OYUNA BAŞLA (BÖLÜM SEÇİMİ)
                   _buildMenuButton(
-                    title: '🎮 OYUNA BAŞLA',
-                    subtitle: 'Kaldığın Yer: Bölüm $unlockedStage • $biomeName',
+                    title: AppStrings.tr('play_game', lang: lang),
+                    subtitle: '${AppStrings.tr('play_game_sub', lang: lang)} $unlockedStage • $biomeName',
                     icon: Icons.play_arrow_rounded,
                     buttonColor: const Color(0xFF4E1609),
                     borderColor: AppColors.lavaOrange,
@@ -487,8 +546,8 @@ class _MainMenuScreenState extends ConsumerState<MainMenuScreen> {
 
                   // 2. EKİP KAZISI (1-10 KİŞİ AI TAKIMI)
                   _buildMenuButton(
-                    title: '👥 EKİP KAZISI (1-10 KİŞİ)',
-                    subtitle: 'Sistem Madenci Botlarıyla Ortak Kazı & Bonus',
+                    title: AppStrings.tr('team_mining', lang: lang),
+                    subtitle: AppStrings.tr('team_mining_sub', lang: lang),
                     icon: Icons.groups,
                     buttonColor: const Color(0xFF0F2C3A),
                     borderColor: AppColors.cyanText,
@@ -504,21 +563,21 @@ class _MainMenuScreenState extends ConsumerState<MainMenuScreen> {
 
                   // 3. 🔒 ÇOK OYUNCULU & ARKADAŞLAR (YAKIN GELECEKTE) - PASİF/BİLGİLENDİRİCİ
                   _buildMenuButton(
-                    title: '🔒 ÇOK OYUNCULU (YAKIN GELECEKTE)',
-                    subtitle: 'v1.1 Büyük Güncellemesi • 2-10 Battle Royale PvP',
+                    title: AppStrings.tr('multiplayer_coming_soon', lang: lang),
+                    subtitle: AppStrings.tr('multiplayer_sub', lang: lang),
                     icon: Icons.lock_clock,
                     buttonColor: const Color(0xFF1E1A24),
                     borderColor: const Color(0xFF5A4838),
                     textColor: AppColors.goldText.withValues(alpha: 0.7),
                     isLocked: true,
-                    onTap: () => _showComingSoonDialog(context),
+                    onTap: () => _showComingSoonDialog(context, lang),
                   ),
                   const SizedBox(height: 5),
 
                   // 4. GÖREVLER & ÖDÜLLER
                   _buildMenuButton(
-                    title: '📋 GÖREVLER & ÖDÜLLER',
-                    subtitle: 'Haftalık Görevler • Elmas & Altın Kazan',
+                    title: AppStrings.tr('quests_rewards', lang: lang),
+                    subtitle: AppStrings.tr('quests_sub', lang: lang),
                     icon: Icons.assignment_turned_in,
                     buttonColor: const Color(0xFF3D2608),
                     borderColor: AppColors.goldText,
@@ -529,8 +588,8 @@ class _MainMenuScreenState extends ConsumerState<MainMenuScreen> {
 
                   // 5. SİLAH VE MERMİ MAĞAZASI
                   _buildMenuButton(
-                    title: '🛒 SİLAH & MERMİ MAĞAZASI',
-                    subtitle: 'Tabanca, Tüfek, Pompalı & Cephane Al',
+                    title: AppStrings.tr('weapon_shop', lang: lang),
+                    subtitle: AppStrings.tr('weapon_shop_sub', lang: lang),
                     icon: Icons.shopping_bag,
                     buttonColor: const Color(0xFF361210),
                     borderColor: const Color(0xFFFF7043),
@@ -546,8 +605,8 @@ class _MainMenuScreenState extends ConsumerState<MainMenuScreen> {
 
                   // 6. ATÖLYE VE GÜÇLENDİRME
                   _buildMenuButton(
-                    title: '⚡ ATÖLYE & GÜÇLENDİRME',
-                    subtitle: 'Kazma, Çekiç & Maden Güçlendirmeleri',
+                    title: AppStrings.tr('forge_upgrade', lang: lang),
+                    subtitle: AppStrings.tr('forge_sub', lang: lang),
                     icon: Icons.hardware,
                     buttonColor: const Color(0xFF2B1038),
                     borderColor: const Color(0xFFE040FB),
@@ -569,7 +628,7 @@ class _MainMenuScreenState extends ConsumerState<MainMenuScreen> {
   }
 
   // Dikey (Fallback) Düzen
-  Widget _buildPortraitLayout(int unlockedStage, String biomeName, GameState gameState) {
+  Widget _buildPortraitLayout(int unlockedStage, String biomeName, GameState gameState, String lang) {
     return SingleChildScrollView(
       child: Column(
         mainAxisSize: MainAxisSize.min,
@@ -614,8 +673,8 @@ class _MainMenuScreenState extends ConsumerState<MainMenuScreen> {
 
           // 1. OYUNA BAŞLA (BÖLÜM SEÇİMİ)
           _buildMenuButton(
-            title: '🎮 OYUNA BAŞLA',
-            subtitle: 'Kaldığın Yer: Bölüm $unlockedStage • $biomeName',
+            title: AppStrings.tr('play_game', lang: lang),
+            subtitle: '${AppStrings.tr('play_game_sub', lang: lang)} $unlockedStage • $biomeName',
             icon: Icons.play_arrow_rounded,
             buttonColor: const Color(0xFF4E1609),
             borderColor: AppColors.lavaOrange,
@@ -633,8 +692,8 @@ class _MainMenuScreenState extends ConsumerState<MainMenuScreen> {
 
           // 2. EKİP KAZISI (1-10 KİŞİ AI TAKIMI)
           _buildMenuButton(
-            title: '👥 EKİP KAZISI (1-10 KİŞİ)',
-            subtitle: 'Sistem Madenci Botlarıyla Ortak Kazı & Bonus',
+            title: AppStrings.tr('team_mining', lang: lang),
+            subtitle: AppStrings.tr('team_mining_sub', lang: lang),
             icon: Icons.groups,
             buttonColor: const Color(0xFF0F2C3A),
             borderColor: AppColors.cyanText,
@@ -650,21 +709,21 @@ class _MainMenuScreenState extends ConsumerState<MainMenuScreen> {
 
           // 3. 🔒 ÇOK OYUNCULU & ARKADAŞLAR (YAKIN GELECEKTE)
           _buildMenuButton(
-            title: '🔒 ÇOK OYUNCULU (YAKIN GELECEKTE)',
-            subtitle: 'v1.1 Büyük Güncellemesi • 2-10 Battle Royale PvP',
+            title: AppStrings.tr('multiplayer_coming_soon', lang: lang),
+            subtitle: AppStrings.tr('multiplayer_sub', lang: lang),
             icon: Icons.lock_clock,
             buttonColor: const Color(0xFF1E1A24),
             borderColor: const Color(0xFF5A4838),
             textColor: AppColors.goldText.withValues(alpha: 0.7),
             isLocked: true,
-            onTap: () => _showComingSoonDialog(context),
+            onTap: () => _showComingSoonDialog(context, lang),
           ),
           const SizedBox(height: 6),
 
           // 4. GÖREVLER & ÖDÜLLER
           _buildMenuButton(
-            title: '📋 GÖREVLER & ÖDÜLLER',
-            subtitle: 'Haftalık Görevler • Elmas & Altın Kazan',
+            title: AppStrings.tr('quests_rewards', lang: lang),
+            subtitle: AppStrings.tr('quests_sub', lang: lang),
             icon: Icons.assignment_turned_in,
             buttonColor: const Color(0xFF3D2608),
             borderColor: AppColors.goldText,
@@ -675,8 +734,8 @@ class _MainMenuScreenState extends ConsumerState<MainMenuScreen> {
 
           // 5. SİLAH VE MERMİ MAĞAZASI
           _buildMenuButton(
-            title: '🛒 SİLAH & MERMİ MAĞAZASI',
-            subtitle: 'Tabanca, Tüfek, Pompalı & Cephane Al',
+            title: AppStrings.tr('weapon_shop', lang: lang),
+            subtitle: AppStrings.tr('weapon_shop_sub', lang: lang),
             icon: Icons.shopping_bag,
             buttonColor: const Color(0xFF361210),
             borderColor: const Color(0xFFFF7043),
@@ -689,8 +748,8 @@ class _MainMenuScreenState extends ConsumerState<MainMenuScreen> {
 
           // 6. ATÖLYE VE GÜÇLENDİRME
           _buildMenuButton(
-            title: '⚡ ATÖLYE & GÜÇLENDİRME',
-            subtitle: 'Kazma, Çekiç & Maden Güçlendirmeleri',
+            title: AppStrings.tr('forge_upgrade', lang: lang),
+            subtitle: AppStrings.tr('forge_sub', lang: lang),
             icon: Icons.hardware,
             buttonColor: const Color(0xFF2B1038),
             borderColor: const Color(0xFFE040FB),
