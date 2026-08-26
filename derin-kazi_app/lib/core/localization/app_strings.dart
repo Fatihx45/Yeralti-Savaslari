@@ -95,6 +95,32 @@ class AppStrings {
     'invite_friend_id': 'ARKADAŞ ÇAĞIR (ID)',
     'invite_to_slot': '+ ID ile Arkadaşını Bu Slota Çağır',
     'start_team_mining': 'KİŞİLİK EKİP KAZISINI BAŞLAT',
+
+    // Profil & Başarımlar
+    'miner_profile': 'MADENCİ PROFİLİ',
+    'player_tag': 'Oyuncu ID',
+    'trophies': 'Kupa',
+    'total_broken_tiles': 'Toplam Kırılan Kutu',
+    'total_bosses_defeated': 'Yenilen Boss Sayısı',
+    'total_monsters_killed': 'Yok Edilen Canavarlar',
+    'badge_showcase': 'ROZET VİTRİNİ (MAX 3)',
+    'achievements': 'BAŞARIMLAR & ÖDÜLLER',
+    'claim_reward': 'ÖDÜLÜ AL',
+    'claimed': 'ALINDI ✅',
+
+    // Görevler
+    'weekly_quests_title': 'HAFTALIK KADEMELİ GÖREVLER',
+    'quests_reset_time': 'Görevler Her Pazartesi Yenilenir',
+    'collect_reward': 'Ödülü Topla',
+    'completed': 'TAMAMLANDI',
+
+    // Mağaza & Silahlar
+    'ammo_pack': 'Mermi Paketi',
+    'buy': 'SATIN AL',
+    'equipped': 'KUŞANILDI',
+    'equip': 'KUŞAN',
+    'upgrade': 'GÜÇLENDİR',
+    'max_level': 'MAKSİMUM SEVİYE',
   };
 
   static const Map<String, String> _en = {
@@ -187,5 +213,31 @@ class AppStrings {
     'invite_friend_id': 'INVITE FRIEND (ID)',
     'invite_to_slot': '+ Invite Friend to this Slot by ID',
     'start_team_mining': 'START TEAM MINING FOR',
+
+    // Profile & Achievements
+    'miner_profile': 'MINER PROFILE',
+    'player_tag': 'Player Tag',
+    'trophies': 'Trophies',
+    'total_broken_tiles': 'Total Broken Blocks',
+    'total_bosses_defeated': 'Bosses Defeated',
+    'total_monsters_killed': 'Monsters Destroyed',
+    'badge_showcase': 'BADGE SHOWCASE (MAX 3)',
+    'achievements': 'ACHIEVEMENTS & REWARDS',
+    'claim_reward': 'CLAIM REWARD',
+    'claimed': 'CLAIMED ✅',
+
+    // Quests
+    'weekly_quests_title': 'WEEKLY TIERED QUESTS',
+    'quests_reset_time': 'Quests Refresh Every Monday',
+    'collect_reward': 'Collect Reward',
+    'completed': 'COMPLETED',
+
+    // Shop & Weapons
+    'ammo_pack': 'Ammo Pack',
+    'buy': 'BUY',
+    'equipped': 'EQUIPPED',
+    'equip': 'EQUIP',
+    'upgrade': 'UPGRADE',
+    'max_level': 'MAX LEVEL',
   };
 }

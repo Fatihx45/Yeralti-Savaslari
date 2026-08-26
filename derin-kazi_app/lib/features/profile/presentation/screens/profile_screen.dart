@@ -5,6 +5,7 @@ import '../../../../core/theme/app_colors.dart';
 import '../../../mining/application/game_notifier.dart';
 import '../../../mining/domain/models/player_state_model.dart';
 import '../../../cosmetics/presentation/screens/cosmetics_screen.dart';
+import '../../../../core/localization/app_strings.dart';
 
 class BadgeItem {
   final String id;
@@ -422,6 +423,9 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
   // 🪪 MADENCİ KİMLİK KARTI & VİTRİN BİLEŞENİ
   // ==========================================
   Widget _buildMinerIdCard(BuildContext context, PlayerStateModel player, List<String> showcaseIds) {
+    final lang = player.languageCode;
+    final isEn = lang == 'en';
+
     return Container(
       padding: const EdgeInsets.all(14),
       decoration: BoxDecoration(
@@ -576,18 +580,18 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              const Row(
+              Row(
                 children: [
-                  Icon(Icons.stars, color: AppColors.goldText, size: 16),
-                  SizedBox(width: 6),
+                  const Icon(Icons.stars, color: AppColors.goldText, size: 16),
+                  const SizedBox(width: 6),
                   Text(
-                    'VİTRİN ROZETLERİ (MAX 3):',
-                    style: TextStyle(color: Colors.white70, fontSize: 11, fontWeight: FontWeight.bold),
+                    AppStrings.tr('badge_showcase', lang: lang),
+                    style: const TextStyle(color: Colors.white70, fontSize: 11, fontWeight: FontWeight.bold),
                   ),
                 ],
               ),
               Text(
-                '${showcaseIds.length} / 3 Kuşanıldı',
+                '${showcaseIds.length} / 3 ${isEn ? 'Equipped' : 'Kuşanıldı'}',
                 style: const TextStyle(color: AppColors.goldText, fontSize: 10.5, fontWeight: FontWeight.bold),
               ),
             ],
@@ -627,10 +631,10 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                             ),
                           ],
                         )
-                      : const Center(
+                      : Center(
                           child: Text(
-                            '+ Boş Yuva',
-                            style: TextStyle(color: Colors.white30, fontSize: 10, fontStyle: FontStyle.italic),
+                            isEn ? '+ Empty Slot' : '+ Boş Yuva',
+                            style: const TextStyle(color: Colors.white30, fontSize: 10, fontStyle: FontStyle.italic),
                           ),
                         ),
                 ),
@@ -650,6 +654,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
     for (final b in _allBadges) {
       if (player.achievementIds.contains(b.id)) totalClaimed++;
     }
+    final isEn = player.languageCode == 'en';
 
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
@@ -661,13 +666,13 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceAround,
         children: [
-          _buildMiniStat('KAZILAN KUTU', '${player.tilesBrokenTotal}', Icons.grid_view, const Color(0xFF4FC3F7)),
+          _buildMiniStat(isEn ? 'BLOCKS DUG' : 'KAZILAN KUTU', '${player.tilesBrokenTotal}', Icons.grid_view, const Color(0xFF4FC3F7)),
           _buildStatDivider(),
-          _buildMiniStat('BÖLÜM', '${player.unlockedStage}/500', Icons.terrain, AppColors.neonGreen),
+          _buildMiniStat(isEn ? 'STAGE' : 'BÖLÜM', '${player.unlockedStage}/500', Icons.terrain, AppColors.neonGreen),
           _buildStatDivider(),
-          _buildMiniStat('BOSS ZAFERİ', '${player.bossesDefeatedTotal}', Icons.military_tech, const Color(0xFFFF5252)),
+          _buildMiniStat(isEn ? 'BOSS WINS' : 'BOSS ZAFERİ', '${player.bossesDefeatedTotal}', Icons.military_tech, const Color(0xFFFF5252)),
           _buildStatDivider(),
-          _buildMiniStat('ROZETLER', '$totalClaimed/${_allBadges.length}', Icons.emoji_events, AppColors.goldText),
+          _buildMiniStat(isEn ? 'BADGES' : 'ROZETLER', '$totalClaimed/${_allBadges.length}', Icons.emoji_events, AppColors.goldText),
         ],
       ),
     );
