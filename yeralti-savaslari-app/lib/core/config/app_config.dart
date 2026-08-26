@@ -1,6 +1,6 @@
 class AppConfig {
   // cPanel API Base URL (Sunucunuza yüklediğinizde bu adresi güncelleyin)
-  static const String cpanelBaseUrl = 'https://siteadresiniz.com/derin_kazi_api/api';
+  static const String cpanelBaseUrl = 'https://api.yeraltisavaslari.olmeztech.com.tr/api';
 
   // İstek zaman aşımı süresi
   static const Duration apiTimeout = Duration(seconds: 8);

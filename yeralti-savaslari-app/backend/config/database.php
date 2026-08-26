@@ -16,14 +16,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
 }
 
 class Database {
-    // ⬇️ cPanel Veritabanı Bilgilerinizi Buraya Giriniz ⬇️
-    private string $host = "localhost";
-    private string $db_name = "derin_kazi_db";   // Örn: cpaneluser_derinkazi
-    private string $username = "root";           // Örn: cpaneluser_dbuser
-    private string $password = "";               // Örn: GucluSifre123!
-    public ?PDO $conn = null;
+    // ⬇️ cPanel Veritabanı Bilgileri ⬇️
+    private $host = "localhost";
+    private $db_name = "olmeztec_yeralti-savaslari";
+    private $username = "olmeztec_yeralti-savaslari";
+    private $password = "Fatih369488";
+    public $conn = null;
 
-    public function getConnection(): ?PDO {
+    public function getConnection() {
         $this->conn = null;
         try {
             $dsn = "mysql:host=" . $this->host . ";dbname=" . $this->db_name . ";charset=utf8mb4";
@@ -40,14 +40,14 @@ class Database {
         return $this->conn;
     }
 
-    public static function getJsonInput(): array {
+    public static function getJsonInput() {
         $raw = file_get_contents("php://input");
         if (empty($raw)) return [];
         $data = json_decode($raw, true);
         return is_array($data) ? $data : [];
     }
 
-    public static function sendResponse(bool $success, string $message, mixed $data = null, int $statusCode = 200): void {
+    public static function sendResponse($success, $message, $data = null, $statusCode = 200) {
         http_response_code($statusCode);
         echo json_encode([
             "success" => $success,
