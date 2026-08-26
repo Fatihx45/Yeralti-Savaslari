@@ -1,8 +1,8 @@
-﻿import 'package:flutter/material.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'core/theme/app_theme.dart';
-import 'features/multiplayer/presentation/screens/main_menu_screen.dart';
+import 'features/splash/presentation/screens/splash_screen.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -32,7 +32,7 @@ class DerinKaziApp extends StatelessWidget {
       title: 'Yeraltı Savaşları',
       debugShowCheckedModeBanner: false,
       theme: AppTheme.darkTheme,
-      home: const MainMenuScreen(),
+      home: const SplashScreen(),
     );
   }
 }

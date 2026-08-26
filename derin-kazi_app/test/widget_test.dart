@@ -1,16 +1,27 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:derin_kazi/main.dart';
+import 'package:derin_kazi/core/theme/app_theme.dart';
+import 'package:derin_kazi/core/audio/audio_service.dart';
+import 'package:derin_kazi/features/multiplayer/presentation/screens/main_menu_screen.dart';
 
 void main() {
+  TestWidgetsFlutterBinding.ensureInitialized();
+
+  setUp(() {
+    AudioService.isTestMode = true;
+  });
+
   testWidgets('Derin Kazı App render ve Mağaza buton testi', (WidgetTester tester) async {
     final container = ProviderContainer();
 
     await tester.pumpWidget(
       UncontrolledProviderScope(
         container: container,
-        child: const DerinKaziApp(),
+        child: MaterialApp(
+          theme: AppTheme.darkTheme,
+          home: const MainMenuScreen(),
+        ),
       ),
     );
 
@@ -40,11 +51,11 @@ void main() {
     await tester.tap(find.text('MAĞAZA'));
     await tester.pumpAndSettle();
 
-    // Dialog açıldı mı?
     expect(find.text('MAĞAZA & YÜKSELTMELER'), findsOneWidget);
 
-    // Temizlik
+    // Ekranı temizle ve zamanlayıcıları boşalt
+    await tester.pumpWidget(const SizedBox.shrink());
+    await tester.pump(const Duration(seconds: 10));
     container.dispose();
   });
 }
-
