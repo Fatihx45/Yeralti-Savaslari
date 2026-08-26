@@ -12,6 +12,7 @@ import '../../application/lobby_notifier.dart';
 import '../../../cosmetics/presentation/screens/cosmetics_screen.dart';
 import '../../../quests/presentation/widgets/quest_dialog.dart';
 import '../../../ai_team/presentation/screens/team_lobby_screen.dart';
+import '../../../friends/presentation/screens/friends_screen.dart';
 
 class MainMenuScreen extends ConsumerStatefulWidget {
   const MainMenuScreen({super.key});
@@ -36,6 +37,88 @@ class _MainMenuScreenState extends ConsumerState<MainMenuScreen> {
   void dispose() {
     _nameController.dispose();
     super.dispose();
+  }
+
+  void _showComingSoonDialog(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        backgroundColor: const Color(0xFF140D1A),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(20),
+          side: const BorderSide(color: AppColors.lavaOrange, width: 2),
+        ),
+        title: const Row(
+          children: [
+            Text('🔒', style: TextStyle(fontSize: 26)),
+            SizedBox(width: 10),
+            Expanded(
+              child: Text(
+                'ÇOK OYUNCULU & ARKADAŞLAR',
+                style: TextStyle(
+                  color: Colors.white,
+                  fontSize: 15,
+                  fontWeight: FontWeight.bold,
+                  letterSpacing: 0.8,
+                ),
+              ),
+            ),
+          ],
+        ),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+              decoration: BoxDecoration(
+                color: AppColors.lavaOrange.withValues(alpha: 0.2),
+                borderRadius: BorderRadius.circular(8),
+                border: Border.all(color: AppColors.lavaOrange),
+              ),
+              child: const Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Icon(Icons.hourglass_top_rounded, color: AppColors.lavaOrange, size: 16),
+                  SizedBox(width: 6),
+                  Text(
+                    'YAKIN GELECEKTE (v1.1 GÜNCELLEMESİ)',
+                    style: TextStyle(color: AppColors.lavaOrange, fontWeight: FontWeight.bold, fontSize: 11),
+                  ),
+                ],
+              ),
+            ),
+            const SizedBox(height: 12),
+            const Text(
+              'Gerçek zamanlı PvP Battle Royale, canlı 2-10 madenci düelloları ve oda kurup arkadaş çağırma sistemi v1.1 büyük güncellemesinde aktif edilecektir.\n\nŞimdilik Arkadaş Merkezinizi ve Oyuncu ID Etiketinizi önizleyebilirsiniz.',
+              style: TextStyle(color: Colors.white70, fontSize: 12.5, height: 1.4),
+            ),
+          ],
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(ctx),
+            child: const Text('KAPAT', style: TextStyle(color: Colors.white60)),
+          ),
+          ElevatedButton.icon(
+            style: ElevatedButton.styleFrom(
+              backgroundColor: AppColors.lavaOrange,
+              foregroundColor: Colors.white,
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+            ),
+            icon: const Icon(Icons.people, size: 18),
+            label: const Text('ARKADAŞ LİSTESİ (ÖNİZLE)', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 11)),
+            onPressed: () {
+              Navigator.pop(ctx);
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (c) => const FriendsScreen()),
+              );
+            },
+          ),
+        ],
+      ),
+    );
   }
 
   @override
@@ -73,7 +156,7 @@ class _MainMenuScreenState extends ConsumerState<MainMenuScreen> {
                 // 2. ANA PANEL (Bazalt Taşı & Kor Ateşi Çerçeveli)
                 Center(
                   child: Container(
-                    constraints: const BoxConstraints(maxWidth: 820, maxHeight: 420),
+                    constraints: const BoxConstraints(maxWidth: 830, maxHeight: 420),
                     margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                     padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
                     decoration: BoxDecoration(
@@ -328,7 +411,7 @@ class _MainMenuScreenState extends ConsumerState<MainMenuScreen> {
                 ),
                 const SizedBox(height: 8),
 
-                // Kostümler & Profil Butonları
+                // Kostümler & Sosyal Butonları
                 Row(
                   children: [
                     Expanded(
@@ -359,12 +442,12 @@ class _MainMenuScreenState extends ConsumerState<MainMenuScreen> {
                           padding: const EdgeInsets.symmetric(vertical: 8),
                           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
                         ),
-                        icon: const Icon(Icons.account_circle, size: 16, color: AppColors.cyanText),
-                        label: const Text('PROFİL & ROZET', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 10)),
+                        icon: const Icon(Icons.people, size: 16, color: AppColors.cyanText),
+                        label: const Text('ARKADAŞLAR', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 10)),
                         onPressed: () {
                           Navigator.push(
                             context,
-                            MaterialPageRoute(builder: (ctx) => const ProfileScreen()),
+                            MaterialPageRoute(builder: (ctx) => const FriendsScreen()),
                           );
                         },
                       ),
@@ -384,7 +467,7 @@ class _MainMenuScreenState extends ConsumerState<MainMenuScreen> {
           margin: const EdgeInsets.symmetric(horizontal: 4),
         ),
 
-        // Sağ Kolon: 5 Oyun Modu Butonları (Kaydırılabilir & Taşmasız)
+        // Sağ Kolon: 6 Oyun Modu Butonları (Kaydırılabilir & Taşmasız)
         Expanded(
           flex: 5,
           child: Padding(
@@ -410,7 +493,7 @@ class _MainMenuScreenState extends ConsumerState<MainMenuScreen> {
                       );
                     },
                   ),
-                  const SizedBox(height: 6),
+                  const SizedBox(height: 5),
 
                   // 2. EKİP KAZISI (1-10 KİŞİ AI TAKIMI)
                   _buildMenuButton(
@@ -427,9 +510,22 @@ class _MainMenuScreenState extends ConsumerState<MainMenuScreen> {
                       );
                     },
                   ),
-                  const SizedBox(height: 6),
+                  const SizedBox(height: 5),
 
-                  // 3. GÖREVLER & ÖDÜLLER
+                  // 3. 🔒 ÇOK OYUNCULU & ARKADAŞLAR (YAKIN GELECEKTE) - PASİF/BİLGİLENDİRİCİ
+                  _buildMenuButton(
+                    title: '🔒 ÇOK OYUNCULU (YAKIN GELECEKTE)',
+                    subtitle: 'v1.1 Büyük Güncellemesi • 2-10 Battle Royale PvP',
+                    icon: Icons.lock_clock,
+                    buttonColor: const Color(0xFF1E1A24),
+                    borderColor: const Color(0xFF5A4838),
+                    textColor: AppColors.goldText.withValues(alpha: 0.7),
+                    isLocked: true,
+                    onTap: () => _showComingSoonDialog(context),
+                  ),
+                  const SizedBox(height: 5),
+
+                  // 4. GÖREVLER & ÖDÜLLER
                   _buildMenuButton(
                     title: '📋 GÖREVLER & ÖDÜLLER',
                     subtitle: 'Haftalık Görevler • Elmas & Altın Kazan',
@@ -439,9 +535,9 @@ class _MainMenuScreenState extends ConsumerState<MainMenuScreen> {
                     textColor: AppColors.goldText,
                     onTap: () => QuestDialog.showQuestDialog(context),
                   ),
-                  const SizedBox(height: 6),
+                  const SizedBox(height: 5),
 
-                  // 4. SİLAH VE MERMİ MAĞAZASI
+                  // 5. SİLAH VE MERMİ MAĞAZASI
                   _buildMenuButton(
                     title: '🛒 SİLAH & MERMİ MAĞAZASI',
                     subtitle: 'Tabanca, Tüfek, Pompalı & Cephane Al',
@@ -456,9 +552,9 @@ class _MainMenuScreenState extends ConsumerState<MainMenuScreen> {
                       );
                     },
                   ),
-                  const SizedBox(height: 6),
+                  const SizedBox(height: 5),
 
-                  // 5. ATÖLYE VE GÜÇLENDİRME
+                  // 6. ATÖLYE VE GÜÇLENDİRME
                   _buildMenuButton(
                     title: '⚡ ATÖLYE & GÜÇLENDİRME',
                     subtitle: 'Kazma, Çekiç & Maden Güçlendirmeleri',
@@ -543,7 +639,7 @@ class _MainMenuScreenState extends ConsumerState<MainMenuScreen> {
               );
             },
           ),
-          const SizedBox(height: 8),
+          const SizedBox(height: 6),
 
           // 2. EKİP KAZISI (1-10 KİŞİ AI TAKIMI)
           _buildMenuButton(
@@ -560,9 +656,22 @@ class _MainMenuScreenState extends ConsumerState<MainMenuScreen> {
               );
             },
           ),
-          const SizedBox(height: 8),
+          const SizedBox(height: 6),
 
-          // 3. GÖREVLER & ÖDÜLLER
+          // 3. 🔒 ÇOK OYUNCULU & ARKADAŞLAR (YAKIN GELECEKTE)
+          _buildMenuButton(
+            title: '🔒 ÇOK OYUNCULU (YAKIN GELECEKTE)',
+            subtitle: 'v1.1 Büyük Güncellemesi • 2-10 Battle Royale PvP',
+            icon: Icons.lock_clock,
+            buttonColor: const Color(0xFF1E1A24),
+            borderColor: const Color(0xFF5A4838),
+            textColor: AppColors.goldText.withValues(alpha: 0.7),
+            isLocked: true,
+            onTap: () => _showComingSoonDialog(context),
+          ),
+          const SizedBox(height: 6),
+
+          // 4. GÖREVLER & ÖDÜLLER
           _buildMenuButton(
             title: '📋 GÖREVLER & ÖDÜLLER',
             subtitle: 'Haftalık Görevler • Elmas & Altın Kazan',
@@ -572,9 +681,9 @@ class _MainMenuScreenState extends ConsumerState<MainMenuScreen> {
             textColor: AppColors.goldText,
             onTap: () => QuestDialog.showQuestDialog(context),
           ),
-          const SizedBox(height: 8),
+          const SizedBox(height: 6),
 
-          // 4. SİLAH VE MERMİ MAĞAZASI
+          // 5. SİLAH VE MERMİ MAĞAZASI
           _buildMenuButton(
             title: '🛒 SİLAH & MERMİ MAĞAZASI',
             subtitle: 'Tabanca, Tüfek, Pompalı & Cephane Al',
@@ -586,9 +695,9 @@ class _MainMenuScreenState extends ConsumerState<MainMenuScreen> {
               Navigator.push(context, MaterialPageRoute(builder: (ctx) => const WeaponShopScreen()));
             },
           ),
-          const SizedBox(height: 8),
+          const SizedBox(height: 6),
 
-          // 5. ATÖLYE VE GÜÇLENDİRME
+          // 6. ATÖLYE VE GÜÇLENDİRME
           _buildMenuButton(
             title: '⚡ ATÖLYE & GÜÇLENDİRME',
             subtitle: 'Kazma, Çekiç & Maden Güçlendirmeleri',
@@ -613,6 +722,7 @@ class _MainMenuScreenState extends ConsumerState<MainMenuScreen> {
     required Color borderColor,
     required Color textColor,
     bool isPrimary = false,
+    bool isLocked = false,
     required VoidCallback onTap,
   }) {
     return Material(
@@ -622,15 +732,15 @@ class _MainMenuScreenState extends ConsumerState<MainMenuScreen> {
         borderRadius: BorderRadius.circular(12),
         child: Container(
           width: double.infinity,
-          padding: EdgeInsets.symmetric(horizontal: 12, vertical: isPrimary ? 8 : 6.5),
+          padding: EdgeInsets.symmetric(horizontal: 12, vertical: isPrimary ? 7.5 : (isLocked ? 5.5 : 6.0)),
           decoration: BoxDecoration(
             color: buttonColor,
             borderRadius: BorderRadius.circular(12),
-            border: Border.all(color: borderColor, width: isPrimary ? 1.8 : 1.3),
+            border: Border.all(color: borderColor, width: isPrimary ? 1.8 : 1.2),
             boxShadow: [
               BoxShadow(
-                color: borderColor.withValues(alpha: isPrimary ? 0.35 : 0.18),
-                blurRadius: isPrimary ? 12 : 8,
+                color: borderColor.withValues(alpha: isPrimary ? 0.35 : (isLocked ? 0.08 : 0.18)),
+                blurRadius: isPrimary ? 12 : 6,
                 spreadRadius: isPrimary ? 1 : 0,
               ),
             ],
@@ -638,14 +748,14 @@ class _MainMenuScreenState extends ConsumerState<MainMenuScreen> {
           child: Row(
             children: [
               Container(
-                padding: const EdgeInsets.all(8),
+                padding: const EdgeInsets.all(7),
                 decoration: BoxDecoration(
                   color: Colors.black45,
                   borderRadius: BorderRadius.circular(8),
                 ),
-                child: Icon(icon, color: textColor, size: isPrimary ? 20 : 18),
+                child: Icon(icon, color: textColor, size: isPrimary ? 19 : 17),
               ),
-              const SizedBox(width: 10),
+              const SizedBox(width: 9),
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -653,18 +763,18 @@ class _MainMenuScreenState extends ConsumerState<MainMenuScreen> {
                     Text(
                       title,
                       style: TextStyle(
-                        color: Colors.white,
-                        fontSize: isPrimary ? 13 : 12,
+                        color: isLocked ? Colors.white70 : Colors.white,
+                        fontSize: isPrimary ? 12.5 : 11.5,
                         fontWeight: FontWeight.bold,
-                        letterSpacing: 0.8,
+                        letterSpacing: 0.6,
                       ),
                     ),
-                    const SizedBox(height: 2),
+                    const SizedBox(height: 1),
                     Text(
                       subtitle,
                       style: TextStyle(
-                        color: textColor.withValues(alpha: 0.9),
-                        fontSize: 9.5,
+                        color: textColor.withValues(alpha: isLocked ? 0.7 : 0.9),
+                        fontSize: 9.0,
                         fontWeight: FontWeight.w500,
                       ),
                       overflow: TextOverflow.ellipsis,
@@ -672,7 +782,11 @@ class _MainMenuScreenState extends ConsumerState<MainMenuScreen> {
                   ],
                 ),
               ),
-              Icon(Icons.arrow_forward_ios, color: textColor.withValues(alpha: 0.7), size: 14),
+              Icon(
+                isLocked ? Icons.lock_outline : Icons.arrow_forward_ios,
+                color: textColor.withValues(alpha: 0.7),
+                size: 13,
+              ),
             ],
           ),
         ),

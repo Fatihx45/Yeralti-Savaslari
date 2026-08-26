@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../mining/application/game_notifier.dart';
@@ -523,9 +524,43 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                       ],
                     ),
                     const SizedBox(height: 4),
-                    Text(
-                      _getRankTitle(player.rank),
-                      style: const TextStyle(color: AppColors.goldText, fontSize: 12, fontWeight: FontWeight.w600),
+                    Row(
+                      children: [
+                        Text(
+                          _getRankTitle(player.rank),
+                          style: const TextStyle(color: AppColors.goldText, fontSize: 12, fontWeight: FontWeight.w600),
+                        ),
+                        const SizedBox(width: 8),
+                        // #TAG ve Kopyala Çipi
+                        InkWell(
+                          onTap: () {
+                            Clipboard.setData(ClipboardData(text: player.playerTag));
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(content: Text('Oyuncu etiketiniz panoya kopyalandı!')),
+                            );
+                          },
+                          borderRadius: BorderRadius.circular(6),
+                          child: Container(
+                            padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                            decoration: BoxDecoration(
+                              color: AppColors.panelBox,
+                              borderRadius: BorderRadius.circular(6),
+                              border: Border.all(color: AppColors.goldText.withValues(alpha: 0.6), width: 0.8),
+                            ),
+                            child: Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Text(
+                                  player.playerTag,
+                                  style: const TextStyle(color: AppColors.goldText, fontSize: 10, fontWeight: FontWeight.bold),
+                                ),
+                                const SizedBox(width: 3),
+                                const Icon(Icons.copy, size: 11, color: Colors.white70),
+                              ],
+                            ),
+                          ),
+                        ),
+                      ],
                     ),
                   ],
                 ),

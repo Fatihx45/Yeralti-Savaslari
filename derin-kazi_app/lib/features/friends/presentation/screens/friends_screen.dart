@@ -180,7 +180,7 @@ class _FriendsScreenState extends ConsumerState<FriendsScreen> with SingleTicker
     final notifier = ref.read(gameNotifierProvider.notifier);
 
     return Scaffold(
-      backgroundColor: const Color(0xFF090918),
+      backgroundColor: AppColors.background,
       body: SafeArea(
         child: Column(
           children: [
@@ -188,8 +188,8 @@ class _FriendsScreenState extends ConsumerState<FriendsScreen> with SingleTicker
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
               decoration: const BoxDecoration(
-                color: Color(0xFF121232),
-                border: Border(bottom: BorderSide(color: Color(0xFF2E2E68), width: 1.5)),
+                color: AppColors.hudPanel,
+                border: Border(bottom: BorderSide(color: Color(0xFF4A2518), width: 1.5)),
               ),
               child: Row(
                 children: [
@@ -198,7 +198,7 @@ class _FriendsScreenState extends ConsumerState<FriendsScreen> with SingleTicker
                     onPressed: () => Navigator.pop(context),
                   ),
                   const SizedBox(width: 6),
-                  const Icon(Icons.people_alt, color: AppColors.goldText, size: 22),
+                  const Icon(Icons.people_alt, color: AppColors.lavaOrange, size: 22),
                   const SizedBox(width: 8),
                   const Text(
                     'SOSYAL & ARKADAŞLAR',
@@ -214,7 +214,7 @@ class _FriendsScreenState extends ConsumerState<FriendsScreen> with SingleTicker
                   Container(
                     padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                     decoration: BoxDecoration(
-                      color: const Color(0xFF1C1C44),
+                      color: AppColors.panelBox,
                       borderRadius: BorderRadius.circular(8),
                       border: Border.all(color: AppColors.goldText.withValues(alpha: 0.6)),
                     ),
@@ -243,12 +243,12 @@ class _FriendsScreenState extends ConsumerState<FriendsScreen> with SingleTicker
 
             // 2. Sekmeler (Tabs)
             Container(
-              color: const Color(0xFF0F0F28),
+              color: AppColors.hudPanel,
               child: TabBar(
                 controller: _tabController,
-                indicatorColor: AppColors.goldText,
+                indicatorColor: AppColors.lavaOrange,
                 indicatorWeight: 3,
-                labelColor: AppColors.goldText,
+                labelColor: AppColors.lavaOrange,
                 unselectedLabelColor: Colors.white60,
                 labelStyle: const TextStyle(fontSize: 11, fontWeight: FontWeight.bold),
                 tabs: [
