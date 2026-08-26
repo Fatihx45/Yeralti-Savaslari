@@ -1,4 +1,5 @@
 import 'dart:math';
+import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:derin_kazi/features/ai_team/domain/models/ai_miner_model.dart';
 import 'package:derin_kazi/features/mining/domain/models/grid_model.dart';
@@ -63,6 +64,31 @@ class AiTeamNotifier extends StateNotifier<AiTeamState> {
       teamBonusPercentage: bonus,
       tileDamageLog: {},
       mvpMinerId: null,
+    );
+  }
+
+  // Arkadaşı ID/Etiket ile Takıma Çağır
+  void inviteFriendToTeam(String friendName, String avatarEmoji, String playerTag) {
+    final newFriendMiner = AiMinerModel(
+      id: 'friend_${DateTime.now().millisecondsSinceEpoch}',
+      name: '$friendName ($playerTag)',
+      color: const Color(0xFF00E5FF),
+      avatarEmoji: avatarEmoji,
+      specialty: AiMinerSpecialty.speedDigger,
+      digPower: 3,
+      position: Position(0, 0),
+    );
+
+    final currentMiners = List<AiMinerModel>.from(state.activeMiners);
+    // Eğer kapasite doluysa son botu arkadaşla değiştir, değilse ekle
+    if (currentMiners.isNotEmpty && currentMiners.length >= state.teamSize - 1) {
+      currentMiners.removeLast();
+    }
+    currentMiners.insert(0, newFriendMiner);
+
+    state = state.copyWith(
+      activeMiners: currentMiners,
+      teamSize: max(state.teamSize, currentMiners.length + 1),
     );
   }
 

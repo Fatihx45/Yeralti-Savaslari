@@ -6,7 +6,7 @@ import '../../../mining/presentation/screens/mining_screen.dart';
 import '../../../mining/application/game_notifier.dart';
 import '../../application/lobby_notifier.dart';
 import '../../domain/models/remote_player_model.dart';
-import '../../../friends/domain/models/friend_model.dart';
+import '../widgets/friend_invite_dialog.dart';
 
 class LobbyScreen extends ConsumerWidget {
   const LobbyScreen({super.key});
@@ -118,7 +118,7 @@ class LobbyScreen extends ConsumerWidget {
                 ),
                 const SizedBox(height: 14),
 
-                // 👥 Arkadaş Davet Et Butonu
+                // 👥 Arkadaş Davet Et & ID ile Çağır Butonu
                 SizedBox(
                   width: double.infinity,
                   child: ElevatedButton.icon(
@@ -129,61 +129,9 @@ class LobbyScreen extends ConsumerWidget {
                       padding: const EdgeInsets.symmetric(vertical: 10),
                       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
                     ),
-                    onPressed: () {
-                      final friends = ref.read(gameNotifierProvider).player.friends;
-                      showDialog(
-                        context: context,
-                        builder: (ctx) => AlertDialog(
-                          backgroundColor: const Color(0xFF101030),
-                          title: const Row(
-                            children: [
-                              Icon(Icons.people, color: Color(0xFF00E5FF), size: 20),
-                              SizedBox(width: 8),
-                              Text('Arkadaşlarını Odaya Çağır', style: TextStyle(color: Colors.white, fontSize: 15, fontWeight: FontWeight.bold)),
-                            ],
-                          ),
-                          content: SizedBox(
-                            width: double.maxFinite,
-                            child: friends.isEmpty
-                                ? const Text('Henüz ekli arkadaşınız yok.', style: TextStyle(color: Colors.white60))
-                                : ListView.builder(
-                                    shrinkWrap: true,
-                                    itemCount: friends.length,
-                                    itemBuilder: (c, i) {
-                                      final f = friends[i];
-                                      return ListTile(
-                                        contentPadding: EdgeInsets.zero,
-                                        title: Text(f.name, style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 13)),
-                                        subtitle: Text(f.status.displayName, style: const TextStyle(color: Colors.white54, fontSize: 11)),
-                                        trailing: ElevatedButton(
-                                          style: ElevatedButton.styleFrom(
-                                            backgroundColor: AppColors.goldText,
-                                            foregroundColor: Colors.black,
-                                            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-                                          ),
-                                          onPressed: () {
-                                            Navigator.pop(ctx);
-                                            ScaffoldMessenger.of(context).showSnackBar(
-                                              SnackBar(content: Text('📨 ${f.name}\'a oda daveti gönderildi!')),
-                                            );
-                                          },
-                                          child: const Text('DAVET', style: TextStyle(fontSize: 10, fontWeight: FontWeight.bold)),
-                                        ),
-                                      );
-                                    },
-                                  ),
-                          ),
-                          actions: [
-                            TextButton(
-                              onPressed: () => Navigator.pop(ctx),
-                              child: const Text('Kapat', style: TextStyle(color: Colors.white60)),
-                            ),
-                          ],
-                        ),
-                      );
-                    },
-                    icon: const Icon(Icons.person_add_alt_1, size: 18),
-                    label: const Text('👥 ARKADAŞLARINI ODAYA ÇAĞIR', style: TextStyle(fontSize: 11.5, fontWeight: FontWeight.bold)),
+                    onPressed: () => FriendInviteDialog.show(context),
+                    icon: const Icon(Icons.person_add_alt_1, size: 18, color: Color(0xFF00E5FF)),
+                    label: const Text('ARKADAŞ ÇAĞIR / ID İLE EKLE', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 11, letterSpacing: 0.5)),
                   ),
                 ),
                 const SizedBox(height: 18),
