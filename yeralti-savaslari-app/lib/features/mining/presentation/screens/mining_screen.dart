@@ -20,6 +20,8 @@ import 'package:derin_kazi/features/battle_royale/presentation/widgets/countdown
 import 'package:derin_kazi/features/battle_royale/presentation/widgets/battle_result_dialog.dart';
 import 'package:derin_kazi/features/multiplayer/presentation/widgets/reaction_bar.dart';
 import 'package:derin_kazi/features/ai_team/application/ai_team_engine.dart';
+import '../../../../core/ads/ad_service.dart';
+import '../../../../core/audio/audio_service.dart';
 
 class MiningScreen extends ConsumerStatefulWidget {
   const MiningScreen({super.key});
@@ -34,6 +36,9 @@ class _MiningScreenState extends ConsumerState<MiningScreen> {
   @override
   void initState() {
     super.initState();
+    // Mağara Arka Plan Müziğini Başlat
+    AudioService().startBgm();
+
     // Sistem Madenci Botları Kazı Döngüsü (Canlı Yapay Zeka Adımları)
     _botLoopTimer = Timer.periodic(const Duration(milliseconds: 750), (timer) {
       if (!mounted) return;
@@ -49,6 +54,7 @@ class _MiningScreenState extends ConsumerState<MiningScreen> {
   @override
   void dispose() {
     _botLoopTimer?.cancel();
+    AudioService().stopBgm();
     super.dispose();
   }
 
@@ -363,7 +369,11 @@ class _MiningScreenState extends ConsumerState<MiningScreen> {
                         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
                       ),
                       onPressed: () {
-                        ref.read(gameNotifierProvider.notifier).advanceStageConfirmed();
+                        AdService.instance.showInterstitialAd(
+                          onDismissed: () {
+                            ref.read(gameNotifierProvider.notifier).advanceStageConfirmed();
+                          },
+                        );
                       },
                       child: Text(isEn ? 'PROCEED 🚀' : 'DEVAM ET 🚀', style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w900)),
                     ),

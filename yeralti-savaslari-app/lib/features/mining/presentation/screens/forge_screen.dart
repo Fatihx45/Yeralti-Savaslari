@@ -38,21 +38,22 @@ class _ForgeScreenState extends ConsumerState<ForgeScreen>
       appBar: AppBar(
         backgroundColor: AppColors.hudPanel,
         elevation: 0,
+        toolbarHeight: 44,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back_ios_new, color: Colors.white),
+          icon: const Icon(Icons.arrow_back_ios_new, color: Colors.white, size: 18),
           onPressed: () => Navigator.pop(context),
         ),
         title: const Row(
           children: [
-            Text('⚡', style: TextStyle(fontSize: 22)),
-            SizedBox(width: 8),
+            Text('⚡', style: TextStyle(fontSize: 18)),
+            SizedBox(width: 6),
             Text(
               'MADENCİ ATÖLYESİ & GÜÇLENDİRME',
               style: TextStyle(
                 color: Colors.white,
                 fontWeight: FontWeight.bold,
-                fontSize: 15,
-                letterSpacing: 1.1,
+                fontSize: 13.5,
+                letterSpacing: 0.8,
               ),
             ),
           ],
@@ -60,13 +61,13 @@ class _ForgeScreenState extends ConsumerState<ForgeScreen>
         bottom: TabBar(
           controller: _tabController,
           indicatorColor: AppColors.lavaOrange,
-          indicatorWeight: 3,
+          indicatorWeight: 2.5,
           labelColor: AppColors.lavaOrange,
           unselectedLabelColor: Colors.white60,
-          labelStyle: const TextStyle(fontWeight: FontWeight.bold, fontSize: 13),
+          labelStyle: const TextStyle(fontWeight: FontWeight.bold, fontSize: 11.5),
           tabs: const [
-            Tab(icon: Text('🔫'), text: 'SİLAH GÜÇLENDİRME'),
-            Tab(icon: Text('⛏️'), text: 'ALET DÖVME'),
+            Tab(height: 38, icon: Text('🔫', style: TextStyle(fontSize: 13)), text: 'SİLAH GÜÇLENDİRME'),
+            Tab(height: 38, icon: Text('⛏️', style: TextStyle(fontSize: 13)), text: 'ALET DÖVME'),
           ],
         ),
       ),
@@ -74,22 +75,22 @@ class _ForgeScreenState extends ConsumerState<ForgeScreen>
         children: [
           // Üst Maden Stoğu Paneli
           Container(
-            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
             color: AppColors.hudPanel,
             child: SingleChildScrollView(
               scrollDirection: Axis.horizontal,
               child: Row(
                 children: [
                   _buildOreChip('🟡', '${player.gold}', 'Altın', Colors.amber),
-                  const SizedBox(width: 6),
+                  const SizedBox(width: 5),
                   _buildOreChip('💎', '${player.gems}', 'Elmas', Colors.cyanAccent),
-                  const SizedBox(width: 6),
+                  const SizedBox(width: 5),
                   _buildOreChip('🟤', '${player.copper}', 'Bakır', Colors.orangeAccent),
-                  const SizedBox(width: 6),
+                  const SizedBox(width: 5),
                   _buildOreChip('⚪', '${player.iron}', 'Demir', Colors.blueGrey.shade100),
-                  const SizedBox(width: 6),
+                  const SizedBox(width: 5),
                   _buildOreChip('🟢', '${player.emeralds}', 'Zümrüt', Colors.greenAccent),
-                  const SizedBox(width: 6),
+                  const SizedBox(width: 5),
                   _buildOreChip('🦴', '${player.fossils}', 'Fosil', Colors.purpleAccent),
                 ],
               ),
@@ -100,11 +101,11 @@ class _ForgeScreenState extends ConsumerState<ForgeScreen>
           if (gameState.lastMessage != null && gameState.lastMessage!.isNotEmpty)
             Container(
               width: double.infinity,
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
+              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
               color: AppColors.goldText.withValues(alpha: 0.15),
               child: Text(
                 gameState.lastMessage!,
-                style: const TextStyle(color: AppColors.goldText, fontSize: 12, fontWeight: FontWeight.w600),
+                style: const TextStyle(color: AppColors.goldText, fontSize: 11, fontWeight: FontWeight.w600),
                 textAlign: TextAlign.center,
               ),
             ),
@@ -126,20 +127,20 @@ class _ForgeScreenState extends ConsumerState<ForgeScreen>
 
   Widget _buildOreChip(String emoji, String count, String label, Color color) {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+      padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2.5),
       decoration: BoxDecoration(
         color: const Color(0xFF1E1738),
-        borderRadius: BorderRadius.circular(10),
+        borderRadius: BorderRadius.circular(8),
         border: Border.all(color: color.withValues(alpha: 0.4)),
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Text(emoji, style: const TextStyle(fontSize: 13)),
-          const SizedBox(width: 4),
+          Text(emoji, style: const TextStyle(fontSize: 11)),
+          const SizedBox(width: 3),
           Text(
             '$count $label',
-            style: TextStyle(color: color, fontWeight: FontWeight.bold, fontSize: 11),
+            style: TextStyle(color: color, fontWeight: FontWeight.bold, fontSize: 10),
           ),
         ],
       ),
@@ -151,7 +152,7 @@ class _ForgeScreenState extends ConsumerState<ForgeScreen>
     final weapons = WeaponType.values;
 
     return ListView.builder(
-      padding: const EdgeInsets.all(12),
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
       itemCount: weapons.length,
       itemBuilder: (context, index) {
         final weapon = weapons[index];
@@ -207,16 +208,16 @@ class _ForgeScreenState extends ConsumerState<ForgeScreen>
             player.gems >= reqGem;
 
         return Container(
-          margin: const EdgeInsets.only(bottom: 14),
-          padding: const EdgeInsets.all(12),
+          margin: const EdgeInsets.only(bottom: 8),
+          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
           decoration: BoxDecoration(
             color: const Color(0xFF181432),
-            borderRadius: BorderRadius.circular(16),
+            borderRadius: BorderRadius.circular(12),
             border: Border.all(
               color: isMax
                   ? AppColors.goldText
                   : (isOwned ? const Color(0xFF3E3668) : Colors.white12),
-              width: isMax ? 1.8 : 1.2,
+              width: isMax ? 1.5 : 1,
             ),
           ),
           child: Column(
@@ -226,17 +227,17 @@ class _ForgeScreenState extends ConsumerState<ForgeScreen>
               Row(
                 children: [
                   Container(
-                    width: 48,
-                    height: 48,
+                    width: 36,
+                    height: 36,
                     decoration: BoxDecoration(
                       color: const Color(0xFF261F48),
-                      borderRadius: BorderRadius.circular(12),
+                      borderRadius: BorderRadius.circular(8),
                     ),
                     child: Center(
-                      child: Text(weapon.iconEmoji, style: const TextStyle(fontSize: 24)),
+                      child: Text(weapon.iconEmoji, style: const TextStyle(fontSize: 18)),
                     ),
                   ),
-                  const SizedBox(width: 12),
+                  const SizedBox(width: 8),
                   Expanded(
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
@@ -248,35 +249,35 @@ class _ForgeScreenState extends ConsumerState<ForgeScreen>
                               style: const TextStyle(
                                 color: Colors.white,
                                 fontWeight: FontWeight.bold,
-                                fontSize: 15,
+                                fontSize: 13,
                               ),
                             ),
-                            const SizedBox(width: 8),
+                            const SizedBox(width: 6),
                             Container(
-                              padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                              padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 1.5),
                               decoration: BoxDecoration(
                                 color: isMax ? AppColors.goldText : const Color(0xFF2E2458),
-                                borderRadius: BorderRadius.circular(6),
+                                borderRadius: BorderRadius.circular(5),
                               ),
                               child: Text(
-                                isMax ? '⭐ EFSANEVİ LV.5' : 'SEVİYE $currentLvl/5',
+                                isMax ? '⭐ LV.5' : 'SEVİYE $currentLvl/5',
                                 style: TextStyle(
                                   color: isMax ? Colors.black : AppColors.goldText,
-                                  fontSize: 9,
+                                  fontSize: 8,
                                   fontWeight: FontWeight.bold,
                                 ),
                               ),
                             ),
                           ],
                         ),
-                        const SizedBox(height: 2),
+                        const SizedBox(height: 1),
                         // Yıldız göstergesi
                         Row(
                           children: List.generate(
                             5,
                             (i) => Icon(
                               Icons.star,
-                              size: 14,
+                              size: 11,
                               color: i < currentLvl ? AppColors.goldText : Colors.white24,
                             ),
                           ),
@@ -286,14 +287,14 @@ class _ForgeScreenState extends ConsumerState<ForgeScreen>
                   ),
                 ],
               ),
-              const SizedBox(height: 10),
+              const SizedBox(height: 6),
 
               // Stat Karşılaştırma Paneli
               Container(
-                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                 decoration: BoxDecoration(
                   color: const Color(0xFF100D24),
-                  borderRadius: BorderRadius.circular(10),
+                  borderRadius: BorderRadius.circular(8),
                 ),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceAround,
@@ -319,13 +320,13 @@ class _ForgeScreenState extends ConsumerState<ForgeScreen>
                   ],
                 ),
               ),
-              const SizedBox(height: 10),
+              const SizedBox(height: 6),
 
               // Gereken Madenler & Güçlendir Butonu
               if (!isMax) ...[
                 Wrap(
-                  spacing: 6,
-                  runSpacing: 4,
+                  spacing: 4,
+                  runSpacing: 3,
                   children: [
                     _buildReqBadge('🟡', '$reqGold', player.gold >= reqGold),
                     if (reqCopper > 0)
@@ -340,7 +341,7 @@ class _ForgeScreenState extends ConsumerState<ForgeScreen>
                       _buildReqBadge('💎 $reqGem Elmas', '', player.gems >= reqGem),
                   ],
                 ),
-                const SizedBox(height: 10),
+                const SizedBox(height: 6),
               ],
 
               // Eylem Butonu
@@ -357,8 +358,10 @@ class _ForgeScreenState extends ConsumerState<ForgeScreen>
                         ? Colors.grey.shade800
                         : (canAfford ? const Color(0xFFFF9100) : Colors.grey.shade800),
                     foregroundColor: Colors.black,
-                    padding: const EdgeInsets.symmetric(vertical: 10),
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                    padding: const EdgeInsets.symmetric(vertical: 6),
+                    minimumSize: const Size(double.infinity, 30),
+                    tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
                   ),
                   child: Text(
                     !isOwned
@@ -368,7 +371,7 @@ class _ForgeScreenState extends ConsumerState<ForgeScreen>
                             : (canAfford ? '🔨 GÜÇLENDİR (SEVİYE ${currentLvl + 1})' : 'YETERSİZ MADEN')),
                     style: TextStyle(
                       fontWeight: FontWeight.w900,
-                      fontSize: 12,
+                      fontSize: 10.5,
                       color: (!isOwned || isMax || !canAfford) ? Colors.white54 : Colors.black,
                     ),
                   ),
@@ -392,7 +395,7 @@ class _ForgeScreenState extends ConsumerState<ForgeScreen>
     ];
 
     return ListView.builder(
-      padding: const EdgeInsets.all(12),
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
       itemCount: tools.length,
       itemBuilder: (context, index) {
         final tool = tools[index];
@@ -443,16 +446,16 @@ class _ForgeScreenState extends ConsumerState<ForgeScreen>
             player.gems >= reqGem;
 
         return Container(
-          margin: const EdgeInsets.only(bottom: 14),
-          padding: const EdgeInsets.all(12),
+          margin: const EdgeInsets.only(bottom: 8),
+          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
           decoration: BoxDecoration(
             color: const Color(0xFF181432),
-            borderRadius: BorderRadius.circular(16),
+            borderRadius: BorderRadius.circular(12),
             border: Border.all(
               color: isMax
                   ? AppColors.neonGreen
                   : (isOwned ? const Color(0xFF3E3668) : Colors.white12),
-              width: isMax ? 1.8 : 1.2,
+              width: isMax ? 1.5 : 1,
             ),
           ),
           child: Column(
@@ -462,17 +465,17 @@ class _ForgeScreenState extends ConsumerState<ForgeScreen>
               Row(
                 children: [
                   Container(
-                    width: 48,
-                    height: 48,
+                    width: 36,
+                    height: 36,
                     decoration: BoxDecoration(
                       color: const Color(0xFF261F48),
-                      borderRadius: BorderRadius.circular(12),
+                      borderRadius: BorderRadius.circular(8),
                     ),
                     child: Center(
-                      child: Text(tool.iconEmoji, style: const TextStyle(fontSize: 24)),
+                      child: Text(tool.iconEmoji, style: const TextStyle(fontSize: 18)),
                     ),
                   ),
-                  const SizedBox(width: 12),
+                  const SizedBox(width: 8),
                   Expanded(
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
@@ -484,34 +487,34 @@ class _ForgeScreenState extends ConsumerState<ForgeScreen>
                               style: const TextStyle(
                                 color: Colors.white,
                                 fontWeight: FontWeight.bold,
-                                fontSize: 15,
+                                fontSize: 13,
                               ),
                             ),
-                            const SizedBox(width: 8),
+                            const SizedBox(width: 6),
                             Container(
-                              padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                              padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 1.5),
                               decoration: BoxDecoration(
                                 color: isMax ? AppColors.neonGreen : const Color(0xFF2E2458),
-                                borderRadius: BorderRadius.circular(6),
+                                borderRadius: BorderRadius.circular(5),
                               ),
                               child: Text(
-                                isMax ? '⭐ KUSURSUZ LV.5' : 'SEVİYE $currentLvl/5',
+                                isMax ? '⭐ LV.5' : 'SEVİYE $currentLvl/5',
                                 style: TextStyle(
                                   color: isMax ? Colors.black : AppColors.neonGreen,
-                                  fontSize: 9,
+                                  fontSize: 8,
                                   fontWeight: FontWeight.bold,
                                 ),
                               ),
                             ),
                           ],
                         ),
-                        const SizedBox(height: 2),
+                        const SizedBox(height: 1),
                         Row(
                           children: List.generate(
                             5,
                             (i) => Icon(
                               Icons.star,
-                              size: 14,
+                              size: 11,
                               color: i < currentLvl ? AppColors.neonGreen : Colors.white24,
                             ),
                           ),
@@ -521,14 +524,14 @@ class _ForgeScreenState extends ConsumerState<ForgeScreen>
                   ),
                 ],
               ),
-              const SizedBox(height: 10),
+              const SizedBox(height: 6),
 
               // Statlar
               Container(
-                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                 decoration: BoxDecoration(
                   color: const Color(0xFF100D24),
-                  borderRadius: BorderRadius.circular(10),
+                  borderRadius: BorderRadius.circular(8),
                 ),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceAround,
@@ -548,13 +551,13 @@ class _ForgeScreenState extends ConsumerState<ForgeScreen>
                   ],
                 ),
               ),
-              const SizedBox(height: 10),
+              const SizedBox(height: 6),
 
               // Gereksinimler
               if (!isMax) ...[
                 Wrap(
-                  spacing: 6,
-                  runSpacing: 4,
+                  spacing: 4,
+                  runSpacing: 3,
                   children: [
                     _buildReqBadge('🟡', '$reqGold', player.gold >= reqGold),
                     if (reqCopper > 0)
@@ -567,7 +570,7 @@ class _ForgeScreenState extends ConsumerState<ForgeScreen>
                       _buildReqBadge('💎 $reqGem Elmas', '', player.gems >= reqGem),
                   ],
                 ),
-                const SizedBox(height: 10),
+                const SizedBox(height: 6),
               ],
 
               // Buton
@@ -584,8 +587,10 @@ class _ForgeScreenState extends ConsumerState<ForgeScreen>
                         ? Colors.grey.shade800
                         : (canAfford ? AppColors.neonGreen : Colors.grey.shade800),
                     foregroundColor: Colors.black,
-                    padding: const EdgeInsets.symmetric(vertical: 10),
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                    padding: const EdgeInsets.symmetric(vertical: 6),
+                    minimumSize: const Size(double.infinity, 30),
+                    tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
                   ),
                   child: Text(
                     !isOwned
@@ -595,7 +600,7 @@ class _ForgeScreenState extends ConsumerState<ForgeScreen>
                             : (canAfford ? '🔨 DÖV (SEVİYE ${currentLvl + 1})' : 'YETERSİZ MADEN')),
                     style: TextStyle(
                       fontWeight: FontWeight.w900,
-                      fontSize: 12,
+                      fontSize: 10.5,
                       color: (!isOwned || isMax || !canAfford) ? Colors.white54 : Colors.black,
                     ),
                   ),
@@ -612,15 +617,15 @@ class _ForgeScreenState extends ConsumerState<ForgeScreen>
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: [
-        Text(label, style: const TextStyle(color: Colors.white60, fontSize: 10)),
-        const SizedBox(height: 2),
+        Text(label, style: const TextStyle(color: Colors.white60, fontSize: 9)),
+        const SizedBox(height: 1),
         Row(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Text(current, style: TextStyle(color: color, fontWeight: FontWeight.bold, fontSize: 13)),
+            Text(current, style: TextStyle(color: color, fontWeight: FontWeight.bold, fontSize: 11.5)),
             if (next != null) ...[
-              const Icon(Icons.arrow_forward, size: 12, color: Colors.white54),
-              Text(next, style: const TextStyle(color: AppColors.neonGreen, fontWeight: FontWeight.w900, fontSize: 13)),
+              const Icon(Icons.arrow_forward, size: 10, color: Colors.white54),
+              Text(next, style: const TextStyle(color: AppColors.neonGreen, fontWeight: FontWeight.w900, fontSize: 11.5)),
             ],
           ],
         ),
@@ -630,10 +635,10 @@ class _ForgeScreenState extends ConsumerState<ForgeScreen>
 
   Widget _buildReqBadge(String iconText, String countText, bool isEnough) {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 3),
+      padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 2),
       decoration: BoxDecoration(
         color: isEnough ? const Color(0xFF132E18) : const Color(0xFF381212),
-        borderRadius: BorderRadius.circular(6),
+        borderRadius: BorderRadius.circular(5),
         border: Border.all(
           color: isEnough ? AppColors.neonGreen.withValues(alpha: 0.6) : Colors.redAccent.withValues(alpha: 0.6),
           width: 0.8,
@@ -646,14 +651,14 @@ class _ForgeScreenState extends ConsumerState<ForgeScreen>
             '$iconText $countText',
             style: TextStyle(
               color: isEnough ? Colors.white : Colors.white70,
-              fontSize: 10,
+              fontSize: 9,
               fontWeight: FontWeight.bold,
             ),
           ),
-          const SizedBox(width: 3),
+          const SizedBox(width: 2),
           Icon(
             isEnough ? Icons.check_circle : Icons.cancel,
-            size: 11,
+            size: 9.5,
             color: isEnough ? AppColors.neonGreen : Colors.redAccent,
           ),
         ],

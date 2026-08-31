@@ -2,9 +2,11 @@ import 'dart:async';
 import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../mining/application/game_notifier.dart';
 import '../../../multiplayer/presentation/screens/main_menu_screen.dart';
+import '../../../onboarding/presentation/screens/onboarding_screen.dart';
 import '../widgets/lava_particles_painter.dart';
 
 class SplashScreen extends ConsumerStatefulWidget {
@@ -90,21 +92,30 @@ class _SplashScreenState extends ConsumerState<SplashScreen> with TickerProvider
         if (_loadingProgress >= 1.0) {
           _loadingProgress = 1.0;
           _progressTimer?.cancel();
-          _navigateToMainMenu();
+          _navigateToNextScreen();
         }
       });
     });
   }
 
-  void _navigateToMainMenu() {
-    Future.delayed(const Duration(milliseconds: 250), () {
+  void _navigateToNextScreen() {
+    Future.delayed(const Duration(milliseconds: 250), () async {
       if (!mounted) return;
+
+      final prefs = await SharedPreferences.getInstance();
+      final hasSeenOnboarding = prefs.getBool('has_seen_onboarding') ?? false;
+
+      if (!mounted) return;
+
+      final Widget targetScreen = hasSeenOnboarding
+          ? const MainMenuScreen()
+          : const OnboardingScreen();
 
       Navigator.pushReplacement(
         context,
         PageRouteBuilder(
           transitionDuration: const Duration(milliseconds: 800),
-          pageBuilder: (context, animation, secondaryAnimation) => const MainMenuScreen(),
+          pageBuilder: (context, animation, secondaryAnimation) => targetScreen,
           transitionsBuilder: (context, animation, secondaryAnimation, child) {
             return FadeTransition(
               opacity: animation,

@@ -13,8 +13,8 @@ import '../../application/lobby_notifier.dart';
 import '../../../cosmetics/presentation/screens/cosmetics_screen.dart';
 import '../../../quests/presentation/widgets/quest_dialog.dart';
 import '../../../ai_team/presentation/screens/team_lobby_screen.dart';
-import '../../../friends/presentation/screens/friends_screen.dart';
 import '../widgets/main_menu_action_button.dart';
+import '../../../../core/ads/banner_ad_widget.dart';
 
 class MainMenuScreen extends ConsumerStatefulWidget {
   const MainMenuScreen({super.key});
@@ -102,6 +102,80 @@ class _MainMenuScreenState extends ConsumerState<MainMenuScreen> {
             style: ElevatedButton.styleFrom(
               backgroundColor: AppColors.lavaOrange,
               foregroundColor: Colors.white,
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+            ),
+            onPressed: () => Navigator.pop(ctx),
+            child: Text(AppStrings.tr('got_it', lang: lang), style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 12)),
+          ),
+        ],
+      ),
+    );
+  }
+
+  void _showFriendsComingSoonDialog(BuildContext context, String lang) {
+    showDialog(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        backgroundColor: const Color(0xFF140D1A),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(20),
+          side: const BorderSide(color: AppColors.cyanText, width: 2),
+        ),
+        title: Row(
+          children: [
+            const Text('👥', style: TextStyle(fontSize: 26)),
+            const SizedBox(width: 10),
+            Expanded(
+              child: Text(
+                AppStrings.tr('friends', lang: lang),
+                style: const TextStyle(
+                  color: Colors.white,
+                  fontSize: 15,
+                  fontWeight: FontWeight.bold,
+                  letterSpacing: 0.8,
+                ),
+              ),
+            ),
+          ],
+        ),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+              decoration: BoxDecoration(
+                color: AppColors.cyanText.withValues(alpha: 0.15),
+                borderRadius: BorderRadius.circular(8),
+                border: Border.all(color: AppColors.cyanText),
+              ),
+              child: const Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Icon(Icons.hourglass_top_rounded, color: AppColors.cyanText, size: 16),
+                  SizedBox(width: 6),
+                  Text(
+                    '⏳ YAKIN GELECEK',
+                    style: TextStyle(color: AppColors.cyanText, fontWeight: FontWeight.bold, fontSize: 11),
+                  ),
+                ],
+              ),
+            ),
+            const SizedBox(height: 12),
+            Text(
+              lang == 'en'
+                  ? 'The friends system is coming soon! You will be able to play with your friends in the near future.'
+                  : 'Arkadaş sistemi yakında geliyor! Yakın gelecekte arkadaşlarınla birlikte oynayabileceksin.',
+              style: const TextStyle(color: Colors.white70, fontSize: 12.5, height: 1.4),
+            ),
+          ],
+        ),
+        actions: [
+          ElevatedButton(
+            style: ElevatedButton.styleFrom(
+              backgroundColor: AppColors.cyanText,
+              foregroundColor: Colors.black,
               shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
               padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
             ),
@@ -486,20 +560,22 @@ class _MainMenuScreenState extends ConsumerState<MainMenuScreen> {
                     Expanded(
                       child: ElevatedButton.icon(
                         style: ElevatedButton.styleFrom(
-                          backgroundColor: const Color(0xFF1D2838),
-                          foregroundColor: AppColors.cyanText,
-                          side: const BorderSide(color: AppColors.cyanText, width: 1.2),
+                          backgroundColor: const Color(0xFF141923),
+                          foregroundColor: AppColors.cyanText.withValues(alpha: 0.5),
+                          side: BorderSide(color: AppColors.cyanText.withValues(alpha: 0.35), width: 1.2),
                           padding: const EdgeInsets.symmetric(vertical: 8),
                           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
                         ),
-                        icon: const Icon(Icons.people, size: 16, color: AppColors.cyanText),
-                        label: Text(AppStrings.tr('friends', lang: lang), style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 10)),
-                        onPressed: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(builder: (ctx) => const FriendsScreen()),
-                          );
-                        },
+                        icon: Icon(Icons.people_outline, size: 16, color: AppColors.cyanText.withValues(alpha: 0.5)),
+                        label: Text(
+                          AppStrings.tr('friends', lang: lang),
+                          style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 10,
+                            color: AppColors.cyanText.withValues(alpha: 0.5),
+                          ),
+                        ),
+                        onPressed: () => _showFriendsComingSoonDialog(context, lang),
                       ),
                     ),
                   ],
@@ -759,6 +835,8 @@ class _MainMenuScreenState extends ConsumerState<MainMenuScreen> {
               Navigator.push(context, MaterialPageRoute(builder: (ctx) => const ForgeScreen()));
             },
           ),
+          const SizedBox(height: 12),
+          const BannerAdWidget(),
         ],
       ),
     );

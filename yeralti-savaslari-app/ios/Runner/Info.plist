@@ -42,5 +42,7 @@
 	<true/>
 	<key>UIApplicationSupportsIndirectInputEvents</key>
 	<true/>
+	<key>GADApplicationIdentifier</key>
+	<string>ca-app-pub-8174961205373924~1347077503</string>
 </dict>
 </plist>

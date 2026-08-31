@@ -104,19 +104,19 @@ class _QuestDialogState extends ConsumerState<QuestDialog> {
 
     return Dialog(
       backgroundColor: Colors.transparent,
-      insetPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 20),
+      insetPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
       child: Container(
-        constraints: const BoxConstraints(maxWidth: 520, maxHeight: 680),
-        padding: const EdgeInsets.all(18),
+        constraints: const BoxConstraints(maxWidth: 580, maxHeight: 420),
+        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
         decoration: BoxDecoration(
           color: const Color(0xFF140D1A),
-          borderRadius: BorderRadius.circular(22),
-          border: Border.all(color: AppColors.lavaOrange, width: 2),
+          borderRadius: BorderRadius.circular(16),
+          border: Border.all(color: AppColors.lavaOrange, width: 1.8),
           boxShadow: [
             BoxShadow(
               color: AppColors.lavaOrange.withValues(alpha: 0.3),
-              blurRadius: 24,
-              spreadRadius: 2,
+              blurRadius: 20,
+              spreadRadius: 1,
             ),
           ],
         ),
@@ -129,8 +129,8 @@ class _QuestDialogState extends ConsumerState<QuestDialog> {
               children: [
                 Row(
                   children: [
-                    const Icon(Icons.assignment, color: AppColors.goldText, size: 24),
-                    const SizedBox(width: 8),
+                    const Icon(Icons.assignment, color: AppColors.goldText, size: 18),
+                    const SizedBox(width: 6),
                     Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
@@ -138,18 +138,18 @@ class _QuestDialogState extends ConsumerState<QuestDialog> {
                           'HAFTALIK GÖREVLER',
                           style: TextStyle(
                             color: Colors.white,
-                            fontSize: 16,
+                            fontSize: 13.5,
                             fontWeight: FontWeight.bold,
-                            letterSpacing: 1.2,
+                            letterSpacing: 1.0,
                           ),
                         ),
                         Row(
                           children: [
-                            const Icon(Icons.timer_outlined, color: AppColors.cyanText, size: 12),
-                            const SizedBox(width: 4),
+                            const Icon(Icons.timer_outlined, color: AppColors.cyanText, size: 10),
+                            const SizedBox(width: 3),
                             Text(
                               'Yenilenmeye Kalan: $remainingTimeStr',
-                              style: const TextStyle(color: AppColors.cyanText, fontSize: 10, fontWeight: FontWeight.w600),
+                              style: const TextStyle(color: AppColors.cyanText, fontSize: 9, fontWeight: FontWeight.w600),
                             ),
                           ],
                         ),
@@ -158,19 +158,21 @@ class _QuestDialogState extends ConsumerState<QuestDialog> {
                   ],
                 ),
                 IconButton(
-                  icon: const Icon(Icons.close, color: Colors.white70, size: 20),
+                  padding: EdgeInsets.zero,
+                  constraints: const BoxConstraints(),
+                  icon: const Icon(Icons.close, color: Colors.white70, size: 18),
                   onPressed: () => Navigator.pop(context),
                 ),
               ],
             ),
-            const SizedBox(height: 10),
+            const SizedBox(height: 6),
 
             // 2. Toplam Tamamlanma Durumu Rozeti
             Container(
-              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
               decoration: BoxDecoration(
                 color: AppColors.hudPanel,
-                borderRadius: BorderRadius.circular(10),
+                borderRadius: BorderRadius.circular(8),
                 border: Border.all(color: const Color(0xFF4A2518)),
               ),
               child: Row(
@@ -178,21 +180,21 @@ class _QuestDialogState extends ConsumerState<QuestDialog> {
                 children: [
                   Text(
                     'Tamamlanan: $completedCount / $totalCount Görev',
-                    style: const TextStyle(color: Colors.white, fontSize: 11, fontWeight: FontWeight.bold),
+                    style: const TextStyle(color: Colors.white, fontSize: 10, fontWeight: FontWeight.bold),
                   ),
                   Row(
                     children: [
-                      const Text('💎 ', style: TextStyle(fontSize: 12)),
+                      const Text('💎 ', style: TextStyle(fontSize: 10)),
                       Text(
                         '${gameState.player.gems} Elmas',
-                        style: const TextStyle(color: Color(0xFF4FC3F7), fontSize: 11, fontWeight: FontWeight.bold),
+                        style: const TextStyle(color: Color(0xFF4FC3F7), fontSize: 10, fontWeight: FontWeight.bold),
                       ),
                     ],
                   ),
                 ],
               ),
             ),
-            const SizedBox(height: 10),
+            const SizedBox(height: 6),
 
             // 3. Zorluk Filtreleme Sekmeleri
             SingleChildScrollView(
@@ -207,7 +209,7 @@ class _QuestDialogState extends ConsumerState<QuestDialog> {
                 ],
               ),
             ),
-            const SizedBox(height: 12),
+            const SizedBox(height: 6),
 
             // 4. Görev Listesi
             Expanded(
@@ -219,22 +221,22 @@ class _QuestDialogState extends ConsumerState<QuestDialog> {
                   final diffLabel = _getDifficultyLabel(quest.difficulty);
 
                   return Container(
-                    margin: const EdgeInsets.only(bottom: 12),
-                    padding: const EdgeInsets.all(12),
+                    margin: const EdgeInsets.only(bottom: 6),
+                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
                     decoration: BoxDecoration(
                       color: const Color(0xFF151538),
-                      borderRadius: BorderRadius.circular(14),
+                      borderRadius: BorderRadius.circular(10),
                       border: Border.all(
                         color: quest.isCompleted
                             ? (quest.isClaimed ? Colors.white24 : AppColors.neonGreen)
                             : diffColor.withValues(alpha: 0.5),
-                        width: quest.isCompleted && !quest.isClaimed ? 1.8 : 1.2,
+                        width: quest.isCompleted && !quest.isClaimed ? 1.5 : 1,
                       ),
                       boxShadow: quest.isCompleted && !quest.isClaimed
                           ? [
                               BoxShadow(
                                 color: AppColors.neonGreen.withValues(alpha: 0.2),
-                                blurRadius: 8,
+                                blurRadius: 6,
                                 spreadRadius: 1,
                               ),
                             ]
@@ -248,18 +250,18 @@ class _QuestDialogState extends ConsumerState<QuestDialog> {
                           children: [
                             // İkon
                             Container(
-                              width: 36,
-                              height: 36,
+                              width: 28,
+                              height: 28,
                               decoration: BoxDecoration(
                                 color: const Color(0xFF0D0D26),
-                                borderRadius: BorderRadius.circular(8),
+                                borderRadius: BorderRadius.circular(6),
                                 border: Border.all(color: diffColor.withValues(alpha: 0.6)),
                               ),
                               child: Center(
-                                child: Text(quest.iconEmoji, style: const TextStyle(fontSize: 18)),
+                                child: Text(quest.iconEmoji, style: const TextStyle(fontSize: 14)),
                               ),
                             ),
-                            const SizedBox(width: 10),
+                            const SizedBox(width: 8),
 
                             // Başlık & Açıklama
                             Expanded(
@@ -273,32 +275,33 @@ class _QuestDialogState extends ConsumerState<QuestDialog> {
                                         style: const TextStyle(
                                           color: Colors.white,
                                           fontWeight: FontWeight.bold,
-                                          fontSize: 12,
+                                          fontSize: 11,
                                         ),
                                       ),
-                                      const SizedBox(width: 6),
+                                      const SizedBox(width: 4),
                                       Container(
-                                        padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 1.5),
+                                        padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 1),
                                         decoration: BoxDecoration(
                                           color: diffColor.withValues(alpha: 0.15),
-                                          borderRadius: BorderRadius.circular(4),
-                                          border: Border.all(color: diffColor, width: 0.8),
+                                          borderRadius: BorderRadius.circular(3),
+                                          border: Border.all(color: diffColor, width: 0.7),
                                         ),
                                         child: Text(
                                           diffLabel,
                                           style: TextStyle(
                                             color: diffColor,
-                                            fontSize: 7.5,
+                                            fontSize: 7,
                                             fontWeight: FontWeight.bold,
                                           ),
                                         ),
                                       ),
                                     ],
                                   ),
-                                  const SizedBox(height: 2),
                                   Text(
                                     quest.description,
-                                    style: const TextStyle(color: Color(0xFF9E9EBE), fontSize: 10),
+                                    style: const TextStyle(color: Color(0xFF9E9EBE), fontSize: 9),
+                                    maxLines: 1,
+                                    overflow: TextOverflow.ellipsis,
                                   ),
                                 ],
                               ),
@@ -310,34 +313,34 @@ class _QuestDialogState extends ConsumerState<QuestDialog> {
                                 style: ElevatedButton.styleFrom(
                                   backgroundColor: const Color(0xFF1E3A5F),
                                   foregroundColor: Colors.white,
-                                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                                   minimumSize: Size.zero,
                                   tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(6)),
                                 ),
                                 onPressed: () => _handleDoQuest(context, quest),
                                 child: const Row(
                                   mainAxisSize: MainAxisSize.min,
                                   children: [
-                                    Text('GÖREVİ YAP', style: TextStyle(fontSize: 9, fontWeight: FontWeight.bold)),
+                                    Text('GÖREVİ YAP', style: TextStyle(fontSize: 8, fontWeight: FontWeight.bold)),
                                     SizedBox(width: 2),
-                                    Icon(Icons.arrow_forward_ios, size: 9),
+                                    Icon(Icons.arrow_forward_ios, size: 7.5),
                                   ],
                                 ),
                               ),
                           ],
                         ),
-                        const SizedBox(height: 8),
+                        const SizedBox(height: 5),
 
                         // Orta Satır: İlerleme Çubuğu & Ödül Değerleri
                         Row(
                           children: [
                             Expanded(
                               child: ClipRRect(
-                                borderRadius: BorderRadius.circular(4),
+                                borderRadius: BorderRadius.circular(3),
                                 child: LinearProgressIndicator(
                                   value: quest.progress,
-                                  minHeight: 7,
+                                  minHeight: 5,
                                   backgroundColor: const Color(0xFF0A0A1C),
                                   valueColor: AlwaysStoppedAnimation<Color>(
                                     quest.isCompleted ? AppColors.neonGreen : const Color(0xFF29B6F6),
@@ -345,22 +348,22 @@ class _QuestDialogState extends ConsumerState<QuestDialog> {
                                 ),
                               ),
                             ),
-                            const SizedBox(width: 8),
+                            const SizedBox(width: 6),
                             Text(
                               '${quest.current}/${quest.target}',
                               style: const TextStyle(
                                 color: Colors.white70,
-                                fontSize: 10,
+                                fontSize: 9,
                                 fontWeight: FontWeight.bold,
                               ),
                             ),
-                            const SizedBox(width: 10),
+                            const SizedBox(width: 8),
                             // Ödül Rozeti
                             Row(
                               children: [
-                                Text('+${quest.rewardGems} 💎', style: const TextStyle(color: Color(0xFF4FC3F7), fontSize: 10.5, fontWeight: FontWeight.bold)),
+                                Text('+${quest.rewardGems} 💎', style: const TextStyle(color: Color(0xFF4FC3F7), fontSize: 9.5, fontWeight: FontWeight.bold)),
                                 const SizedBox(width: 4),
-                                Text('+${quest.rewardGold} 🟡', style: const TextStyle(color: AppColors.goldText, fontSize: 10, fontWeight: FontWeight.bold)),
+                                Text('+${quest.rewardGold} 🟡', style: const TextStyle(color: AppColors.goldText, fontSize: 9.5, fontWeight: FontWeight.bold)),
                               ],
                             ),
                           ],
@@ -368,14 +371,16 @@ class _QuestDialogState extends ConsumerState<QuestDialog> {
 
                         // Alt Satır: ÖDÜLÜ AL Butonu (Tamamlandıysa Parlayan Yeşil Buton)
                         if (quest.isCompleted) ...[
-                          const SizedBox(height: 8),
+                          const SizedBox(height: 5),
                           ElevatedButton(
                             style: ElevatedButton.styleFrom(
                               backgroundColor: quest.isClaimed ? const Color(0xFF222244) : AppColors.neonGreen,
                               foregroundColor: quest.isClaimed ? Colors.white38 : Colors.black,
-                              padding: const EdgeInsets.symmetric(vertical: 8),
-                              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
-                              elevation: quest.isClaimed ? 0 : 4,
+                              padding: const EdgeInsets.symmetric(vertical: 5),
+                              minimumSize: const Size(double.infinity, 26),
+                              tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(6)),
+                              elevation: quest.isClaimed ? 0 : 3,
                             ),
                             onPressed: quest.isClaimed
                                 ? null
@@ -387,15 +392,15 @@ class _QuestDialogState extends ConsumerState<QuestDialog> {
                               children: [
                                 Icon(
                                   quest.isClaimed ? Icons.check_circle : Icons.card_giftcard,
-                                  size: 14,
+                                  size: 12,
                                   color: quest.isClaimed ? Colors.white38 : Colors.black,
                                 ),
-                                const SizedBox(width: 6),
+                                const SizedBox(width: 4),
                                 Text(
                                   quest.isClaimed
                                       ? 'ÖDÜL ALINDI'
                                       : '🎁 ÖDÜLÜ AL (+${quest.rewardGems} 💎 +${quest.rewardGold} 🟡)',
-                                  style: const TextStyle(fontSize: 10.5, fontWeight: FontWeight.bold),
+                                  style: const TextStyle(fontSize: 9.5, fontWeight: FontWeight.bold),
                                 ),
                               ],
                             ),
@@ -416,13 +421,13 @@ class _QuestDialogState extends ConsumerState<QuestDialog> {
   Widget _buildFilterChip(String label, QuestDifficulty? difficulty) {
     final bool isSelected = _selectedDifficulty == difficulty;
     return Padding(
-      padding: const EdgeInsets.only(right: 6),
+      padding: const EdgeInsets.only(right: 5),
       child: ChoiceChip(
         label: Text(
           label,
           style: TextStyle(
             color: isSelected ? Colors.black : Colors.white70,
-            fontSize: 9.5,
+            fontSize: 8.5,
             fontWeight: FontWeight.bold,
           ),
         ),
@@ -430,7 +435,8 @@ class _QuestDialogState extends ConsumerState<QuestDialog> {
         selectedColor: AppColors.goldText,
         backgroundColor: const Color(0xFF16163A),
         side: BorderSide(color: isSelected ? AppColors.goldText : const Color(0xFF2E2E68)),
-        padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 2),
+        padding: const EdgeInsets.symmetric(horizontal: 2, vertical: 0),
+        materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
         onSelected: (_) {
           setState(() {
             _selectedDifficulty = difficulty;

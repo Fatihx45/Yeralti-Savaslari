@@ -39,34 +39,35 @@ class _WeaponShopScreenState extends ConsumerState<WeaponShopScreen>
       appBar: AppBar(
         backgroundColor: AppColors.hudPanel,
         elevation: 0,
+        toolbarHeight: 44,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back_ios_new, color: Colors.white),
+          icon: const Icon(Icons.arrow_back_ios_new, color: Colors.white, size: 18),
           onPressed: () => Navigator.pop(context),
         ),
         title: const Row(
           children: [
-            Text('🛒', style: TextStyle(fontSize: 22)),
-            SizedBox(width: 8),
+            Text('🛒', style: TextStyle(fontSize: 18)),
+            SizedBox(width: 6),
             Text(
               'MERKEZ CEPHANELİK & MAĞAZA',
               style: TextStyle(
                 color: Colors.white,
                 fontWeight: FontWeight.bold,
-                fontSize: 15,
-                letterSpacing: 1.0,
+                fontSize: 13.5,
+                letterSpacing: 0.8,
               ),
             ),
           ],
         ),
         actions: [
           TextButton.icon(
-            icon: const Text('⚡', style: TextStyle(fontSize: 16)),
+            icon: const Text('⚡', style: TextStyle(fontSize: 14)),
             label: const Text(
               'GÜÇLENDİR',
               style: TextStyle(
                 color: Color(0xFFE040FB),
                 fontWeight: FontWeight.bold,
-                fontSize: 12,
+                fontSize: 11,
               ),
             ),
             onPressed: () {
@@ -76,19 +77,19 @@ class _WeaponShopScreenState extends ConsumerState<WeaponShopScreen>
               );
             },
           ),
-          const SizedBox(width: 6),
+          const SizedBox(width: 4),
         ],
         bottom: TabBar(
           controller: _tabController,
           indicatorColor: AppColors.lavaOrange,
-          indicatorWeight: 3,
+          indicatorWeight: 2.5,
           labelColor: AppColors.lavaOrange,
           unselectedLabelColor: Colors.white60,
-          labelStyle: const TextStyle(fontWeight: FontWeight.bold, fontSize: 13),
+          labelStyle: const TextStyle(fontWeight: FontWeight.bold, fontSize: 11.5),
           tabs: const [
-            Tab(icon: Text('🔫'), text: 'SİLAHLAR'),
-            Tab(icon: Text('⛏️'), text: 'ALETLER'),
-            Tab(icon: Text('🎒'), text: 'CEPHANE & YÜKSELTME'),
+            Tab(height: 38, icon: Text('🔫', style: TextStyle(fontSize: 13)), text: 'SİLAHLAR'),
+            Tab(height: 38, icon: Text('⛏️', style: TextStyle(fontSize: 13)), text: 'ALETLER'),
+            Tab(height: 38, icon: Text('🎒', style: TextStyle(fontSize: 13)), text: 'CEPHANE & YÜKSELTME'),
           ],
         ),
       ),
@@ -96,7 +97,7 @@ class _WeaponShopScreenState extends ConsumerState<WeaponShopScreen>
         children: [
           // Üst Bakiye Bilgi Çubuğu
           Container(
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 5),
             color: AppColors.hudPanel,
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceAround,
@@ -113,11 +114,11 @@ class _WeaponShopScreenState extends ConsumerState<WeaponShopScreen>
           if (gameState.lastMessage != null && gameState.lastMessage!.isNotEmpty)
             Container(
               width: double.infinity,
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
+              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
               color: AppColors.neonGreen.withValues(alpha: 0.15),
               child: Text(
                 gameState.lastMessage!,
-                style: const TextStyle(color: AppColors.neonGreen, fontSize: 12, fontWeight: FontWeight.w600),
+                style: const TextStyle(color: AppColors.neonGreen, fontSize: 11, fontWeight: FontWeight.w600),
                 textAlign: TextAlign.center,
               ),
             ),
@@ -140,26 +141,20 @@ class _WeaponShopScreenState extends ConsumerState<WeaponShopScreen>
 
   Widget _buildBalanceChip(String emoji, String value, String label, Color color) {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2.5),
       decoration: BoxDecoration(
         color: const Color(0xFF1E1E38),
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: BorderRadius.circular(10),
         border: Border.all(color: color.withValues(alpha: 0.3)),
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Text(emoji, style: const TextStyle(fontSize: 14)),
+          Text(emoji, style: const TextStyle(fontSize: 12)),
           const SizedBox(width: 4),
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Text(
-                value,
-                style: TextStyle(color: color, fontWeight: FontWeight.bold, fontSize: 12),
-              ),
-            ],
+          Text(
+            value,
+            style: TextStyle(color: color, fontWeight: FontWeight.bold, fontSize: 11),
           ),
         ],
       ),
@@ -171,7 +166,7 @@ class _WeaponShopScreenState extends ConsumerState<WeaponShopScreen>
     final weapons = WeaponType.values;
 
     return ListView.builder(
-      padding: const EdgeInsets.all(12),
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
       itemCount: weapons.length,
       itemBuilder: (context, index) {
         final weapon = weapons[index];
@@ -179,36 +174,36 @@ class _WeaponShopScreenState extends ConsumerState<WeaponShopScreen>
         final bool isEquipped = player.equippedWeapon == weapon;
 
         return Container(
-          margin: const EdgeInsets.only(bottom: 12),
-          padding: const EdgeInsets.all(12),
+          margin: const EdgeInsets.only(bottom: 8),
+          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
           decoration: BoxDecoration(
             color: const Color(0xFF16162E),
-            borderRadius: BorderRadius.circular(14),
+            borderRadius: BorderRadius.circular(12),
             border: Border.all(
               color: isEquipped
                   ? AppColors.neonGreen
                   : (isOwned ? Colors.blueGrey : const Color(0xFF2E2E54)),
-              width: isEquipped ? 2 : 1,
+              width: isEquipped ? 1.8 : 1,
             ),
           ),
           child: Row(
             children: [
               // Silah İkonu
               Container(
-                width: 54,
-                height: 54,
+                width: 42,
+                height: 42,
                 decoration: BoxDecoration(
                   color: const Color(0xFF222244),
-                  borderRadius: BorderRadius.circular(12),
+                  borderRadius: BorderRadius.circular(10),
                   border: Border.all(
                     color: isEquipped ? AppColors.neonGreen : Colors.white24,
                   ),
                 ),
                 child: Center(
-                  child: Text(weapon.iconEmoji, style: const TextStyle(fontSize: 26)),
+                  child: Text(weapon.iconEmoji, style: const TextStyle(fontSize: 20)),
                 ),
               ),
-              const SizedBox(width: 12),
+              const SizedBox(width: 10),
 
               // Bilgiler
               Expanded(
@@ -222,22 +217,22 @@ class _WeaponShopScreenState extends ConsumerState<WeaponShopScreen>
                           style: const TextStyle(
                             color: Colors.white,
                             fontWeight: FontWeight.bold,
-                            fontSize: 15,
+                            fontSize: 13.5,
                           ),
                         ),
                         if (isEquipped) ...[
                           const SizedBox(width: 6),
                           Container(
-                            padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                            padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 1.5),
                             decoration: BoxDecoration(
                               color: AppColors.neonGreen,
-                              borderRadius: BorderRadius.circular(6),
+                              borderRadius: BorderRadius.circular(5),
                             ),
                             child: const Text(
                               'KUŞANILDI',
                               style: TextStyle(
                                 color: Colors.black,
-                                fontSize: 9,
+                                fontSize: 8,
                                 fontWeight: FontWeight.w900,
                               ),
                             ),
@@ -245,19 +240,20 @@ class _WeaponShopScreenState extends ConsumerState<WeaponShopScreen>
                         ],
                       ],
                     ),
-                    const SizedBox(height: 4),
+                    const SizedBox(height: 2),
                     Text(
                       weapon.description,
-                      style: const TextStyle(color: Colors.white70, fontSize: 11),
-                      maxLines: 2,
+                      style: const TextStyle(color: Colors.white70, fontSize: 10),
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
                     ),
-                    const SizedBox(height: 6),
+                    const SizedBox(height: 4),
                     Row(
                       children: [
                         _buildStatBadge('⚔️ Hasar: ${weapon.damage}', Colors.redAccent),
-                        const SizedBox(width: 6),
+                        const SizedBox(width: 5),
                         _buildStatBadge('📦 Blok Delme: ${weapon.tileDamage}', Colors.amberAccent),
-                        const SizedBox(width: 6),
+                        const SizedBox(width: 5),
                         _buildStatBadge('🔫 Şarjör: ${weapon.maxAmmo}', Colors.lightBlueAccent),
                       ],
                     ),
@@ -280,21 +276,23 @@ class _WeaponShopScreenState extends ConsumerState<WeaponShopScreen>
                       ? Colors.grey.shade800
                       : (isOwned ? Colors.blue.shade700 : AppColors.neonGreen),
                   foregroundColor: (isOwned || isEquipped) ? Colors.white : Colors.black,
-                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                  minimumSize: const Size(70, 32),
+                  tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
                 ),
                 child: isEquipped
-                    ? const Text('KULLANILIYOR', style: TextStyle(fontSize: 10, fontWeight: FontWeight.bold))
+                    ? const Text('KULLANILIYOR', style: TextStyle(fontSize: 9, fontWeight: FontWeight.bold))
                     : (isOwned
-                        ? const Text('KUŞAN', style: TextStyle(fontSize: 11, fontWeight: FontWeight.bold))
+                        ? const Text('KUŞAN', style: TextStyle(fontSize: 10, fontWeight: FontWeight.bold))
                         : Column(
                             mainAxisSize: MainAxisSize.min,
                             children: [
-                              const Text('SATIN AL', style: TextStyle(fontSize: 10, fontWeight: FontWeight.w900)),
+                              const Text('SATIN AL', style: TextStyle(fontSize: 9, fontWeight: FontWeight.w900)),
                               if (weapon.goldPrice > 0)
-                                Text('${weapon.goldPrice} 🟡', style: const TextStyle(fontSize: 10, fontWeight: FontWeight.bold)),
+                                Text('${weapon.goldPrice} 🟡', style: const TextStyle(fontSize: 9, fontWeight: FontWeight.bold)),
                               if (weapon.gemPrice > 0)
-                                Text('${weapon.gemPrice} 💎', style: const TextStyle(fontSize: 10, fontWeight: FontWeight.bold)),
+                                Text('${weapon.gemPrice} 💎', style: const TextStyle(fontSize: 9, fontWeight: FontWeight.bold)),
                             ],
                           )),
               ),
@@ -316,7 +314,7 @@ class _WeaponShopScreenState extends ConsumerState<WeaponShopScreen>
     ];
 
     return ListView.builder(
-      padding: const EdgeInsets.all(12),
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
       itemCount: tools.length,
       itemBuilder: (context, index) {
         final item = tools[index];
@@ -324,11 +322,11 @@ class _WeaponShopScreenState extends ConsumerState<WeaponShopScreen>
         final bool isOwned = player.inventoryTools.contains(tool);
 
         return Container(
-          margin: const EdgeInsets.only(bottom: 12),
-          padding: const EdgeInsets.all(12),
+          margin: const EdgeInsets.only(bottom: 8),
+          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
           decoration: BoxDecoration(
             color: const Color(0xFF16162E),
-            borderRadius: BorderRadius.circular(14),
+            borderRadius: BorderRadius.circular(12),
             border: Border.all(
               color: isOwned ? AppColors.neonGreen.withValues(alpha: 0.5) : const Color(0xFF2E2E54),
             ),
@@ -336,32 +334,37 @@ class _WeaponShopScreenState extends ConsumerState<WeaponShopScreen>
           child: Row(
             children: [
               Container(
-                width: 50,
-                height: 50,
+                width: 40,
+                height: 40,
                 decoration: BoxDecoration(
                   color: const Color(0xFF222244),
-                  borderRadius: BorderRadius.circular(10),
+                  borderRadius: BorderRadius.circular(8),
                 ),
                 child: Center(
-                  child: Text(tool.iconEmoji, style: const TextStyle(fontSize: 24)),
+                  child: Text(tool.iconEmoji, style: const TextStyle(fontSize: 20)),
                 ),
               ),
-              const SizedBox(width: 12),
+              const SizedBox(width: 10),
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
                       tool.displayName,
-                      style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 14),
+                      style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 13),
                     ),
-                    const SizedBox(height: 2),
-                    Text(item.desc, style: const TextStyle(color: Colors.white70, fontSize: 11)),
-                    const SizedBox(height: 4),
+                    const SizedBox(height: 1),
+                    Text(
+                      item.desc,
+                      style: const TextStyle(color: Colors.white70, fontSize: 10),
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                    const SizedBox(height: 3),
                     Row(
                       children: [
-                        _buildStatBadge('⛏️ Kazma Gücü: +${tool.tileDamage}', Colors.orangeAccent),
-                        const SizedBox(width: 6),
+                        _buildStatBadge('⛏️ Kazma: +${tool.tileDamage}', Colors.orangeAccent),
+                        const SizedBox(width: 5),
                         _buildStatBadge('⚔️ Saldırı: +${tool.pvpDamage}', Colors.redAccent),
                       ],
                     ),
@@ -378,16 +381,18 @@ class _WeaponShopScreenState extends ConsumerState<WeaponShopScreen>
                 style: ElevatedButton.styleFrom(
                   backgroundColor: isOwned ? Colors.grey.shade800 : AppColors.neonGreen,
                   foregroundColor: isOwned ? Colors.white60 : Colors.black,
-                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                  minimumSize: const Size(70, 32),
+                  tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
                 ),
                 child: isOwned
-                    ? const Text('ENVANTERDE', style: TextStyle(fontSize: 10, fontWeight: FontWeight.bold))
+                    ? const Text('ENVANTERDE', style: TextStyle(fontSize: 9, fontWeight: FontWeight.bold))
                     : Column(
                         mainAxisSize: MainAxisSize.min,
                         children: [
-                          const Text('SATIN AL', style: TextStyle(fontSize: 10, fontWeight: FontWeight.bold)),
-                          Text('${item.price} 🟡', style: const TextStyle(fontSize: 10, fontWeight: FontWeight.bold)),
+                          const Text('SATIN AL', style: TextStyle(fontSize: 9, fontWeight: FontWeight.bold)),
+                          Text('${item.price} 🟡', style: const TextStyle(fontSize: 9, fontWeight: FontWeight.bold)),
                         ],
                       ),
               ),
@@ -401,7 +406,7 @@ class _WeaponShopScreenState extends ConsumerState<WeaponShopScreen>
   // 3. CEPHANE & YÜKSELTME SEKMESİ
   Widget _buildUpgradesTab(dynamic player) {
     return ListView(
-      padding: const EdgeInsets.all(12),
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
       children: [
         // 1. Tabanca Mermisi Paketi
         _buildUpgradeCard(
@@ -482,35 +487,40 @@ class _WeaponShopScreenState extends ConsumerState<WeaponShopScreen>
     bool isMax = false,
   }) {
     return Container(
-      margin: const EdgeInsets.only(bottom: 12),
-      padding: const EdgeInsets.all(12),
+      margin: const EdgeInsets.only(bottom: 8),
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
       decoration: BoxDecoration(
         color: const Color(0xFF16162E),
-        borderRadius: BorderRadius.circular(14),
+        borderRadius: BorderRadius.circular(12),
         border: Border.all(color: const Color(0xFF2E2E54)),
       ),
       child: Row(
         children: [
           Container(
-            width: 48,
-            height: 48,
+            width: 38,
+            height: 38,
             decoration: BoxDecoration(
               color: const Color(0xFF222244),
-              borderRadius: BorderRadius.circular(10),
+              borderRadius: BorderRadius.circular(8),
             ),
-            child: Center(child: Text(emoji, style: const TextStyle(fontSize: 22))),
+            child: Center(child: Text(emoji, style: const TextStyle(fontSize: 18))),
           ),
-          const SizedBox(width: 12),
+          const SizedBox(width: 10),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
                   title,
-                  style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 13),
+                  style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 12.5),
                 ),
-                const SizedBox(height: 2),
-                Text(desc, style: const TextStyle(color: Colors.white70, fontSize: 11)),
+                const SizedBox(height: 1),
+                Text(
+                  desc,
+                  style: const TextStyle(color: Colors.white70, fontSize: 10),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                ),
               ],
             ),
           ),
@@ -520,16 +530,18 @@ class _WeaponShopScreenState extends ConsumerState<WeaponShopScreen>
             style: ElevatedButton.styleFrom(
               backgroundColor: isMax ? Colors.grey.shade800 : AppColors.neonGreen,
               foregroundColor: isMax ? Colors.white60 : Colors.black,
-              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+              minimumSize: const Size(64, 30),
+              tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
             ),
             child: isMax
-                ? const Text('MAKSİMUM', style: TextStyle(fontSize: 10, fontWeight: FontWeight.bold))
+                ? const Text('MAKSİMUM', style: TextStyle(fontSize: 9, fontWeight: FontWeight.bold))
                 : Column(
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      const Text('AL', style: TextStyle(fontSize: 10, fontWeight: FontWeight.bold)),
-                      Text(costText, style: const TextStyle(fontSize: 10, fontWeight: FontWeight.bold)),
+                      const Text('AL', style: TextStyle(fontSize: 9, fontWeight: FontWeight.bold)),
+                      Text(costText, style: const TextStyle(fontSize: 9, fontWeight: FontWeight.bold)),
                     ],
                   ),
           ),
@@ -540,15 +552,15 @@ class _WeaponShopScreenState extends ConsumerState<WeaponShopScreen>
 
   Widget _buildStatBadge(String text, Color color) {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+      padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 1.5),
       decoration: BoxDecoration(
         color: color.withValues(alpha: 0.15),
-        borderRadius: BorderRadius.circular(6),
+        borderRadius: BorderRadius.circular(5),
         border: Border.all(color: color.withValues(alpha: 0.4), width: 0.8),
       ),
       child: Text(
         text,
-        style: TextStyle(color: color, fontSize: 9, fontWeight: FontWeight.bold),
+        style: TextStyle(color: color, fontSize: 8.5, fontWeight: FontWeight.bold),
       ),
     );
   }

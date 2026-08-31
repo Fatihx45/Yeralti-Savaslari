@@ -2,10 +2,14 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'core/theme/app_theme.dart';
+import 'core/ads/ad_service.dart';
 import 'features/splash/presentation/screens/splash_screen.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+
+  // Reklam servisini arka planda başlat
+  await AdService.instance.initialize();
 
   // Oyunu telefonlarda otomatik olarak yatay (Landscape) moda kitle
   await SystemChrome.setPreferredOrientations([
