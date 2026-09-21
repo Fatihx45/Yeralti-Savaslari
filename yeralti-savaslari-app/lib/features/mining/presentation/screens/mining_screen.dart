@@ -152,7 +152,7 @@ class _MiningScreenState extends ConsumerState<MiningScreen> {
             ),
 
             // ==========================================
-            // KATMAN 4: SOL BAŞPARMAK - D-PAD KONTROLÜ
+            // KATMAN 4: SOL BAŞPARMAK - SANAL JOYSTICK KONTROLÜ
             // ==========================================
             const Positioned(
               left: 12,
@@ -165,7 +165,7 @@ class _MiningScreenState extends ConsumerState<MiningScreen> {
             // ==========================================
             Positioned(
               bottom: 6,
-              left: 136,
+              left: 146,
               right: 180,
               child: Column(
                 mainAxisSize: MainAxisSize.min,
